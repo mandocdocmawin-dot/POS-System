@@ -1,0 +1,2 @@
+const colors = ['bg-indigo-100 text-indigo-700', 'bg-teal-100 text-teal-700', 'bg-orange-100 text-orange-700', 'bg-rose-100 text-rose-700']
+export function Avatar({ name, size = 'h-8 w-8', index = 0 }: { name: string; size?: string; index?: number }) { return <span role="img" aria-label={name} title={name} className={`inline-flex shrink-0 items-center justify-center rounded-full border-2 border-white text-[10px] font-semibold dark:border-slate-900 ${size} ${colors[index % colors.length]}`}>{name.split(' ').map(n => n[0]).slice(0,2).join('')}</span> }

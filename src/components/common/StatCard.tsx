@@ -1,0 +1,3 @@
+import type { LucideIcon } from 'lucide-react'
+export interface Stat { title: string; value: string; trend: string; up: boolean; icon: LucideIcon; color: string }
+export function StatCard({ title, value, trend, up, icon: Icon, color }: Stat) { return <section className="card"><div className="mb-5 flex items-start justify-between gap-2"><div><p className="mb-2 text-xs text-slate-500">{title}</p><h2 className="text-2xl font-semibold tracking-tight">{value}</h2></div><span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${color}`}><Icon size={19}/></span></div><p className="text-[10px] text-slate-400"><span className={`mr-1 font-semibold ${up ? 'text-emerald-500' : 'text-red-500'}`}>{up ? '▲' : '▼'} {trend}</span> From Last Week</p></section> }

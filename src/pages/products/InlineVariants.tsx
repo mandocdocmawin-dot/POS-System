@@ -1,8 +1,112 @@
-import { useFieldArray, type Control, type UseFormRegister, type FieldErrors } from 'react-hook-form';
-import type { ProductFormValues } from './ProductFormPage';
-import { TextInput, NumberInput } from '../../components/forms/Fields';
-import { generateSku } from '../../utils/id';
-export function InlineVariants({control,register,errors,editing}:{control:Control<ProductFormValues>;register:UseFormRegister<ProductFormValues>;errors:FieldErrors<ProductFormValues>;editing:boolean}) {
- const {fields,append,remove}=useFieldArray({control,name:'variants',keyName:'fieldKey'});
- return <section className="card space-y-4"><div className="flex items-center justify-between"><h2 className="font-semibold">Variants</h2><button type="button" className="btn" onClick={()=>append({name:'',sku:generateSku(),barcode:'',costPrice:0,sellingPrice:0,openingStock:0,attributesText:''})}>Add variant</button></div>{errors.variants?.message&&<p role="alert" className="text-red-500">{errors.variants.message}</p>}{fields.map((field,i)=><fieldset key={field.fieldKey} className="rounded-lg border border-slate-200 p-4 dark:border-slate-700"><legend className="px-2">Variant {i+1}</legend><div className="grid gap-3 sm:grid-cols-2"><TextInput label="Variant name" {...register(`variants.${i}.name`)} error={errors.variants?.[i]?.name?.message}/><TextInput label="Variant SKU" {...register(`variants.${i}.sku`)} error={errors.variants?.[i]?.sku?.message}/><TextInput label="Variant barcode" {...register(`variants.${i}.barcode`)}/><TextInput label="Attributes (Size: L, Color: Red)" {...register(`variants.${i}.attributesText`)} error={errors.variants?.[i]?.attributesText?.message}/><NumberInput label="Variant cost (PHP)" {...register(`variants.${i}.costPrice`,{valueAsNumber:true})} error={errors.variants?.[i]?.costPrice?.message}/><NumberInput label="Variant price (PHP)" {...register(`variants.${i}.sellingPrice`,{valueAsNumber:true})} error={errors.variants?.[i]?.sellingPrice?.message}/>{!editing&&<NumberInput label="Variant opening stock" {...register(`variants.${i}.openingStock`,{valueAsNumber:true})} error={errors.variants?.[i]?.openingStock?.message}/>}</div><button type="button" className="mt-3 text-red-500" onClick={()=>remove(i)}>Remove variant {i+1}</button></fieldset>)}</section>;
+import {
+  useFieldArray,
+  type Control,
+  type UseFormRegister,
+  type FieldErrors,
+} from "react-hook-form";
+import type { ProductFormValues } from "../../components/forms/productSchema";
+import { TextInput, NumberInput } from "../../components/forms/Fields";
+import { generateSku } from "../../utils/id";
+export function InlineVariants({
+  control,
+  register,
+  errors,
+  editing,
+}: {
+  control: Control<ProductFormValues>;
+  register: UseFormRegister<ProductFormValues>;
+  errors: FieldErrors<ProductFormValues>;
+  editing: boolean;
+}) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
+    keyName: "fieldKey",
+  });
+  return (
+    <section className="card space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="font-semibold">Variants</h2>
+        <button
+          type="button"
+          className="btn"
+          onClick={() =>
+            append({
+              name: "",
+              sku: generateSku(),
+              barcode: "",
+              costPrice: 0,
+              sellingPrice: 0,
+              openingStock: 0,
+              attributesText: "",
+            })
+          }
+        >
+          Add variant
+        </button>
+      </div>
+      {errors.variants?.message && (
+        <p role="alert" className="text-red-500">
+          {errors.variants.message}
+        </p>
+      )}
+      {fields.map((field, i) => (
+        <fieldset
+          key={field.fieldKey}
+          className="rounded-lg border border-slate-200 p-4 dark:border-slate-700"
+        >
+          <legend className="px-2">Variant {i + 1}</legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <TextInput
+              label="Variant name"
+              {...register(`variants.${i}.name`)}
+              error={errors.variants?.[i]?.name?.message}
+            />
+            <TextInput
+              label="Variant SKU"
+              {...register(`variants.${i}.sku`)}
+              error={errors.variants?.[i]?.sku?.message}
+            />
+            <TextInput
+              label="Variant barcode"
+              {...register(`variants.${i}.barcode`)}
+            />
+            <TextInput
+              label="Attributes (Size: L, Color: Red)"
+              {...register(`variants.${i}.attributesText`)}
+              error={errors.variants?.[i]?.attributesText?.message}
+            />
+            <NumberInput
+              label="Variant cost (PHP)"
+              {...register(`variants.${i}.costPrice`, { valueAsNumber: true })}
+              error={errors.variants?.[i]?.costPrice?.message}
+            />
+            <NumberInput
+              label="Variant price (PHP)"
+              {...register(`variants.${i}.sellingPrice`, {
+                valueAsNumber: true,
+              })}
+              error={errors.variants?.[i]?.sellingPrice?.message}
+            />
+            {!editing && (
+              <NumberInput
+                label="Variant opening stock"
+                {...register(`variants.${i}.openingStock`, {
+                  valueAsNumber: true,
+                })}
+                error={errors.variants?.[i]?.openingStock?.message}
+              />
+            )}
+          </div>
+          <button
+            type="button"
+            className="mt-3 text-red-500"
+            onClick={() => remove(i)}
+          >
+            Remove variant {i + 1}
+          </button>
+        </fieldset>
+      ))}
+    </section>
+  );
 }

@@ -530,10 +530,28 @@ featureStatus["*"] = {
 };
 // Short URLs and existing menu URLs share the same implemented screens.
 export const phase2Paths = [
-  '/products', '/products/all-products', '/products/add', '/products/add-product', '/products/:id/edit',
-  '/products/variants', '/products/categories', '/products/subcategories', '/products/brands', '/products/units',
-  '/inventory/stock', '/inventory/stock-list', '/inventory/stock-in', '/inventory/stock-out', '/inventory/adjustment', '/inventory/stock-adjustment',
+  "/products",
+  "/products/all-products",
+  "/products/add",
+  "/products/add-product",
+  "/products/:id/edit",
+  "/products/variants",
+  "/products/categories",
+  "/products/subcategories",
+  "/products/brands",
+  "/products/units",
+  "/inventory/stock",
+  "/inventory/stock-list",
+  "/inventory/stock-in",
+  "/inventory/stock-out",
+  "/inventory/adjustment",
+  "/inventory/stock-adjustment",
 ] as const;
-for (const path of phase2Paths) featureStatus[path] = { status: 'done', description: 'Working with browser-persisted local data.', plannedFeatures: [] };
+for (const path of phase2Paths)
+  featureStatus[path] = {
+    status: "done",
+    description: "Working with browser-persisted local data.",
+    plannedFeatures: [],
+  };
 // General settings are still planned; only its local Data card is implemented.
-featureStatus['/settings/general'].status = 'placeholder';
+featureStatus["/settings/general"].status = "placeholder";

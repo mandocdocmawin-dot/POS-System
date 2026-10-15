@@ -12,14 +12,13 @@ export function ProductsRow() {
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
       <section className="card min-w-0 md:col-span-2 xl:col-span-5">
         <CardHeading title="Low Stock Items">
-          <Link
-            to="/inventory/stock-list"
-            className="text-xs text-indigo-500"
-          >
+          <Link to="/inventory/stock-list" className="text-xs text-indigo-500">
             View All →
           </Link>
         </CardHeading>
-        {!stock.length && <p className="mt-4 text-xs text-slate-500">No low stock items.</p>}
+        {!stock.length && (
+          <p className="mt-4 text-xs text-slate-500">No low stock items.</p>
+        )}
         <div className="-mx-5 mt-4">
           <DataTable
             caption="Low stock products"
@@ -35,7 +34,7 @@ export function ProductsRow() {
                     <div>
                       <span className="text-xs font-medium">{r.name}</span>
                       <p className="mt-1 text-xs text-red-400">
-                        ↓ {r.percent}%
+                        Reorder: {r.reorderLevel}
                       </p>
                     </div>
                   </div>
@@ -53,7 +52,14 @@ export function ProductsRow() {
                 header: "Stock",
                 cell: (r) => (
                   <div className="flex items-center gap-2">
-                    <div className="h-1 w-12 rounded-full bg-slate-100 dark:bg-slate-800">
+                    <div
+                      role="progressbar"
+                      aria-label={`${r.name} stock versus reorder level`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={r.percent}
+                      className="h-1 w-12 rounded-full bg-slate-100 dark:bg-slate-800"
+                    >
                       <div
                         style={{ width: `${r.percent}%` }}
                         className="h-full rounded-full bg-red-400"

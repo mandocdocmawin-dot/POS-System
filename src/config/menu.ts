@@ -918,9 +918,11 @@ const entries: RouteDefinition[] = menu.flatMap((section) =>
       (item.children ?? [item]).map((child) => ({
         path: child.path,
         title: child.label,
-        breadcrumb: child.breadcrumb ?? (item.children
-          ? [section.label, item.label, child.label]
-          : [section.label, child.label]),
+        breadcrumb:
+          child.breadcrumb ??
+          (item.children
+            ? [section.label, item.label, child.label]
+            : [section.label, child.label]),
         sectionId: section.id,
         layout:
           section.id === "authentication"
@@ -936,6 +938,16 @@ export const routes = entries.filter(
   (entry, index) =>
     entries.findIndex((other) => other.path === entry.path) === index,
 );
+export function resolveMenuPath(path: string): string {
+  const aliases: Record<string, string> = {
+    "/products": "/products/all-products",
+    "/products/add": "/products/add-product",
+    "/inventory/stock": "/inventory/stock-list",
+    "/inventory/adjustment": "/inventory/stock-adjustment",
+  };
+  if (/^\/products\/[^/]+\/edit$/.test(path)) return "/products/add-product";
+  return aliases[path] ?? path;
+}
 export function findRoute(path: string) {
-  return routes.find((route) => route.path === path);
+  return routes.find((route) => route.path === resolveMenuPath(path));
 }

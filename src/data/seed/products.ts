@@ -1,13 +1,62 @@
-import type { Product, Variant } from '../../types/models';
+import type { Product, Variant } from "../../types/models";
 const rows: [string, number, number, number, number, number, number][] = [
-  ['Sinandomeng Rice',0,0,1,45,55,0], ['Jasmine Rice',0,0,1,58,68,0], ['Lucky Me Pancit Canton',0,0,2,12,16,1],
-  ['Century Tuna Flakes 155g',1,1,0,28,36,0], ['555 Sardines 155g',1,1,0,20,25,0], ['Argentina Corned Beef',1,0,0,32,42,1],
-  ['Nescafé Classic Sachet',2,2,2,5,8,0], ['Milo 24g',2,2,2,8,12,0], ['Coca-Cola 1.5L',2,0,4,55,70,1], ['Summit Water 1L',2,0,5,15,22,1],
-  ['Rebisco Crackers',3,3,2,6,9,0], ['Piattos',3,3,2,13,18,1], ['Nova Multigrain',3,3,2,14,20,1], ['SkyFlakes',3,3,3,48,60,0],
-  ['Safeguard Soap',4,5,0,28,38,0], ['Palmolive Shampoo',4,4,2,5,8,1], ['Dove Beauty Bar',4,4,0,42,55,0],
-  ['Tide Powder 70g',5,5,2,10,15,0], ['Surf Powder 70g',5,4,2,9,14,0], ['Joy Dishwashing 250ml',5,5,4,30,42,1],
-  ['Datu Puti Soy Sauce',6,6,4,18,25,0], ['Datu Puti Vinegar',6,6,4,16,23,0], ['Iodized Salt 250g',6,0,2,6,10,1],
-  ['Alaska Evaporated Milk',7,7,0,32,42,0], ['Fresh Eggs',7,0,0,6,8.5,1],
+  ["Sinandomeng Rice", 0, 0, 1, 45, 55, 0],
+  ["Jasmine Rice", 0, 0, 1, 58, 68, 0],
+  ["Lucky Me Pancit Canton", 0, 0, 2, 12, 16, 1],
+  ["Century Tuna Flakes 155g", 1, 1, 0, 28, 36, 0],
+  ["555 Sardines 155g", 1, 1, 0, 20, 25, 0],
+  ["Argentina Corned Beef", 1, 0, 0, 32, 42, 1],
+  ["Nescafé Classic Sachet", 2, 2, 2, 5, 8, 0],
+  ["Milo 24g", 2, 2, 2, 8, 12, 0],
+  ["Coca-Cola 1.5L", 2, 0, 4, 55, 70, 1],
+  ["Summit Water 1L", 2, 0, 5, 15, 22, 1],
+  ["Rebisco Crackers", 3, 3, 2, 6, 9, 0],
+  ["Piattos", 3, 3, 2, 13, 18, 1],
+  ["Nova Multigrain", 3, 3, 2, 14, 20, 1],
+  ["SkyFlakes", 3, 3, 3, 48, 60, 0],
+  ["Safeguard Soap", 4, 5, 0, 28, 38, 0],
+  ["Palmolive Shampoo", 4, 4, 2, 5, 8, 1],
+  ["Dove Beauty Bar", 4, 4, 0, 42, 55, 0],
+  ["Tide Powder 70g", 5, 5, 2, 10, 15, 0],
+  ["Surf Powder 70g", 5, 4, 2, 9, 14, 0],
+  ["Joy Dishwashing 250ml", 5, 5, 4, 30, 42, 1],
+  ["Datu Puti Soy Sauce", 6, 6, 4, 18, 25, 0],
+  ["Datu Puti Vinegar", 6, 6, 4, 16, 23, 0],
+  ["Iodized Salt 250g", 6, 0, 2, 6, 10, 1],
+  ["Alaska Evaporated Milk", 7, 7, 0, 32, 42, 0],
+  ["Fresh Eggs", 7, 0, 0, 6, 8.5, 1],
 ];
-export const products: Product[] = rows.map(([name,c,b,u,costPrice,sellingPrice,sub],i) => ({ id: `prod-${i}`, name, sku: `TP-${String(i+1).padStart(4,'0')}`, barcode: `480000000${String(i+1).padStart(4,'0')}`, categoryId: `cat-${c}`, subcategoryId: `sub-${c}-${sub}`, brandId: `brand-${b}`, unitId: `unit-${u}`, costPrice, sellingPrice, taxRate: 12, reorderLevel: 10, hasVariants: [11,15,20].includes(i), status: 'active', description: 'Everyday sari-sari store essential.', createdAt: '2025-12-19T08:00:00.000Z', updatedAt: '2025-12-19T08:00:00.000Z' }));
-export const variants: Variant[] = products.filter(p => p.hasVariants).flatMap(p => ['Regular', 'Large'].map((name,i) => ({ id: `${p.id}-v${i}`, productId: p.id, name, sku: `${p.sku}-${i+1}`, costPrice: p.costPrice * (i+1), sellingPrice: p.sellingPrice * (i+1), attributes: { Size: name } })));
+export const products: Product[] = rows.map(
+  ([name, c, b, u, costPrice, sellingPrice, sub], i) => ({
+    id: `prod-${i}`,
+    name,
+    sku: `TP-${String(i + 1).padStart(4, "0")}`,
+    barcode: `480000000${String(i + 1).padStart(4, "0")}`,
+    categoryId: `cat-${c}`,
+    subcategoryId: `sub-${c}-${sub}`,
+    brandId: `brand-${b}`,
+    unitId: `unit-${u}`,
+    costPrice,
+    sellingPrice,
+    taxRate: 12,
+    reorderLevel: 10,
+    hasVariants: [11, 15, 20].includes(i),
+    status: "active",
+    description: "Everyday sari-sari store essential.",
+    createdAt: "2025-12-19T08:00:00.000Z",
+    updatedAt: "2025-12-19T08:00:00.000Z",
+  }),
+);
+export const variants: Variant[] = products
+  .filter((p) => p.hasVariants)
+  .flatMap((p) =>
+    ["Regular", "Large"].map((name, i) => ({
+      id: `${p.id}-v${i}`,
+      productId: p.id,
+      name,
+      sku: `${p.sku}-${i + 1}`,
+      costPrice: p.costPrice * (i + 1),
+      sellingPrice: p.sellingPrice * (i + 1),
+      attributes: { Size: name },
+    })),
+  );

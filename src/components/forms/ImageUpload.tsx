@@ -1,13 +1,89 @@
-import { useEffect, useRef, useState } from 'react';
-export async function compressImage(file: File): Promise<Blob> {
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('Choose a JPEG, PNG or WebP image.');
-  if (file.size > 20 * 1024 * 1024) throw new Error('Image must be smaller than 20 MB.');
-  const bitmap = await createImageBitmap(file);
-  try { const ratio = Math.min(1, 800 / Math.max(bitmap.width, bitmap.height)); const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(bitmap.width * ratio)); canvas.height = Math.max(1, Math.round(bitmap.height * ratio)); const context = canvas.getContext('2d'); if (!context) throw new Error('Image compression is unavailable.'); context.fillStyle = '#fff'; context.fillRect(0, 0, canvas.width, canvas.height); context.drawImage(bitmap, 0, 0, canvas.width, canvas.height); return await new Promise<Blob>((resolve, reject) => canvas.toBlob(b => b ? resolve(b) : reject(new Error('Could not compress this image.')), 'image/jpeg', 0.8)); } finally { bitmap.close(); }
-}
-export function ImageUpload({ onChange, preview }: { onChange: (blob: Blob | null) => void; preview?: string }) {
-  const [url, setUrl] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const input = useRef<HTMLInputElement>(null);
-  useEffect(() => () => { if (url) URL.revokeObjectURL(url); }, [url]);
-  async function pick(file?: File) { if (!file || busy) return; setBusy(true); setError(''); try { const blob = await compressImage(file); setUrl(URL.createObjectURL(blob)); onChange(blob); } catch (e) { setError(e instanceof Error ? e.message : 'Could not load image.'); } finally { setBusy(false); } }
-  return <div onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); void pick(e.dataTransfer.files[0]); }} className="rounded-lg border-2 border-dashed border-slate-300 p-5 dark:border-slate-600"><label className="block space-y-3">Product image<input ref={input} type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e => void pick(e.target.files?.[0])} className="block w-full" /></label><p className="my-2 text-xs text-slate-500">Drop an image here. JPEG, PNG or WebP; up to 20 MB. Compressed to 800px.</p>{(url || preview) && <img src={url || preview} alt="Product preview" className="mt-3 h-36 w-36 rounded-lg object-contain" />}{url && <button type="button" className="btn mt-3" onClick={() => { setUrl(''); onChange(null); if (input.current) input.current.value = ''; }}>Discard new image</button>}{busy && <p role="status">Compressing image…</p>}{error && <p role="alert" className="text-red-500">{error}</p>}</div>;
+import { useEffect, useRef, useState } from "react";
+import { compressImage } from "../../utils/image";
+export function ImageUpload({
+  onChange,
+  preview,
+  onBusyChange,
+}: {
+  onChange: (blob: Blob | null) => void;
+  preview?: string;
+  onBusyChange?: (busy: boolean) => void;
+}) {
+  const [url, setUrl] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+  useEffect(
+    () => () => {
+      if (url) URL.revokeObjectURL(url);
+    },
+    [url],
+  );
+  async function pick(file?: File) {
+    if (!file || busy) return;
+    setBusy(true);
+    onBusyChange?.(true);
+    setError("");
+    try {
+      const blob = await compressImage(file);
+      setUrl(URL.createObjectURL(blob));
+      onChange(blob);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load image.");
+    } finally {
+      setBusy(false);
+      onBusyChange?.(false);
+    }
+  }
+  return (
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        void pick(e.dataTransfer.files[0]);
+      }}
+      className="rounded-lg border-2 border-dashed border-slate-300 p-5 dark:border-slate-600"
+    >
+      <label className="block space-y-3">
+        Product image
+        <input
+          ref={input}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          disabled={busy}
+          onChange={(e) => void pick(e.target.files?.[0])}
+          className="block w-full"
+        />
+      </label>
+      <p className="my-2 text-xs text-slate-500">
+        Drop an image here. JPEG, PNG or WebP; up to 20 MB. Compressed to 800px.
+      </p>
+      {(url || preview) && (
+        <img
+          src={url || preview}
+          alt="Product preview"
+          className="mt-3 h-36 w-36 rounded-lg object-contain"
+        />
+      )}
+      {url && (
+        <button
+          type="button"
+          className="btn mt-3"
+          onClick={() => {
+            setUrl("");
+            onChange(null);
+            if (input.current) input.current.value = "";
+          }}
+        >
+          Discard new image
+        </button>
+      )}
+      {busy && <p role="status">Compressing image…</p>}
+      {error && (
+        <p role="alert" className="text-red-500">
+          {error}
+        </p>
+      )}
+    </div>
+  );
 }

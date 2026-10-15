@@ -6,7 +6,7 @@ export interface LegacyProduct {
   brand: string;
   price: number;
 }
-export type { Product, Variant } from './models';
+export type { Product, Variant } from "./models";
 export interface ProductCategory {
   name: string;
   icon:

@@ -1,17 +1,18 @@
 import { ChevronDown, ChevronUp, Store, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { menu } from "../../config/menu";
+import { menu, resolveMenuPath } from "../../config/menu";
 import { useUiStore } from "../../store/useUiStore";
 import { Brand } from "./Brand";
 export function Sidebar() {
   const section = useUiStore((s) => s.section);
   const close = useUiStore((s) => s.setMobileOpen);
   const { pathname } = useLocation();
+  const canonicalPath = resolveMenuPath(pathname);
   const current = menu.find((s) => s.id === section) ?? menu[0];
   const activeParent = current.groups
     .flatMap((g) => g.items)
-    .find((i) => i.children?.some((c) => c.path === pathname))?.label;
+    .find((i) => i.children?.some((c) => c.path === canonicalPath))?.label;
   const [expanded, setExpanded] = useState<{
     route: string;
     section: string;
@@ -72,7 +73,7 @@ export function Sidebar() {
                             to={child.path}
                             onClick={() => close(false)}
                             className={({ isActive }) =>
-                              `flex min-h-9 items-center gap-3 pl-5 text-sm ${isActive ? "font-medium text-indigo-600 dark:text-indigo-300" : "text-slate-500 hover:text-indigo-600"}`
+                              `flex min-h-9 items-center gap-3 pl-5 text-sm ${isActive || child.path === canonicalPath ? "font-medium text-indigo-600 dark:text-indigo-300" : "text-slate-500 hover:text-indigo-600"}`
                             }
                           >
                             <span className="h-1 w-1 rounded-full bg-current" />

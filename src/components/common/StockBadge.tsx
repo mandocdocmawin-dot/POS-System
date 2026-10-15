@@ -1,2 +1,17 @@
-export function stockStatus(stock: number, reorderLevel: number) { return stock <= 0 ? 'Out of stock' : stock <= reorderLevel ? 'Low stock' : 'In stock'; }
-export function StockBadge({ stock, reorderLevel }: { stock: number; reorderLevel: number }) { const label = stockStatus(stock, reorderLevel); return <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${stock <= 0 ? 'bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300' : stock <= reorderLevel ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'}`}>{label}</span>; }
+import { stockStatus } from "../../utils/stock";
+export function StockBadge({
+  stock,
+  reorderLevel,
+}: {
+  stock: number;
+  reorderLevel: number;
+}) {
+  const label = stockStatus(stock, reorderLevel);
+  return (
+    <span
+      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${stock <= 0 ? "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300" : stock <= reorderLevel ? "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" : "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"}`}
+    >
+      {label}
+    </span>
+  );
+}

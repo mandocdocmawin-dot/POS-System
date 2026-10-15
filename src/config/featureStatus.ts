@@ -19,3 +19,6 @@ export const featureStatus: Record<string, FeatureDefinition> = Object.fromEntri
 for (const path of ['/', '/pos', '/auth/sign-in', '/auth/sign-up', '/auth/forgot-password']) featureStatus[path].status = 'done'
 
 for (const route of routes.filter(route => route.layout === 'auth')) featureStatus[route.path].status = 'done'
+
+for (const path of ['/errors/404', '/errors/500']) featureStatus[path].status = 'done'
+featureStatus['*'] = { status: 'done', description: 'Unknown route recovery', plannedFeatures: [] }

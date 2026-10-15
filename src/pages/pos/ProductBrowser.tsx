@@ -43,10 +43,10 @@ export function ProductBrowser() {
         `${p.name} ${p.sku}`.toLowerCase().includes(search.toLowerCase()),
     );
   return (
-    <div className="flex min-w-0 flex-1 flex-col sm:flex-row">
+    <div className="flex min-w-0 shrink-0 flex-col sm:flex-row xl:min-h-0 xl:flex-1">
       <nav
         aria-label="Product categories"
-        className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-[110px] sm:flex-col sm:border-b-0 sm:border-r dark:border-slate-800 dark:bg-slate-900"
+        className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-[110px] sm:flex-col sm:px-3 xl:overflow-y-auto sm:border-b-0 sm:border-r dark:border-slate-800 dark:bg-slate-900"
       >
         {categories.map((c) => {
           const Icon = icons[c.icon];
@@ -63,7 +63,7 @@ export function ProductBrowser() {
           );
         })}
       </nav>
-      <main className="min-w-0 flex-1 p-4 md:p-6">
+      <main className="min-w-0 flex-1 p-4 md:p-6 xl:overflow-y-auto">
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <Popover
             label="Filter products"
@@ -154,7 +154,7 @@ export function ProductBrowser() {
             </p>
           </div>
           <span className="text-xs text-slate-400">
-            {products.length} products
+            {products.length} {products.length === 1 ? "product" : "products"}
           </span>
         </div>
         {notice && (

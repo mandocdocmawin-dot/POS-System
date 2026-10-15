@@ -20,7 +20,7 @@ export function OrderPanel() {
   return (
     <aside
       aria-label="Current order"
-      className="flex w-full shrink-0 flex-col border-t border-slate-200 bg-white xl:w-[380px] xl:border-l xl:border-t-0 2xl:w-[420px] dark:border-slate-800 dark:bg-slate-900"
+      className="flex w-full shrink-0 flex-col border-t border-slate-200 bg-white xl:min-h-0 xl:w-[380px] xl:overflow-y-auto xl:border-l xl:border-t-0 2xl:w-[420px] dark:border-slate-800 dark:bg-slate-900"
     >
       <div className="flex items-center justify-between border-b border-slate-100 p-5 dark:border-slate-800">
         <h2 className="text-sm font-semibold">Order ID: {order.id}</h2>

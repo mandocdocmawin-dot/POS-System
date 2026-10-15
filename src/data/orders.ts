@@ -1,4 +1,4 @@
-import type { Order } from "../types/order";
+import type { LegacyOrder as Order } from "../types/order";
 const names = [
   "Ana Santos",
   "Jose Dela Cruz",

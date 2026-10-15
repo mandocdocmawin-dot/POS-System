@@ -1,4 +1,4 @@
-export interface Order {
+export interface LegacyOrder {
   id: string;
   date: string;
   product: string;
@@ -10,3 +10,5 @@ export interface Order {
   status: string;
   method: string;
 }
+
+export type { Order, OrderLine, Payment } from './pos';

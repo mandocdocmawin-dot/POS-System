@@ -6,7 +6,7 @@ import { Avatar } from "../../components/common/Avatar";
 import { StatusBadge } from "../../components/common/StatusBadge";
 import { dashboardService } from "../../services/dashboardService";
 import { formatCurrency } from "../../types/format";
-import type { Order } from "../../types/order";
+import type { LegacyOrder as Order } from "../../types/order";
 export function RecentOrders() {
   const orders = dashboardService.getRecentOrders();
   const [page, setPage] = useState(1);

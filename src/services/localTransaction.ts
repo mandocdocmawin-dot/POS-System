@@ -1,3 +1,7 @@
+import {usePosStore} from '../store/usePosStore';
+import {useOrderStore} from '../store/useOrderStore';
+import {useHeldOrderStore} from '../store/useHeldOrderStore';
+import {useCustomerStore} from '../store/useCustomerStore';
 import { useCatalogStore } from "../store/useCatalogStore";
 import { useProductStore } from "../store/useProductStore";
 import { useStockStore } from "../store/useStockStore";
@@ -6,10 +10,18 @@ export function localTransaction<T>(write: () => T): T {
   const catalog = useCatalogStore.getState(),
     products = useProductStore.getState(),
     stock = useStockStore.getState();
+  const pos = usePosStore.getState();
+  const order = useOrderStore.getState();
+  const heldorder = useHeldOrderStore.getState();
+  const customer = useCustomerStore.getState();
   try {
     return write();
   } catch (cause) {
     for (const restore of [
+      () => usePosStore.setState(pos, true),
+      () => useOrderStore.setState(order, true),
+      () => useHeldOrderStore.setState(heldorder, true),
+      () => useCustomerStore.setState(customer, true),
       () => useCatalogStore.setState(catalog, true),
       () => useProductStore.setState(products, true),
       () => useStockStore.setState(stock, true),

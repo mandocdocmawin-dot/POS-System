@@ -1,0 +1,2 @@
+import { Package } from 'lucide-react'
+export function ProductThumb({ large = false }: { large?: boolean }) { return <span aria-label="Product image placeholder" role="img" className={`flex shrink-0 items-center justify-center rounded-lg border border-slate-100 bg-slate-100 text-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-600 ${large ? 'aspect-square w-full' : 'h-9 w-9'}`}><Package size={large ? 42 : 17} strokeWidth={1.2}/></span> }

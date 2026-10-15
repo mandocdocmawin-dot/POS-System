@@ -1,7 +1,8 @@
-import { Footer } from '../components/layout/Footer'
-import { Topbar } from '../components/layout/Topbar'
-import { useUiStore } from '../store/useUiStore'
-import { Sidebar } from '../components/layout/Sidebar'
 import { Outlet } from 'react-router-dom'
 import { IconRail } from '../components/layout/IconRail'
-export function MainLayout() { const sidebarOpen = useUiStore(s => s.sidebarOpen); const compact = useUiStore(s => s.compact); return <div className="flex min-h-dvh"><div className="sticky top-0 h-dvh"><IconRail /></div>{sidebarOpen && <div className="sticky top-0 h-dvh"><Sidebar /></div>}<div className="flex min-w-0 flex-1 flex-col"><Topbar /><main className={compact ? "p-3" : "p-6"}><Outlet /></main><Footer /></div></div> }
+import { Sidebar } from '../components/layout/Sidebar'
+import { Topbar } from '../components/layout/Topbar'
+import { Footer } from '../components/layout/Footer'
+import { MobileNavigation } from '../components/layout/MobileNavigation'
+import { useUiStore } from '../store/useUiStore'
+export function MainLayout() { const { sidebarOpen, mobileOpen, compact } = useUiStore(); return <div className="flex min-h-dvh"><div className="sticky top-0 hidden h-dvh lg:block"><IconRail /></div>{sidebarOpen && <div className="sticky top-0 hidden h-dvh lg:block"><Sidebar /></div>}{mobileOpen && <MobileNavigation />}<div className="flex min-w-0 flex-1 flex-col"><Topbar /><main className={compact ? 'flex-1 p-3' : 'flex-1 p-4 md:p-6'}><Outlet /></main><Footer /></div></div> }

@@ -1,5 +1,6 @@
 // Add a page loader and its path here when a future feature is implemented.
 export const pageLoaders = {
+  categories: () => import('../pages/products/CategoriesPage'),
   dashboard: () => import("../pages/dashboard/DashboardPage"),
   pos: () => import("../pages/pos/PosPage"),
   auth: () => import("../pages/auth/AuthPage"),
@@ -8,6 +9,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+  '/products/categories': 'categories',
   "/": "dashboard",
   "/pos": "pos",
   "/auth/sign-in": "auth",
@@ -24,3 +26,4 @@ export const implementedPages: Record<string, PageId> = {
 export function getPageLoader(path: string) {
   return pageLoaders[implementedPages[path] ?? "placeholder"];
 }
+

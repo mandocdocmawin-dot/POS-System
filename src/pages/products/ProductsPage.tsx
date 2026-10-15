@@ -1,3 +1,4 @@
+import { ProductDetails } from './ProductDetails';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DataTable } from '../../components/common/DataTable';
@@ -14,7 +15,7 @@ import { toast } from '../../services/toastService';
 import { formatPHP } from '../../utils/money';
 import { exportCSV } from '../../utils/csv';
 export function Component() {
-  useLocalData(); const [category, setCategory] = useState(''); const [brand, setBrand] = useState(''); const [status, setStatus] = useState(''); const [stock, setStock] = useState(''); const [selected, setSelected] = useState<string[]>([]); const [deleting, setDeleting] = useState<string[]>([]);
+  useLocalData(); const [view, setView] = useState<string>(); const [category, setCategory] = useState(''); const [brand, setBrand] = useState(''); const [status, setStatus] = useState(''); const [stock, setStock] = useState(''); const [selected, setSelected] = useState<string[]>([]); const [deleting, setDeleting] = useState<string[]>([]);
   const categories = categoryService.list(), brands = brandService.list(), units = unitService.list();
   const rows = productService.list().filter(p => (!category || p.categoryId === category) && (!brand || p.brandId === brand) && (!status || p.status === status) && (!stock || stockStatus(stockService.getStock(p.id),p.reorderLevel) === stock));
   return <><PageActions title="All Products"><button className="btn" onClick={() => exportCSV('products.csv', [['Name','SKU','Cost','Price','Stock'],...rows.map(p => [p.name,p.sku,p.costPrice,p.sellingPrice,stockService.getStock(p.id)])])}>Export CSV</button><Link className="btn-primary" to="/products/add">Add Product</Link></PageActions>
@@ -26,6 +27,8 @@ export function Component() {
   { id:'brand', header:'Brand', cell:p=>brands.find(b=>b.id===p.brandId)?.name??'—' }, { id:'unit',header:'Unit',cell:p=>units.find(u=>u.id===p.unitId)?.shortName },
   { id:'cost',header:'Cost',cell:p=>formatPHP(p.costPrice),sortValue:p=>p.costPrice }, { id:'price',header:'Price',cell:p=>formatPHP(p.sellingPrice),sortValue:p=>p.sellingPrice },
   { id:'stock',header:'Stock',cell:p=><div className="flex items-center gap-2">{stockService.getStock(p.id)}<StockBadge stock={stockService.getStock(p.id)} reorderLevel={p.reorderLevel}/></div>,sortValue:p=>stockService.getStock(p.id) }, { id:'status',header:'Status',cell:p=>p.status,sortValue:p=>p.status }
-  ]} actions={p=><div className="flex gap-3"><Link className="text-indigo-500" to={`/products/${p.id}/edit`} aria-label={`Edit ${p.name}`}>Edit</Link><button className="text-red-500" onClick={()=>setDeleting([p.id])} aria-label={`Delete ${p.name}`}>Delete</button></div>}/></section>
+  ]} actions={p=><div className="flex gap-3"><button className="text-indigo-500" onClick={()=>setView(p.id)} aria-label={`View ${p.name}`}>View</button><Link className="text-indigo-500" to={`/products/${p.id}/edit`} aria-label={`Edit ${p.name}`}>Edit</Link><button className="text-red-500" onClick={()=>setDeleting([p.id])} aria-label={`Delete ${p.name}`}>Delete</button></div>}/></section>
+  {view && <ProductDetails id={view} onClose={()=>setView(undefined)}/>}
   {deleting.length > 0 && <ConfirmDialog open title="Delete products?" message={`Delete ${deleting.length} product(s), their variants and stock history? This cannot be undone.`} onClose={()=>setDeleting([])} onConfirm={()=>{productService.removeMany(deleting);setSelected([]);toast.success('Products deleted');}}/>}</>;
 }
+

@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { LayoutGrid, Package, Search, Plus } from "lucide-react";
+import { LayoutGrid, Package, Search } from "lucide-react";
 import { productService } from "../../services/productService";
 import { categoryService, brandService } from "../../services/catalogService";
-import { stockService } from "../../services/stockService";
+import { posService } from "../../services/posService";
+import { ProductCard } from "../../components/pos/ProductCard";
 import { useLocalData } from "../../services/useLocalData";
-import { toast } from "../../services/toastService";
-import { ProductImage } from "../../components/common/ProductImage";
-import { formatPHP } from "../../utils/money";
+import { toast, errorMessage } from "../../services/toastService";
 export function ProductBrowser() {
   useLocalData();
   const [category, setCategory] = useState(""),
@@ -95,44 +94,8 @@ export function ProductBrowser() {
           </span>
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((p) => {
-            const stock = stockService.getStock(p.id);
-            return (
-              <article
-                className={`card p-3 ${stock <= 0 ? "opacity-50" : ""}`}
-                key={p.id}
-              >
-                <ProductImage imageId={p.imageId} name={p.name} large />
-                <h2 className="mb-1 mt-3 truncate text-xs font-medium">
-                  {p.name}
-                </h2>
-                <p className="text-xs text-slate-500">SKU: {p.sku}</p>
-                {stock <= 0 ? (
-                  <p className="mt-1 text-xs text-red-500">Out of stock</p>
-                ) : (
-                  <p className="mt-1 text-xs text-slate-500">
-                    {stock} available
-                    {p.hasVariants ? " · Variants available" : ""}
-                  </p>
-                )}
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-sm font-semibold">
-                    {formatPHP(p.sellingPrice)}
-                  </span>
-                  <button
-                    disabled={stock <= 0}
-                    aria-label={`Add ${p.name} (preview)`}
-                    className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-white disabled:cursor-not-allowed"
-                    onClick={() =>
-                      toast.info("Cart functionality is planned for Phase 3.")
-                    }
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
-              </article>
-            );
-          })}
+          {products.map(p=><ProductCard key={p.id} product={p} onAdd={()=>{try{posService.add(p.id);}catch(e){toast.error(errorMessage(e));}}}/>)}
+
         </div>
         {!products.length && (
           <div className="card py-12 text-center text-slate-500">

@@ -1,0 +1,3 @@
+import { create } from 'zustand'
+interface UiState { section: string; sidebarOpen: boolean; mobileOpen: boolean; compact: boolean; setSection: (section: string) => void; toggleSidebar: () => void; setMobileOpen: (mobileOpen: boolean) => void; toggleCompact: () => void }
+export const useUiStore = create<UiState>(set => ({ section: 'dashboard', sidebarOpen: true, mobileOpen: false, compact: false, setSection: section => set({ section }), toggleSidebar: () => set(s => ({ sidebarOpen: !s.sidebarOpen })), setMobileOpen: mobileOpen => set({ mobileOpen }), toggleCompact: () => set(s => ({ compact: !s.compact })) }))

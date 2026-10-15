@@ -1,4 +1,4 @@
-import type { Product, ProductCategory } from "../types/product";
+import type { LegacyProduct as Product, ProductCategory } from "../types/product";
 export const categories: ProductCategory[] = [
   { name: "All", icon: "all" },
   { name: "Clothing", icon: "clothing" },

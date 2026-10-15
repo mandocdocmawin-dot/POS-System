@@ -77,6 +77,7 @@ export function Popover({
             if ((e.target as HTMLElement).closest("a,button")) setOpen(false);
           }}
           onKeyDown={(e) => {
+            if ((e.target as HTMLElement).matches("input,select,textarea")) return;
             if (["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) {
               const items = Array.from(
                 e.currentTarget.querySelectorAll<HTMLElement>("a,button,input"),

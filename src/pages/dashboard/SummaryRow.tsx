@@ -20,7 +20,7 @@ export function SummaryRow() {
           <h2 className="text-3xl font-semibold tracking-tight">
             {summary.total}
           </h2>
-          <span className="flex items-center text-[10px] font-medium text-emerald-500">
+          <span className="flex items-center text-xs font-medium text-emerald-500">
             <ArrowUpRight size={12} />
             {summary.trend}
           </span>
@@ -31,7 +31,7 @@ export function SummaryRow() {
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                 {item.value}
               </p>
-              <p className="mt-1 text-[9px] text-slate-400">{item.label}</p>
+              <p className="mt-1 text-xs text-slate-400">{item.label}</p>
             </div>
           ))}
         </div>

@@ -28,12 +28,12 @@ export function RecentOrders() {
     <section className="card min-w-0 p-0">
       <div className="flex flex-wrap items-center justify-between gap-3 p-5">
         <div className="flex items-center gap-2">
-          <h2 className="text-[13px] font-semibold">Recent Orders</h2>
-          <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] text-indigo-600 dark:bg-indigo-500/15">
+          <h2 className="text-sm font-semibold">Recent Orders</h2>
+          <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-xs text-indigo-600 dark:bg-indigo-500/15">
             {orders.length} orders
           </span>
         </div>
-        <span className="text-[10px] text-slate-400">
+        <span className="text-xs text-slate-400">
           {selected.length
             ? `${selected.length} selected`
             : "Latest store activity"}
@@ -85,7 +85,7 @@ export function RecentOrders() {
             id: "date",
             header: "Date",
             cell: (r) => (
-              <span className="text-[10px] text-slate-500">{r.date}</span>
+              <span className="text-xs text-slate-500">{r.date}</span>
             ),
           },
           {
@@ -94,7 +94,7 @@ export function RecentOrders() {
             cell: (r) => (
               <div className="flex items-center gap-2">
                 <ProductThumb />
-                <span className="text-[10px]">{r.product}</span>
+                <span className="text-xs">{r.product}</span>
               </div>
             ),
           },
@@ -104,7 +104,7 @@ export function RecentOrders() {
             cell: (r) => (
               <div className="flex items-center gap-2">
                 <Avatar name={r.customer} />
-                <span className="text-[10px]">{r.customer}</span>
+                <span className="text-xs">{r.customer}</span>
               </div>
             ),
           },
@@ -152,13 +152,13 @@ export function RecentOrders() {
         ]}
       />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 p-4 dark:border-slate-800">
-        <p className="text-[10px] text-slate-400">
+        <p className="text-xs text-slate-400">
           Showing {start + 1}-{Math.min(start + pageSize, orders.length)} of{" "}
           {orders.length} Results
         </p>
         <nav aria-label="Orders pagination" className="flex gap-1">
           <button
-            className="btn min-h-7 px-2 text-[10px] disabled:opacity-40"
+            className="btn min-h-7 px-2 text-xs disabled:opacity-40"
             disabled={page === 1}
             onClick={() => setPage((p) => p - 1)}
           >
@@ -169,14 +169,14 @@ export function RecentOrders() {
               key={i}
               aria-label={`Page ${i + 1}`}
               aria-current={page === i + 1 ? "page" : undefined}
-              className={`h-7 w-7 rounded text-[10px] ${page === i + 1 ? "bg-indigo-600 text-white" : "hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+              className={`h-7 w-7 rounded text-xs ${page === i + 1 ? "bg-indigo-600 text-white" : "hover:bg-slate-100 dark:hover:bg-slate-800"}`}
               onClick={() => setPage(i + 1)}
             >
               {i + 1}
             </button>
           ))}
           <button
-            className="btn min-h-7 px-2 text-[10px] disabled:opacity-40"
+            className="btn min-h-7 px-2 text-xs disabled:opacity-40"
             disabled={page === pages}
             onClick={() => setPage((p) => p + 1)}
           >
@@ -204,7 +204,7 @@ export function RecentOrders() {
             {detail.order.customer} · {detail.order.product} ·{" "}
             {formatCurrency(detail.order.total)}
           </p>
-          <p className="mt-2 text-[10px] text-slate-500">
+          <p className="mt-2 text-xs text-slate-500">
             {detail.action === "View"
               ? "Static order preview. Full order details are planned for a later phase."
               : `${detail.action} is a UI preview only. No records are changed in Phase 1.`}

@@ -63,7 +63,7 @@ export function OrderPanel() {
           <p className="text-xs font-semibold text-slate-800 dark:text-white">
             {order.customer.name}
           </p>
-          <p className="mt-1 text-[10px] text-slate-400">
+          <p className="mt-1 text-xs text-slate-400">
             {order.customer.membership} • {order.customer.points} Points
           </p>
         </div>
@@ -83,7 +83,7 @@ export function OrderPanel() {
           </span>
         </h3>
         <button
-          className="text-[10px] text-red-400"
+          className="text-xs text-red-400"
           onClick={() => setNotice("The cart is already empty.")}
         >
           Clear All
@@ -196,7 +196,7 @@ export function OrderPanel() {
               onClick={() =>
                 setNotice(`${label} is planned for a later phase.`)
               }
-              className="flex flex-col items-center gap-2 text-[9px] text-slate-500"
+              className="flex flex-col items-center gap-2 text-xs text-slate-500"
             >
               <span
                 className={`flex h-10 w-10 items-center justify-center rounded-full ${color}`}

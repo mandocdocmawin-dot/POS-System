@@ -13,9 +13,9 @@ export function CardHeading({
   return (
     <div className="flex items-start justify-between gap-3">
       <div>
-        <h2 className="text-[13px] font-semibold">{title}</h2>
+        <h2 className="text-sm font-semibold">{title}</h2>
         {subtitle && (
-          <p className="mt-1 text-[10px] text-slate-400">{subtitle}</p>
+          <p className="mt-1 text-xs text-slate-400">{subtitle}</p>
         )}
       </div>
       {children ?? (
@@ -45,7 +45,7 @@ export function PeriodSelect({
   return (
     <select
       aria-label={label}
-      className="py-1.5 text-[10px]"
+      className="py-1.5 text-xs"
       defaultValue={options[0]}
     >
       {options.map((option) => (

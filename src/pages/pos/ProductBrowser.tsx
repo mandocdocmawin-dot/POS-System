@@ -55,7 +55,7 @@ export function ProductBrowser() {
               key={c.name}
               aria-pressed={category === c.name}
               onClick={() => setCategory(c.name)}
-              className={`flex min-h-20 w-[78px] shrink-0 flex-col items-center justify-center gap-2 rounded-xl border text-[10px] ${category === c.name ? "border-indigo-500 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300" : "border-slate-200 text-slate-400 hover:border-indigo-300 dark:border-slate-700"}`}
+              className={`flex min-h-20 w-[78px] shrink-0 flex-col items-center justify-center gap-2 rounded-xl border text-xs ${category === c.name ? "border-indigo-500 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300" : "border-slate-200 text-slate-400 hover:border-indigo-300 dark:border-slate-700"}`}
             >
               <Icon size={23} strokeWidth={1.5} />
               {c.name}
@@ -153,7 +153,7 @@ export function ProductBrowser() {
               Find something your customer will love.
             </p>
           </div>
-          <span className="text-[10px] text-slate-400">
+          <span className="text-xs text-slate-400">
             {products.length} products
           </span>
         </div>
@@ -179,7 +179,7 @@ export function ProductBrowser() {
               <h2 className="mb-1 mt-3 truncate text-xs font-medium">
                 {p.name}
               </h2>
-              <p className="text-[10px] text-slate-400">SKU: {p.sku}</p>
+              <p className="text-xs text-slate-400">SKU: {p.sku}</p>
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-900 dark:text-white">
                   {formatCurrency(p.price)}

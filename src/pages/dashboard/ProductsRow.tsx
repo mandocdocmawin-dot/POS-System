@@ -12,7 +12,7 @@ export function ProductsRow() {
         <CardHeading title="Low Stock Items">
           <Link
             to="/inventory/stock-list"
-            className="text-[10px] text-indigo-500"
+            className="text-xs text-indigo-500"
           >
             View All →
           </Link>
@@ -30,8 +30,8 @@ export function ProductsRow() {
                   <div className="flex items-center gap-2">
                     <ProductThumb />
                     <div>
-                      <span className="text-[10px] font-medium">{r.name}</span>
-                      <p className="mt-1 text-[9px] text-red-400">
+                      <span className="text-xs font-medium">{r.name}</span>
+                      <p className="mt-1 text-xs text-red-400">
                         ↓ {r.percent}%
                       </p>
                     </div>
@@ -42,7 +42,7 @@ export function ProductsRow() {
                 id: "sku",
                 header: "SKU",
                 cell: (r) => (
-                  <span className="text-[10px] text-slate-400">{r.sku}</span>
+                  <span className="text-xs text-slate-400">{r.sku}</span>
                 ),
               },
               {
@@ -56,7 +56,7 @@ export function ProductsRow() {
                         className="h-full rounded-full bg-red-400"
                       />
                     </div>
-                    <span className="text-[10px]">{r.stock}</span>
+                    <span className="text-xs">{r.stock}</span>
                   </div>
                 ),
               },
@@ -71,7 +71,7 @@ export function ProductsRow() {
             options={["Monthly", "Weekly", "Yearly"]}
           />
         </CardHeading>
-        <div className="mt-4 flex gap-4 text-[9px] text-slate-400">
+        <div className="mt-4 flex gap-4 text-xs text-slate-400">
           <span>
             <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-indigo-500" />
             Profit
@@ -90,10 +90,10 @@ export function ProductsRow() {
             <li key={p.sku} className="flex items-center gap-2.5">
               <ProductThumb />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[10px] font-medium text-slate-800 dark:text-slate-100">
+                <p className="truncate text-xs font-medium text-slate-800 dark:text-slate-100">
                   {p.name}
                 </p>
-                <p className="mt-1 text-[9px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {p.sku}{" "}
                   <span
                     className={`ml-1 ${p.up ? "text-emerald-500" : "text-red-400"}`}
@@ -104,7 +104,7 @@ export function ProductsRow() {
               </div>
               <div className="text-right">
                 <p className="text-xs font-semibold">{p.sales}</p>
-                <p className="mt-1 text-[9px] text-slate-400">sales</p>
+                <p className="mt-1 text-xs text-slate-400">sales</p>
               </div>
             </li>
           ))}

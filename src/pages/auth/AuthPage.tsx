@@ -61,7 +61,7 @@ export function Component() {
             autoComplete={signUp ? "new-password" : "current-password"}
           />
         )}
-        <div className="flex items-center justify-between gap-2 text-[11px]">
+        <div className="flex items-center justify-between gap-2 text-xs">
           {signUp ? (
             <label className="flex items-center gap-2">
               <input type="checkbox" required />I agree to the{" "}
@@ -120,7 +120,7 @@ export function Component() {
           </Link>
         )}
       </div>
-      <p className="mt-5 text-center text-[10px] text-slate-400">
+      <p className="mt-5 text-center text-xs text-slate-400">
         UI preview only. No real authentication.
       </p>
     </>

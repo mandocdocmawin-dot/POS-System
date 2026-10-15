@@ -9,13 +9,13 @@ export function AuthLayout() {
       <main className="card w-full max-w-md p-7 sm:p-9">
         <Outlet />
       </main>
-      <p className="mt-7 text-center text-[11px] text-slate-400">
+      <p className="mt-7 text-center text-xs text-slate-400">
         Made for your everyday business.{" "}
         <Link className="text-indigo-500" to="/help-center">
           Need help?
         </Link>
       </p>
-      <p className="mt-4 text-[10px] text-slate-400">
+      <p className="mt-4 text-xs text-slate-400">
         © 2026 TindaPOS · Frontend demo
       </p>
     </div>

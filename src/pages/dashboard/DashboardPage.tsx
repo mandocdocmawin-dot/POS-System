@@ -21,7 +21,7 @@ export function Component() {
             Here's what's happening with your store today.
           </p>
         </div>
-        <span className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] dark:border-slate-800 dark:bg-slate-900">
+        <span className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-800 dark:bg-slate-900">
           <Store size={14} className="text-indigo-500" />
           {branch}
           <span className="ml-2 h-1.5 w-1.5 rounded-full bg-emerald-500" />

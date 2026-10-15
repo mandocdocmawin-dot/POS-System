@@ -18,7 +18,7 @@ export function Avatar({
       role="img"
       aria-label={name}
       title={name}
-      className={`inline-flex shrink-0 items-center justify-center rounded-full border-2 border-white text-[10px] font-semibold dark:border-slate-900 ${size} ${colors[index % colors.length]}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full border-2 border-white text-xs font-semibold dark:border-slate-900 ${size} ${colors[index % colors.length]}`}
     >
       {name
         .split(" ")

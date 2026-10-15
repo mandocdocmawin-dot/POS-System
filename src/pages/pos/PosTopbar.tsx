@@ -22,7 +22,7 @@ export function PosTopbar() {
     <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex flex-wrap items-center gap-3">
         <Brand />
-        <span className="ml-3 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[11px] dark:border-slate-700">
+        <span className="ml-3 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs dark:border-slate-700">
           <CalendarDays size={15} />
           {time.toLocaleDateString("en-PH", {
             month: "short",
@@ -31,7 +31,7 @@ export function PosTopbar() {
             timeZone: "Asia/Manila",
           })}
         </span>
-        <span className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[11px] dark:border-slate-700">
+        <span className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs dark:border-slate-700">
           <Clock3 size={15} />
           {time.toLocaleTimeString("en-PH", {
             hour: "2-digit",
@@ -39,7 +39,7 @@ export function PosTopbar() {
             timeZone: "Asia/Manila",
           })}
         </span>
-        <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-[10px] font-medium text-emerald-600 dark:bg-emerald-500/10">
+        <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-600 dark:bg-emerald-500/10">
           <Power size={12} />
           Open Order
         </span>

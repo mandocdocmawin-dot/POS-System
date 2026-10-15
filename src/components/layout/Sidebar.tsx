@@ -33,7 +33,7 @@ export function Sidebar() {
         {current.groups.map((group, index) => (
           <div key={index} className="mb-6">
             {group.label && (
-              <p className="mb-3 px-3 text-[10px] font-semibold tracking-[0.14em] text-slate-400">
+              <p className="mb-3 px-3 text-sm font-semibold tracking-[0.14em] text-slate-400">
                 {group.label}
               </p>
             )}
@@ -51,7 +51,7 @@ export function Sidebar() {
                           label: open === label ? "" : label,
                         })
                       }
-                      className={`flex h-10 w-full items-center gap-3 rounded-lg border px-3 text-xs ${open === label ? "border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white" : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-800"}`}
+                      className={`flex h-10 w-full items-center gap-3 rounded-lg border px-3 text-sm ${open === label ? "border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white" : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                     >
                       <Icon size={17} />
                       <span className="flex-1 text-left">{label}</span>
@@ -72,7 +72,7 @@ export function Sidebar() {
                             to={child.path}
                             onClick={() => close(false)}
                             className={({ isActive }) =>
-                              `flex min-h-9 items-center gap-3 pl-5 text-xs ${isActive ? "font-medium text-indigo-600 dark:text-indigo-300" : "text-slate-500 hover:text-indigo-600"}`
+                              `flex min-h-9 items-center gap-3 pl-5 text-sm ${isActive ? "font-medium text-indigo-600 dark:text-indigo-300" : "text-slate-500 hover:text-indigo-600"}`
                             }
                           >
                             <span className="h-1 w-1 rounded-full bg-current" />
@@ -88,7 +88,7 @@ export function Sidebar() {
                     to={path}
                     onClick={() => close(false)}
                     className={({ isActive }) =>
-                      `flex h-10 items-center gap-3 rounded-lg px-3 text-xs ${isActive ? "menu-active font-semibold" : "hover:bg-slate-50 dark:hover:bg-slate-800"}`
+                      `flex h-10 items-center gap-3 rounded-lg px-3 text-sm ${isActive ? "menu-active font-semibold" : "hover:bg-slate-50 dark:hover:bg-slate-800"}`
                     }
                   >
                     <Icon size={17} />
@@ -102,7 +102,7 @@ export function Sidebar() {
       </nav>
       <div className="m-3 shrink-0 rounded-xl border border-indigo-100 bg-gradient-to-br from-orange-50 to-indigo-50 p-4 dark:border-indigo-900 dark:from-slate-800 dark:to-indigo-950">
         <Store size={24} className="mb-3 text-indigo-500" />
-        <p className="text-[10px] text-slate-500">Live sales insights</p>
+        <p className="text-sm text-slate-500">Live sales insights</p>
         <h3 className="mb-3 mt-1 text-sm font-semibold">Boost today's sales</h3>
         <Link
           className="btn-primary w-full"

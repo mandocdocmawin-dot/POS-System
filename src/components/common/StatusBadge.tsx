@@ -15,7 +15,7 @@ export function StatusBadge({ children }: { children: string }) {
         : "slate";
   return (
     <span
-      className={`inline-flex whitespace-nowrap rounded-full px-2 py-1 text-[10px] font-medium ${tones[tone]}`}
+      className={`inline-flex whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium ${tones[tone]}`}
     >
       {children}
     </span>

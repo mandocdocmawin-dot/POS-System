@@ -19,7 +19,7 @@ export function DataTable<T>({
     <div className="w-full overflow-x-auto">
       <table className="w-full whitespace-nowrap text-left text-xs">
         <caption className="sr-only">{caption}</caption>
-        <thead className="bg-slate-50 text-[10px] text-slate-500 dark:bg-slate-800/70">
+        <thead className="bg-slate-50 text-xs text-slate-500 dark:bg-slate-800/70">
           <tr>
             {columns.map((column) => (
               <th scope="col" key={column.id} className="px-4 py-3 font-medium">

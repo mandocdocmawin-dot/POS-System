@@ -134,7 +134,7 @@ export function AccountFlow() {
           Back to Sign In
         </Link>
       </div>
-      <p className="mt-5 text-center text-[10px] text-slate-400">
+      <p className="mt-5 text-center text-xs text-slate-400">
         UI preview only. No account data is saved.
       </p>
     </>

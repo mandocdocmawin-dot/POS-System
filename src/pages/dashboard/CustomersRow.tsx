@@ -47,7 +47,7 @@ export function CustomersRow() {
             <h3 className="text-3xl font-semibold tracking-tight">
               {customers.total}
             </h3>
-            <p className="mt-1 text-[10px] text-slate-400">
+            <p className="mt-1 text-xs text-slate-400">
               <span className="text-emerald-500">↗ {customers.trend}</span> vs
               last month
             </p>
@@ -64,7 +64,7 @@ export function CustomersRow() {
               <ProgressRing percent={r.percent} color={r.color} />
               <div className="flex-1">
                 <p className="text-xs font-medium">{r.label}</p>
-                <p className="mt-1 text-[10px] text-slate-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {r.count} customers
                 </p>
               </div>
@@ -79,7 +79,7 @@ export function CustomersRow() {
           {payments.map((p) => (
             <div key={p.label}>
               <p className="text-xl font-semibold">{p.percent}%</p>
-              <p className="mt-1 text-[10px] text-slate-400">
+              <p className="mt-1 text-xs text-slate-400">
                 <i
                   className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${p.color}`}
                 />
@@ -97,7 +97,7 @@ export function CustomersRow() {
             options={["Monthly", "Weekly", "Yearly"]}
           />
         </CardHeading>
-        <div className="mt-4 flex gap-4 text-[9px] text-slate-400">
+        <div className="mt-4 flex gap-4 text-xs text-slate-400">
           <span>
             <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-indigo-500" />
             Stock In

@@ -21,7 +21,7 @@ export function StatCard({ title, value, trend, up, icon: Icon, color }: Stat) {
           <Icon size={19} />
         </span>
       </div>
-      <p className="text-[10px] text-slate-400">
+      <p className="text-xs text-slate-400">
         <span
           className={`mr-1 font-semibold ${up ? "text-emerald-500" : "text-red-500"}`}
         >

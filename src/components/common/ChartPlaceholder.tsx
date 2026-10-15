@@ -18,7 +18,7 @@ export function ChartPlaceholder({
             : ""
         }
       >
-        <span className="text-[10px] text-slate-400">Chart placeholder</span>
+        <span className="text-xs text-slate-400">Chart placeholder</span>
       </div>
     </div>
   );

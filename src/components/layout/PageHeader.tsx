@@ -15,7 +15,7 @@ export function PageHeader({
         {children}
       </div>
       <nav aria-label="Breadcrumb">
-        <ol className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+        <ol className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
           {breadcrumb.map((text, i) => (
             <li key={`${text}-${i}`} className="flex items-center gap-2">
               {i > 0 && <ChevronRight size={12} />}

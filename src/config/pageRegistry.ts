@@ -8,6 +8,7 @@ export const pageLoaders = {
   productForm: () => import('../pages/products/ProductFormPage'),
   variants: () => import('../pages/products/VariantsPage'),
   stockList: () => import('../pages/inventory/StockListPage'),
+  stockIn: () => import('../pages/inventory/StockMovementPage'),
   dashboard: () => import("../pages/dashboard/DashboardPage"),
   pos: () => import("../pages/pos/PosPage"),
   auth: () => import("../pages/auth/AuthPage"),
@@ -28,6 +29,7 @@ export const implementedPages: Record<string, PageId> = {
   '/products/variants': 'variants',
   '/inventory/stock': 'stockList',
   '/inventory/stock-list': 'stockList',
+  '/inventory/stock-in': 'stockIn',
   "/": "dashboard",
   "/pos": "pos",
   "/auth/sign-in": "auth",
@@ -44,6 +46,7 @@ export const implementedPages: Record<string, PageId> = {
 export function getPageLoader(path: string) {
   return pageLoaders[implementedPages[path] ?? "placeholder"];
 }
+
 
 
 

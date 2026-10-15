@@ -9,10 +9,12 @@ export function Providers() {
     document.documentElement.style.colorScheme = theme;
   }, [theme]);
   return (
-    <RouterProvider
+    <><Toast /><RouterProvider
       future={{ v7_startTransition: true }}
       router={router}
       fallbackElement={<p className="p-8">Loading TindaPOS…</p>}
-    />
+    /></>
   );
 }
+import { Toast } from '../components/common/Toast';
+

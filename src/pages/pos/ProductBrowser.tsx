@@ -1,3 +1,5 @@
+import type {Product} from '../../types/models';
+import {VariantPicker} from '../../components/pos/VariantPicker';
 import { useState } from "react";
 import { LayoutGrid, Package, Search } from "lucide-react";
 import { productService } from "../../services/productService";
@@ -11,6 +13,8 @@ export function ProductBrowser() {
   const [category, setCategory] = useState(""),
     [brand, setBrand] = useState(""),
     [search, setSearch] = useState("");
+  const [variantProduct,setVariantProduct]=useState<Product|null>(null);
+  const add=(p:Product,variantId?:string)=>{if(p.hasVariants&&!variantId){setVariantProduct(p);return;}try{posService.add(p.id,variantId);setVariantProduct(null);}catch(e){toast.error(errorMessage(e));}};
   const categories = categoryService
     .list()
     .filter((c) => c.status === "active");
@@ -27,7 +31,7 @@ export function ProductBrowser() {
         .includes(search.toLowerCase()),
   );
   return (
-    <div className="flex min-w-0 shrink-0 flex-col sm:flex-row xl:min-h-0 xl:flex-1">
+    <><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex min-w-0 shrink-0 flex-col sm:flex-row xl:min-h-0 xl:flex-1">
       <nav
         aria-label="Product categories"
         className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-28 sm:flex-col sm:border-b-0 sm:border-r xl:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
@@ -94,7 +98,7 @@ export function ProductBrowser() {
           </span>
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map(p=><ProductCard key={p.id} product={p} onAdd={()=>{try{posService.add(p.id);}catch(e){toast.error(errorMessage(e));}}}/>)}
+          {products.map(p=><ProductCard key={p.id} product={p} onAdd={()=>add(p)}/>)}
 
         </div>
         {!products.length && (
@@ -103,6 +107,6 @@ export function ProductBrowser() {
           </div>
         )}
       </main>
-    </div>
+    </div></>
   );
 }

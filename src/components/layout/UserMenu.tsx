@@ -1,4 +1,36 @@
-import { Link } from 'react-router-dom'
-import { UserRound, Settings, LogOut } from 'lucide-react'
-import { Popover } from '../common/Popover'
-export function UserMenu() { return <Popover label="User menu" trigger={<span className="flex h-full w-full items-center justify-center rounded-lg bg-teal-100 text-xs font-bold text-teal-800">MR</span>}><div className="w-48"><div className="border-b border-slate-100 p-3 dark:border-slate-800"><p className="font-semibold">Miguel Reyes</p><p className="muted mt-1">Store administrator</p></div>{[{ label: 'Profile', path: '/profile/overview', icon: UserRound }, { label: 'Settings', path: '/settings/general', icon: Settings }, { label: 'Logout', path: '/auth/sign-in', icon: LogOut }].map(({ label, path, icon: Icon }) => <Link className="flex items-center gap-3 rounded-lg p-3 text-xs hover:bg-slate-50 dark:hover:bg-slate-800" key={path} to={path}><Icon size={16}/>{label}</Link>)}</div></Popover> }
+import { Link } from "react-router-dom";
+import { UserRound, Settings, LogOut } from "lucide-react";
+import { Popover } from "../common/Popover";
+export function UserMenu() {
+  return (
+    <Popover
+      label="User menu"
+      trigger={
+        <span className="flex h-full w-full items-center justify-center rounded-lg bg-teal-100 text-xs font-bold text-teal-800">
+          MR
+        </span>
+      }
+    >
+      <div className="w-48">
+        <div className="border-b border-slate-100 p-3 dark:border-slate-800">
+          <p className="font-semibold">Miguel Reyes</p>
+          <p className="muted mt-1">Store administrator</p>
+        </div>
+        {[
+          { label: "Profile", path: "/profile/overview", icon: UserRound },
+          { label: "Settings", path: "/settings/general", icon: Settings },
+          { label: "Logout", path: "/auth/sign-in", icon: LogOut },
+        ].map(({ label, path, icon: Icon }) => (
+          <Link
+            className="flex items-center gap-3 rounded-lg p-3 text-xs hover:bg-slate-50 dark:hover:bg-slate-800"
+            key={path}
+            to={path}
+          >
+            <Icon size={16} />
+            {label}
+          </Link>
+        ))}
+      </div>
+    </Popover>
+  );
+}

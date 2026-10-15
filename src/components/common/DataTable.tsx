@@ -1,3 +1,48 @@
-import type { ReactNode } from 'react'
-export interface Column<T> { id: string; header: ReactNode; cell: (row: T) => ReactNode }
-export function DataTable<T>({ columns, rows, rowKey, caption }: { columns: Column<T>[]; rows: T[]; rowKey: (row: T) => string; caption: string }) { return <div className="w-full overflow-x-auto"><table className="w-full whitespace-nowrap text-left text-xs"><caption className="sr-only">{caption}</caption><thead className="bg-slate-50 text-[10px] text-slate-500 dark:bg-slate-800/70"><tr>{columns.map(column => <th scope="col" key={column.id} className="px-4 py-3 font-medium">{column.header}</th>)}</tr></thead><tbody className="divide-y divide-slate-100 dark:divide-slate-800">{rows.map(row => <tr key={rowKey(row)} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">{columns.map(column => <td key={column.id} className="px-4 py-3">{column.cell(row)}</td>)}</tr>)}</tbody></table></div> }
+import type { ReactNode } from "react";
+export interface Column<T> {
+  id: string;
+  header: ReactNode;
+  cell: (row: T) => ReactNode;
+}
+export function DataTable<T>({
+  columns,
+  rows,
+  rowKey,
+  caption,
+}: {
+  columns: Column<T>[];
+  rows: T[];
+  rowKey: (row: T) => string;
+  caption: string;
+}) {
+  return (
+    <div className="w-full overflow-x-auto">
+      <table className="w-full whitespace-nowrap text-left text-xs">
+        <caption className="sr-only">{caption}</caption>
+        <thead className="bg-slate-50 text-[10px] text-slate-500 dark:bg-slate-800/70">
+          <tr>
+            {columns.map((column) => (
+              <th scope="col" key={column.id} className="px-4 py-3 font-medium">
+                {column.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          {rows.map((row) => (
+            <tr
+              key={rowKey(row)}
+              className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
+            >
+              {columns.map((column) => (
+                <td key={column.id} className="px-4 py-3">
+                  {column.cell(row)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

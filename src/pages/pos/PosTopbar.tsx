@@ -1,8 +1,72 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { CalendarDays, Clock3, Power, LayoutDashboard, Settings, Store } from 'lucide-react'
-import { NotificationMenu } from '../../components/layout/NotificationMenu'
-import { UserMenu } from '../../components/layout/UserMenu'
-import { FullscreenButton } from '../../components/layout/FullscreenButton'
-import { Brand } from '../../components/layout/Brand'
-export function PosTopbar() { const [time, setTime] = useState(new Date()); useEffect(() => { const interval = setInterval(() => setTime(new Date()), 1000); return () => clearInterval(interval) }, []); return <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900"><div className="flex flex-wrap items-center gap-3"><Brand/><span className="ml-3 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[11px] dark:border-slate-700"><CalendarDays size={15}/>{time.toLocaleDateString('en-PH', { month: 'short', day: '2-digit', year: 'numeric', timeZone: 'Asia/Manila' })}</span><span className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[11px] dark:border-slate-700"><Clock3 size={15}/>{time.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Manila' })}</span><span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-[10px] font-medium text-emerald-600 dark:bg-emerald-500/10"><Power size={12}/>Open Order</span></div><div className="flex items-center gap-2"><Link to="/" className="btn border-slate-900 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800"><LayoutDashboard size={15}/>Dashboard</Link><Link className="icon-btn" aria-label="POS settings" to="/settings/pos"><Settings size={17}/></Link><FullscreenButton/><Link className="icon-btn relative" aria-label="Switch store" to="/multi-store/store-list"><Store size={17}/><span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-red-500"/></Link><NotificationMenu/><UserMenu/></div></header> }
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  CalendarDays,
+  Clock3,
+  Power,
+  LayoutDashboard,
+  Settings,
+  Store,
+} from "lucide-react";
+import { NotificationMenu } from "../../components/layout/NotificationMenu";
+import { UserMenu } from "../../components/layout/UserMenu";
+import { FullscreenButton } from "../../components/layout/FullscreenButton";
+import { Brand } from "../../components/layout/Brand";
+export function PosTopbar() {
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return (
+    <header className="flex min-h-20 flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex flex-wrap items-center gap-3">
+        <Brand />
+        <span className="ml-3 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[11px] dark:border-slate-700">
+          <CalendarDays size={15} />
+          {time.toLocaleDateString("en-PH", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+            timeZone: "Asia/Manila",
+          })}
+        </span>
+        <span className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[11px] dark:border-slate-700">
+          <Clock3 size={15} />
+          {time.toLocaleTimeString("en-PH", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: "Asia/Manila",
+          })}
+        </span>
+        <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-[10px] font-medium text-emerald-600 dark:bg-emerald-500/10">
+          <Power size={12} />
+          Open Order
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        <Link
+          to="/"
+          className="btn border-slate-900 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800"
+        >
+          <LayoutDashboard size={15} />
+          Dashboard
+        </Link>
+        <Link className="icon-btn" aria-label="POS settings" to="/settings/pos">
+          <Settings size={17} />
+        </Link>
+        <FullscreenButton />
+        <Link
+          className="icon-btn relative"
+          aria-label="Switch store"
+          to="/multi-store/store-list"
+        >
+          <Store size={17} />
+          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-red-500" />
+        </Link>
+        <NotificationMenu />
+        <UserMenu />
+      </div>
+    </header>
+  );
+}

@@ -1,12 +1,77 @@
-import type { Product, ProductCategory } from '../types/product'
-export const categories: ProductCategory[] = [{ name: 'All', icon: 'all' }, { name: 'Clothing', icon: 'clothing' }, { name: 'Footwear', icon: 'footwear' }, { name: 'Watches', icon: 'watches' }, { name: 'Food', icon: 'food' }, { name: 'Accessories', icon: 'accessories' }, { name: 'Electronics', icon: 'electronics' }, { name: 'Bags', icon: 'bags' }]
+import type { Product, ProductCategory } from "../types/product";
+export const categories: ProductCategory[] = [
+  { name: "All", icon: "all" },
+  { name: "Clothing", icon: "clothing" },
+  { name: "Footwear", icon: "footwear" },
+  { name: "Watches", icon: "watches" },
+  { name: "Food", icon: "food" },
+  { name: "Accessories", icon: "accessories" },
+  { name: "Electronics", icon: "electronics" },
+  { name: "Bags", icon: "bags" },
+];
 export const products: Product[] = [
- { id: '1', name: 'Everyday Cotton Tee', sku: 'TP-001', category: 'Clothing', brand: 'Tinda Basics', price: 499 },
- { id: '2', name: 'Classic Canvas Shoes', sku: 'TP-002', category: 'Footwear', brand: 'Lakbay', price: 1290 },
- { id: '3', name: 'Everyday Tote Bag', sku: 'TP-003', category: 'Bags', brand: 'Tinda Basics', price: 350 },
- { id: '4', name: 'Wireless Earbuds', sku: 'TP-004', category: 'Electronics', brand: 'Sulong', price: 2290 },
- { id: '5', name: 'Minimalist Watch', sku: 'TP-005', category: 'Watches', brand: 'Sulong', price: 1899 },
- { id: '6', name: 'Brewed Coffee', sku: 'TP-006', category: 'Food', brand: 'Kape Lokal', price: 120 },
- { id: '7', name: 'Everyday Backpack', sku: 'TP-007', category: 'Bags', brand: 'Lakbay', price: 850 },
- { id: '8', name: 'Classic Sunglasses', sku: 'TP-008', category: 'Accessories', brand: 'Sulong', price: 650 }
-]
+  {
+    id: "1",
+    name: "Everyday Cotton Tee",
+    sku: "TP-001",
+    category: "Clothing",
+    brand: "Tinda Basics",
+    price: 499,
+  },
+  {
+    id: "2",
+    name: "Classic Canvas Shoes",
+    sku: "TP-002",
+    category: "Footwear",
+    brand: "Lakbay",
+    price: 1290,
+  },
+  {
+    id: "3",
+    name: "Everyday Tote Bag",
+    sku: "TP-003",
+    category: "Bags",
+    brand: "Tinda Basics",
+    price: 350,
+  },
+  {
+    id: "4",
+    name: "Wireless Earbuds",
+    sku: "TP-004",
+    category: "Electronics",
+    brand: "Sulong",
+    price: 2290,
+  },
+  {
+    id: "5",
+    name: "Minimalist Watch",
+    sku: "TP-005",
+    category: "Watches",
+    brand: "Sulong",
+    price: 1899,
+  },
+  {
+    id: "6",
+    name: "Brewed Coffee",
+    sku: "TP-006",
+    category: "Food",
+    brand: "Kape Lokal",
+    price: 120,
+  },
+  {
+    id: "7",
+    name: "Everyday Backpack",
+    sku: "TP-007",
+    category: "Bags",
+    brand: "Lakbay",
+    price: 850,
+  },
+  {
+    id: "8",
+    name: "Classic Sunglasses",
+    sku: "TP-008",
+    category: "Accessories",
+    brand: "Sulong",
+    price: 650,
+  },
+];

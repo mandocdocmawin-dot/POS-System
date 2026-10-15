@@ -1,12 +1,142 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { CheckCheck, ShieldCheck, KeyRound, UserRoundX } from 'lucide-react'
-import { useState } from 'react'
-import { AuthField } from './AuthField'
-import { VerificationCode } from './VerificationCode'
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { CheckCheck, ShieldCheck, KeyRound, UserRoundX } from "lucide-react";
+import { useState } from "react";
+import { AuthField } from "./AuthField";
+import { VerificationCode } from "./VerificationCode";
 export function AccountFlow() {
- const { pathname } = useLocation(); const navigate = useNavigate(); const [notice, setNotice] = useState('')
- const verify = pathname.endsWith('/two-step-verification'); const reset = pathname.endsWith('/reset-password'); const success = pathname.endsWith('/successful-password')
- const title = verify ? 'Two step verification' : reset ? 'Set a new password' : success ? 'Password updated!' : 'Deactivate your account'
- const Icon = verify ? ShieldCheck : reset ? KeyRound : success ? CheckCheck : UserRoundX
- return <><span className={`mb-5 inline-flex rounded-xl p-3 ${success ? 'bg-emerald-50 text-emerald-500 dark:bg-emerald-500/10' : 'bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10'}`}><Icon size={26}/></span><h1 className="text-2xl font-semibold tracking-tight">{title}</h1><p className="mb-7 mt-2 text-xs leading-5 text-slate-400">{verify ? 'Enter any six digits to preview verification. No message was sent.' : reset ? 'Choose a password with at least 8 characters.' : success ? 'Your password reset preview is complete. You can return to sign in.' : 'Review your choice before previewing account deactivation.'}</p>{success ? <Link className="btn-primary w-full" to="/auth/sign-in">Back to Sign In</Link> : <form className="space-y-5" onSubmit={e => { e.preventDefault(); const data = new FormData(e.currentTarget); if (reset && data.get('password') !== data.get('confirm')) { setNotice('Passwords must match.'); return } navigate(verify ? '/auth/reset-password' : reset ? '/auth/successful-password' : '/auth/sign-in') }}>{verify ? <VerificationCode/> : reset ? <><AuthField label="New password" name="password" type="password" minLength={8} autoComplete="new-password"/><AuthField label="Confirm password" name="confirm" type="password" minLength={8} autoComplete="new-password"/></> : <><div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-700 dark:border-amber-900 dark:bg-amber-500/10 dark:text-amber-300">Account access would be disabled in a complete application. This preview does not change any account.</div><AuthField label="Password" name="password" type="password" autoComplete="current-password"/><label className="flex items-start gap-2 text-xs"><input type="checkbox" required className="mt-0.5"/>I understand and want to preview deactivation.</label></>}{notice && <p role="alert" className="text-xs text-red-500">{notice}</p>}<button type="submit" className={`btn-primary w-full ${!verify && !reset ? 'border-red-500 bg-red-500 hover:bg-red-600 dark:border-red-500 dark:bg-red-500' : ''}`}>{verify ? 'Verify Code' : reset ? 'Reset Password' : 'Deactivate Account'}</button>{verify && <button type="button" className="w-full text-xs text-indigo-500" onClick={() => setNotice('Demo only: no verification code has been sent.')}>Resend code</button>}</form>}<div className="mt-6 text-center"><Link to="/auth/sign-in" className="text-xs text-indigo-500">Back to Sign In</Link></div><p className="mt-5 text-center text-[10px] text-slate-400">UI preview only. No account data is saved.</p></>
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [notice, setNotice] = useState("");
+  const verify = pathname.endsWith("/two-step-verification");
+  const reset = pathname.endsWith("/reset-password");
+  const success = pathname.endsWith("/successful-password");
+  const title = verify
+    ? "Two step verification"
+    : reset
+      ? "Set a new password"
+      : success
+        ? "Password updated!"
+        : "Deactivate your account";
+  const Icon = verify
+    ? ShieldCheck
+    : reset
+      ? KeyRound
+      : success
+        ? CheckCheck
+        : UserRoundX;
+  return (
+    <>
+      <span
+        className={`mb-5 inline-flex rounded-xl p-3 ${success ? "bg-emerald-50 text-emerald-500 dark:bg-emerald-500/10" : "bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10"}`}
+      >
+        <Icon size={26} />
+      </span>
+      <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+      <p className="mb-7 mt-2 text-xs leading-5 text-slate-400">
+        {verify
+          ? "Enter any six digits to preview verification. No message was sent."
+          : reset
+            ? "Choose a password with at least 8 characters."
+            : success
+              ? "Your password reset preview is complete. You can return to sign in."
+              : "Review your choice before previewing account deactivation."}
+      </p>
+      {success ? (
+        <Link className="btn-primary w-full" to="/auth/sign-in">
+          Back to Sign In
+        </Link>
+      ) : (
+        <form
+          className="space-y-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const data = new FormData(e.currentTarget);
+            if (reset && data.get("password") !== data.get("confirm")) {
+              setNotice("Passwords must match.");
+              return;
+            }
+            navigate(
+              verify
+                ? "/auth/reset-password"
+                : reset
+                  ? "/auth/successful-password"
+                  : "/auth/sign-in",
+            );
+          }}
+        >
+          {verify ? (
+            <VerificationCode />
+          ) : reset ? (
+            <>
+              <AuthField
+                label="New password"
+                name="password"
+                type="password"
+                minLength={8}
+                autoComplete="new-password"
+              />
+              <AuthField
+                label="Confirm password"
+                name="confirm"
+                type="password"
+                minLength={8}
+                autoComplete="new-password"
+              />
+            </>
+          ) : (
+            <>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-700 dark:border-amber-900 dark:bg-amber-500/10 dark:text-amber-300">
+                Account access would be disabled in a complete application. This
+                preview does not change any account.
+              </div>
+              <AuthField
+                label="Password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+              />
+              <label className="flex items-start gap-2 text-xs">
+                <input type="checkbox" required className="mt-0.5" />I
+                understand and want to preview deactivation.
+              </label>
+            </>
+          )}
+          {notice && (
+            <p role="alert" className="text-xs text-red-500">
+              {notice}
+            </p>
+          )}
+          <button
+            type="submit"
+            className={`btn-primary w-full ${!verify && !reset ? "border-red-500 bg-red-500 hover:bg-red-600 dark:border-red-500 dark:bg-red-500" : ""}`}
+          >
+            {verify
+              ? "Verify Code"
+              : reset
+                ? "Reset Password"
+                : "Deactivate Account"}
+          </button>
+          {verify && (
+            <button
+              type="button"
+              className="w-full text-xs text-indigo-500"
+              onClick={() =>
+                setNotice("Demo only: no verification code has been sent.")
+              }
+            >
+              Resend code
+            </button>
+          )}
+        </form>
+      )}
+      <div className="mt-6 text-center">
+        <Link to="/auth/sign-in" className="text-xs text-indigo-500">
+          Back to Sign In
+        </Link>
+      </div>
+      <p className="mt-5 text-center text-[10px] text-slate-400">
+        UI preview only. No account data is saved.
+      </p>
+    </>
+  );
 }

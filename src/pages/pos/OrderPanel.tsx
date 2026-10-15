@@ -1,7 +1,213 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { MoreHorizontal, Pencil, Trash2, CreditCard, Pause, Receipt, Clock3, History, ArrowRight } from 'lucide-react'
-import { orderService } from '../../services/orderService'
-import { Avatar } from '../../components/common/Avatar'
-import { Popover } from '../../components/common/Popover'
-export function OrderPanel() { const order = orderService.getCurrentOrder(); const [notice, setNotice] = useState(''); return <aside aria-label="Current order" className="flex w-full shrink-0 flex-col border-t border-slate-200 bg-white xl:w-[380px] xl:border-l xl:border-t-0 2xl:w-[420px] dark:border-slate-800 dark:bg-slate-900"><div className="flex items-center justify-between border-b border-slate-100 p-5 dark:border-slate-800"><h2 className="text-sm font-semibold">Order ID: {order.id}</h2><div className="flex gap-1.5"><Popover label="Order options" trigger={<MoreHorizontal size={15}/>} className="rounded border border-slate-200 p-1.5 dark:border-slate-700"><Link to="/orders/all-orders" className="block w-36 rounded p-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800">View all orders</Link></Popover><button aria-label="Edit current order" onClick={() => setNotice('Order editing is planned for a later phase.')} className="rounded border border-slate-200 p-1.5 dark:border-slate-700"><Pencil size={13}/></button><button aria-label="Delete current order" onClick={() => setNotice('The order is empty. No order has been deleted.')} className="rounded border border-red-200 p-1.5 text-red-400 dark:border-red-900"><Trash2 size={13}/></button></div></div><div className="m-5 flex items-center gap-3 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 dark:border-indigo-900 dark:bg-indigo-500/10"><Avatar name={order.customer.name} size="h-11 w-11" index={2}/><div className="flex-1"><p className="text-xs font-semibold text-slate-800 dark:text-white">{order.customer.name}</p><p className="mt-1 text-[10px] text-slate-400">{order.customer.membership} • {order.customer.points} Points</p></div><Link aria-label="Edit customer" to="/customers/customer-list" className="text-indigo-500"><Pencil size={14}/></Link></div><div className="flex items-center justify-between px-5"><h3 className="text-xs font-semibold">Order Detail <span className="font-normal text-slate-400">(Items: {order.items})</span></h3><button className="text-[10px] text-red-400" onClick={() => setNotice('The cart is already empty.')}>Clear All</button></div><div className="flex min-h-80 flex-1 flex-col items-center justify-center px-8 py-12"><svg role="img" aria-label="Empty shopping bag" width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="78" r="60" fill="currentColor" className="text-indigo-50 dark:text-indigo-950"/><ellipse cx="75" cy="124" rx="42" ry="5" fill="currentColor" className="text-indigo-100 dark:text-indigo-900"/><path d="M43 53h64l8 65H35z" fill="currentColor" className="text-indigo-100 dark:text-indigo-900" stroke="#a5b4fc" strokeWidth="1.5" strokeLinejoin="round"/><path d="M60 59V42a15 15 0 0130 0v17" fill="none" stroke="#818cf8" strokeWidth="4" strokeLinecap="round"/><path d="M60 83h30M67 97h16" stroke="#a5b4fc" strokeWidth="4" strokeLinecap="round"/><circle cx="115" cy="38" r="4" fill="#5eead4"/><path d="M29 75h8M33 71v8" stroke="#818cf8" strokeWidth="2"/></svg><h3 className="mt-5 text-sm font-semibold">Your cart is waiting</h3><p className="mt-2 max-w-52 text-center text-xs leading-5 text-slate-400">Add products to start a new order.<br/>Every great sale starts here.</p></div>{notice && <p role="status" className="mx-5 mb-4 rounded-lg bg-indigo-50 p-3 text-xs text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">{notice}</p>}<div className="border-t border-slate-100 p-5 dark:border-slate-800"><button className="btn-primary w-full justify-between py-3" onClick={() => setNotice('Payment is a preview only. Cart and payment logic are planned for a later phase.')}><span>Process to Payment</span><ArrowRight size={16}/></button><div className="mt-6 grid grid-cols-5 gap-1">{[{ label: 'Payment', icon: CreditCard, color: 'bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10' }, { label: 'Hold', icon: Pause, color: 'bg-amber-50 text-amber-500 dark:bg-amber-500/10' }, { label: 'Invoice', icon: Receipt, color: 'bg-teal-50 text-teal-600 dark:bg-teal-500/10' }, { label: 'Pay Later', icon: Clock3, color: 'bg-rose-50 text-rose-500 dark:bg-rose-500/10' }, { label: 'History', icon: History, color: 'bg-sky-50 text-sky-500 dark:bg-sky-500/10' }].map(({ label, icon: Icon, color }) => <button key={label} onClick={() => setNotice(`${label} is planned for a later phase.`)} className="flex flex-col items-center gap-2 text-[9px] text-slate-500"><span className={`flex h-10 w-10 items-center justify-center rounded-full ${color}`}><Icon size={18}/></span>{label}</button>)}</div></div></aside> }
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  CreditCard,
+  Pause,
+  Receipt,
+  Clock3,
+  History,
+  ArrowRight,
+} from "lucide-react";
+import { orderService } from "../../services/orderService";
+import { Avatar } from "../../components/common/Avatar";
+import { Popover } from "../../components/common/Popover";
+export function OrderPanel() {
+  const order = orderService.getCurrentOrder();
+  const [notice, setNotice] = useState("");
+  return (
+    <aside
+      aria-label="Current order"
+      className="flex w-full shrink-0 flex-col border-t border-slate-200 bg-white xl:w-[380px] xl:border-l xl:border-t-0 2xl:w-[420px] dark:border-slate-800 dark:bg-slate-900"
+    >
+      <div className="flex items-center justify-between border-b border-slate-100 p-5 dark:border-slate-800">
+        <h2 className="text-sm font-semibold">Order ID: {order.id}</h2>
+        <div className="flex gap-1.5">
+          <Popover
+            label="Order options"
+            trigger={<MoreHorizontal size={15} />}
+            className="rounded border border-slate-200 p-1.5 dark:border-slate-700"
+          >
+            <Link
+              to="/orders/all-orders"
+              className="block w-36 rounded p-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              View all orders
+            </Link>
+          </Popover>
+          <button
+            aria-label="Edit current order"
+            onClick={() =>
+              setNotice("Order editing is planned for a later phase.")
+            }
+            className="rounded border border-slate-200 p-1.5 dark:border-slate-700"
+          >
+            <Pencil size={13} />
+          </button>
+          <button
+            aria-label="Delete current order"
+            onClick={() =>
+              setNotice("The order is empty. No order has been deleted.")
+            }
+            className="rounded border border-red-200 p-1.5 text-red-400 dark:border-red-900"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
+      </div>
+      <div className="m-5 flex items-center gap-3 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 dark:border-indigo-900 dark:bg-indigo-500/10">
+        <Avatar name={order.customer.name} size="h-11 w-11" index={2} />
+        <div className="flex-1">
+          <p className="text-xs font-semibold text-slate-800 dark:text-white">
+            {order.customer.name}
+          </p>
+          <p className="mt-1 text-[10px] text-slate-400">
+            {order.customer.membership} • {order.customer.points} Points
+          </p>
+        </div>
+        <Link
+          aria-label="Edit customer"
+          to="/customers/customer-list"
+          className="text-indigo-500"
+        >
+          <Pencil size={14} />
+        </Link>
+      </div>
+      <div className="flex items-center justify-between px-5">
+        <h3 className="text-xs font-semibold">
+          Order Detail{" "}
+          <span className="font-normal text-slate-400">
+            (Items: {order.items})
+          </span>
+        </h3>
+        <button
+          className="text-[10px] text-red-400"
+          onClick={() => setNotice("The cart is already empty.")}
+        >
+          Clear All
+        </button>
+      </div>
+      <div className="flex min-h-80 flex-1 flex-col items-center justify-center px-8 py-12">
+        <svg
+          role="img"
+          aria-label="Empty shopping bag"
+          width="150"
+          height="150"
+          viewBox="0 0 150 150"
+        >
+          <circle
+            cx="75"
+            cy="78"
+            r="60"
+            fill="currentColor"
+            className="text-indigo-50 dark:text-indigo-950"
+          />
+          <ellipse
+            cx="75"
+            cy="124"
+            rx="42"
+            ry="5"
+            fill="currentColor"
+            className="text-indigo-100 dark:text-indigo-900"
+          />
+          <path
+            d="M43 53h64l8 65H35z"
+            fill="currentColor"
+            className="text-indigo-100 dark:text-indigo-900"
+            stroke="#a5b4fc"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M60 59V42a15 15 0 0130 0v17"
+            fill="none"
+            stroke="#818cf8"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <path
+            d="M60 83h30M67 97h16"
+            stroke="#a5b4fc"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <circle cx="115" cy="38" r="4" fill="#5eead4" />
+          <path d="M29 75h8M33 71v8" stroke="#818cf8" strokeWidth="2" />
+        </svg>
+        <h3 className="mt-5 text-sm font-semibold">Your cart is waiting</h3>
+        <p className="mt-2 max-w-52 text-center text-xs leading-5 text-slate-400">
+          Add products to start a new order.
+          <br />
+          Every great sale starts here.
+        </p>
+      </div>
+      {notice && (
+        <p
+          role="status"
+          className="mx-5 mb-4 rounded-lg bg-indigo-50 p-3 text-xs text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300"
+        >
+          {notice}
+        </p>
+      )}
+      <div className="border-t border-slate-100 p-5 dark:border-slate-800">
+        <button
+          className="btn-primary w-full justify-between py-3"
+          onClick={() =>
+            setNotice(
+              "Payment is a preview only. Cart and payment logic are planned for a later phase.",
+            )
+          }
+        >
+          <span>Process to Payment</span>
+          <ArrowRight size={16} />
+        </button>
+        <div className="mt-6 grid grid-cols-5 gap-1">
+          {[
+            {
+              label: "Payment",
+              icon: CreditCard,
+              color: "bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10",
+            },
+            {
+              label: "Hold",
+              icon: Pause,
+              color: "bg-amber-50 text-amber-500 dark:bg-amber-500/10",
+            },
+            {
+              label: "Invoice",
+              icon: Receipt,
+              color: "bg-teal-50 text-teal-600 dark:bg-teal-500/10",
+            },
+            {
+              label: "Pay Later",
+              icon: Clock3,
+              color: "bg-rose-50 text-rose-500 dark:bg-rose-500/10",
+            },
+            {
+              label: "History",
+              icon: History,
+              color: "bg-sky-50 text-sky-500 dark:bg-sky-500/10",
+            },
+          ].map(({ label, icon: Icon, color }) => (
+            <button
+              key={label}
+              onClick={() =>
+                setNotice(`${label} is planned for a later phase.`)
+              }
+              className="flex flex-col items-center gap-2 text-[9px] text-slate-500"
+            >
+              <span
+                className={`flex h-10 w-10 items-center justify-center rounded-full ${color}`}
+              >
+                <Icon size={18} />
+              </span>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </aside>
+  );
+}

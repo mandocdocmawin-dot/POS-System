@@ -1,5 +1,6 @@
 import { ShoppingBag, ShoppingCart, Wallet, RotateCcw } from "lucide-react";
 export const dashboardData = {
+  overview: { ownerName: "Miguel", salesGrowth: "75%", grossProfitTrend: "6.8%" },
   stats: [
     {
       title: "Today Sales",

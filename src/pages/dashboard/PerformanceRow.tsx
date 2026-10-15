@@ -5,6 +5,7 @@ import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
 import { dashboardService } from "../../services/dashboardService";
 export function PerformanceRow() {
   const staff = dashboardService.getStaff();
+  const overview = dashboardService.getOverview();
   const gross = dashboardService.getGrossProfit();
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
@@ -17,7 +18,7 @@ export function PerformanceRow() {
         </CardHeading>
         <div className="mt-5 flex items-center justify-between">
           <p className="text-xs font-semibold text-emerald-500">
-            ↗ 75%{" "}
+            ↗ {overview.salesGrowth}{" "}
             <span className="font-normal text-slate-400">sales growth</span>
           </p>
           <div className="flex gap-4 text-xs text-slate-400">
@@ -82,7 +83,7 @@ export function PerformanceRow() {
           <h3 className="text-2xl font-semibold tracking-tight">
             {gross.value}
           </h3>
-          <span className="text-xs text-emerald-500">↗ 6.8%</span>
+          <span className="text-xs text-emerald-500">↗ {overview.grossProfitTrend}</span>
         </div>
         <div className="space-y-2.5">
           {gross.bars.map((bar, i) => (

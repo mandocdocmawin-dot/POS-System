@@ -1,3 +1,5 @@
+import { findRoute } from "../../config/menu";
+import { dashboardService } from "../../services/dashboardService";
 import { RecentOrders } from "./RecentOrders";
 import { AnalyticsRow } from "./AnalyticsRow";
 import { CustomersRow } from "./CustomersRow";
@@ -9,13 +11,15 @@ import { useBranchStore } from "../../store/useBranchStore";
 import { SummaryRow } from "./SummaryRow";
 export function Component() {
   const branch = useBranchStore((s) => s.branch);
+  const route = findRoute("/");
+  const overview = dashboardService.getOverview();
   return (
     <>
-      <PageHeader title="Dashboard" breadcrumb={["Dashboards", "Main"]} />
+      <PageHeader title={route?.title ?? "Dashboard"} breadcrumb={route?.breadcrumb ?? []} />
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold tracking-tight">
-            Good morning, Miguel <span className="ml-1">☀️</span>
+            Good morning, {overview.ownerName} <span className="ml-1">☀️</span>
           </h2>
           <p className="mt-1 text-xs text-slate-400">
             Here's what's happening with your store today.

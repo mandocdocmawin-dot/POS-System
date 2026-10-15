@@ -35,6 +35,7 @@ export interface MenuItem {
   icon: LucideIcon;
   path: string;
   children?: MenuItem[];
+  breadcrumb?: string[];
 }
 export interface MenuGroup {
   label?: string;
@@ -66,6 +67,7 @@ export const menu: MenuSection[] = [
             label: "Dashboard",
             icon: Home,
             path: "/",
+            breadcrumb: ["Dashboards", "Main"],
           },
           {
             label: "POS",
@@ -916,9 +918,9 @@ const entries: RouteDefinition[] = menu.flatMap((section) =>
       (item.children ?? [item]).map((child) => ({
         path: child.path,
         title: child.label,
-        breadcrumb: item.children
+        breadcrumb: child.breadcrumb ?? (item.children
           ? [section.label, item.label, child.label]
-          : [section.label, child.label],
+          : [section.label, child.label]),
         sectionId: section.id,
         layout:
           section.id === "authentication"

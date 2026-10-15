@@ -1,3 +1,4 @@
+import {CartSummary} from '../../components/pos/CartSummary';
 import {DiscountEditor} from '../../components/pos/DiscountEditor';
 import {useState} from 'react';
 import {ShoppingBag,Trash2} from 'lucide-react';
@@ -14,7 +15,7 @@ export function OrderPanel(){
  <div className="flex items-center justify-between border-b pb-4"><h2 className="text-sm font-semibold">Order ID: #{orderService.nextOrderNo()}</h2><button className="btn text-red-500" aria-label="Clear cart" onClick={()=>setClear(true)}><Trash2 size={15}/></button></div>
  <div className="my-5 flex items-center justify-between"><h3 className="text-sm font-semibold">Order Detail (Items: {s.cart.length})</h3><button className="text-xs text-red-500" onClick={()=>setClear(true)}>Clear All</button></div>
  {s.cart.length?totals.items.map(l=><CartLine key={`${l.id}-${l.quantity}`} line={l} selected={selected===l.id} onSelect={()=>setSelected(l.id)}/>):<div className="flex flex-1 flex-col items-center justify-center gap-3 py-20 text-slate-400"><ShoppingBag size={65} strokeWidth={1}/><p>Your cart is empty</p><p className="text-xs">Select products to start a sale.</p></div>}
- <button className="my-3 text-left text-xs text-indigo-500" onClick={()=>setDiscountOpen(v=>!v)}>Order discount · {s.orderDiscount.type==='percent'?s.orderDiscount.value+'%':'₱'+s.orderDiscount.value}</button>{discountOpen&&<DiscountEditor value={s.orderDiscount} onSave={v=>{posService.discount(v);}} onClose={()=>setDiscountOpen(false)}/>}
+ <CartSummary totals={totals} onDiscount={()=>setDiscountOpen(v=>!v)}/>{discountOpen&&<DiscountEditor value={s.orderDiscount} onSave={v=>{posService.discount(v);}} onClose={()=>setDiscountOpen(false)}/>}
  <ConfirmDialog open={clear} title="Clear current cart?" message="All current items, discounts, customer and notes will be cleared." onClose={()=>setClear(false)} onConfirm={()=>{posService.clear();}}/>
  </aside>;
 }

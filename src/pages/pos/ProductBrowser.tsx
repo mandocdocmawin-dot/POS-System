@@ -1,3 +1,5 @@
+import {stockService} from '../../services/stockService';
+import {Modal} from '../../components/common/Modal';
 import type {Product} from '../../types/models';
 import {VariantPicker} from '../../components/pos/VariantPicker';
 import { useState } from "react";
@@ -13,8 +15,11 @@ export function ProductBrowser() {
   const [category, setCategory] = useState(""),
     [brand, setBrand] = useState(""),
     [search, setSearch] = useState("");
+  const [brandModal,setBrandModal]=useState(false),[filterModal,setFilterModal]=useState(false),[stockOnly,setStockOnly]=useState(false);
   const [variantProduct,setVariantProduct]=useState<Product|null>(null);
-  const add=(p:Product,variantId?:string)=>{if(p.hasVariants&&!variantId){setVariantProduct(p);return;}try{posService.add(p.id,variantId);setVariantProduct(null);}catch(e){toast.error(errorMessage(e));}};
+  const add=(p:Product,variantId?:string)=>{if(p.hasVariants&&!variantId){setVariantProduct(p);return;}try{posService.add(p.id,variantId);setVariantProduct(null);requestAnimationFrame(()=>document.getElementById('pos-search')?.focus());}catch(e){toast.error(errorMessage(e));}};
+  const focusSearch=()=>requestAnimationFrame(()=>{if(!document.querySelector('dialog[open]'))document.getElementById('pos-search')?.focus();});
+  const scan=()=>{const query=search.trim().toLowerCase();if(!query)return;for(const p of productService.list().filter(p=>p.status==='active')){const v=productService.variants(p.id).find(v=>v.sku.toLowerCase()===query||v.barcode?.toLowerCase()===query);if(v||p.sku.toLowerCase()===query||p.barcode?.toLowerCase()===query){add(p,v?.id);setSearch('');focusSearch();return;}}toast.error('No exact barcode or SKU match.');};
   const categories = categoryService
     .list()
     .filter((c) => c.status === "active");
@@ -23,6 +28,7 @@ export function ProductBrowser() {
       p.status === "active" &&
       (!category || p.categoryId === category) &&
       (!brand || p.brandId === brand) &&
+      (!stockOnly || stockService.getStock(p.id)>0) &&
       `${p.name} ${p.sku} ${p.barcode ?? ""} ${productService
         .variants(p.id)
         .map((v) => `${v.sku} ${v.barcode ?? ""}`)
@@ -31,7 +37,8 @@ export function ProductBrowser() {
         .includes(search.toLowerCase()),
   );
   return (
-    <><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex min-w-0 shrink-0 flex-col sm:flex-row xl:min-h-0 xl:flex-1">
+    <><Modal open={brandModal} title="View All Brands" onClose={()=>{setBrandModal(false);focusSearch();}}><div className="flex flex-wrap gap-2">{[{id:'',name:'All brands'},...brandService.list().filter(b=>b.status==='active')].map(b=><button className="btn" aria-pressed={brand===b.id} key={b.id} onClick={()=>{setBrand(b.id);setBrandModal(false);focusSearch();}}>{b.name}</button>)}</div></Modal>
+    <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/>In-stock products only</label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}>Apply filters</button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex min-w-0 shrink-0 flex-col sm:flex-row xl:min-h-0 xl:flex-1">
       <nav
         aria-label="Product categories"
         className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-28 sm:flex-col sm:border-b-0 sm:border-r xl:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
@@ -42,7 +49,7 @@ export function ProductBrowser() {
             <button
               key={c.id}
               aria-pressed={category === c.id}
-              onClick={() => setCategory(c.id)}
+              onClick={() => {setCategory(c.id);focusSearch();}}
               className={`flex min-h-20 w-20 shrink-0 flex-col items-center justify-center gap-2 rounded-xl border px-1 text-center text-xs ${category === c.id ? "border-indigo-500 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300" : "border-slate-200 text-slate-500 dark:border-slate-700"}`}
             >
               <Icon size={23} strokeWidth={1.5} />
@@ -60,30 +67,20 @@ export function ProductBrowser() {
               className="absolute left-3 top-3 text-slate-400"
             />
             <input
+              id="pos-search" autoFocus onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();scan();}}}
               className="w-full pl-9"
               placeholder="Search name, SKU or barcode…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </label>
-          <select
-            aria-label="Filter brand"
-            value={brand}
-            onChange={(e) => setBrand(e.target.value)}
-          >
-            <option value="">All brands</option>
-            {brandService.list().map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </select>
+          <button className="btn" onClick={()=>setBrandModal(true)}>View All Brands{brand?' •':''}</button><button className="btn" onClick={()=>setFilterModal(true)}>Filter{stockOnly?' •':''}</button>
           <button
             className="btn"
             onClick={() => {
               setCategory("");
               setBrand("");
-              setSearch("");
+              setSearch("");setStockOnly(false);focusSearch();
             }}
           >
             Reset

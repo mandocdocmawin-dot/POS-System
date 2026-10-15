@@ -1,86 +1,102 @@
 # TindaPOS
 
-A frontend-only Point of Sale prototype for Filipino businesses. **Phase 1 is complete; Phase 2 has not started.**
+A frontend-only POS web app for Filipino stores. **Phase 2 (Products and Inventory) is complete. Phase 3 has not started.** Built with Vite, React, strict TypeScript, React Router v6, Tailwind, lucide-react and Zustand. No backend, API calls or database server.
 
 ## Run locally
 
-Use Node.js 24 LTS (the version used for verification) and npm.
+Use Node.js 24 and npm. From an existing checkout:
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite. Additional commands:
+New Phase 2 dependencies only:
+
+```sh
+npm install react-hook-form zod idb-keyval @hookform/resolvers
+```
+
+`@hookform/resolvers` connects React Hook Form to Zod. The lockfile records the installed versions.
 
 ```sh
 npm run build
 npm run lint
+npm run test:phase2
 npm run preview
 ```
 
-The production build is written to `dist/`. Static hosting must rewrite unknown paths to `index.html` so React Router can handle direct links and its 404 screen.
+The build runs TypeScript checking and produces `dist/`. Static hosting must rewrite unknown URLs to `index.html` for direct React Router links. Browser data belongs to the origin, so use the same host and port when checking persistence.
 
-## Scaffold and installation commands
+## Working Phase 2 features
 
-The workspace already contained a Vite React TypeScript scaffold and one local commit. That baseline was retained rather than overwritten. For a new, empty workspace, the equivalent scaffold command is:
+- Categories, subcategories, brands and units: searchable/sortable tables, CRUD modals, status controls, product counts, dependent parent categories and in-use deletion protection.
+- Products: name/SKU/barcode search; category, brand, status and stock filters; selection and confirmed bulk deletion; CSV export; full details drawer with variants and the last five stock movements.
+- Add/edit product: Zod validation, generated SKU, dependent subcategory, pricing and live margin after discount, tax, reorder level, description, status, images, unsaved-change warning and save-and-add-another. Opening quantities create initial movements only during creation.
+- Variants: inline editor plus a shared overview with add/edit/remove, unique SKUs, free-text attributes and independent prices/stock. Enter attributes as `Size: L, Color: Red`. New product variants accept their own opening quantities.
+- Inventory: product/variant stock list, summary totals and valuation; history drawer; stock in/out with reasons, reference, note, date and date/product history filters; counted stock adjustments with before/after confirmation.
+- POS: real active products, category/brand filters, name/SKU/barcode search, stored images and disabled out-of-stock preview buttons. Cart and checkout remain Phase 3 work.
+- Dashboard: real low-stock products with reorder progress; real names/SKUs for top products while sales numbers remain explicitly mock.
+- Settings → General: Data card for reset and JSON export/import, including images. The remainder of General stays a placeholder.
 
-```sh
-npm create vite@latest . -- --template react-ts
-```
+Reusable components include `DataTable<T>`, native modal dialogs and drawers with focus containment/Escape/focus restoration, confirmation dialogs, labeled form fields, switches, compressed image upload, toasts, page actions and stock badges. Tables scroll horizontally on narrow screens. New components support the existing dark theme.
 
-Frontend dependencies added for this phase:
+Reviews, Print Barcode, Bulk Import, Bulk Export, Warranty, Stock Transfer, Batch Management, Lost Items, Alerts, Valuation and Warehouse remain placeholders. JSON backups in Settings and CSV export from All Products do not implement the reserved Bulk Import/Export pages. No cart, checkout, orders, customers, suppliers, reports or authentication logic was added.
 
-```sh
-npm install react-router-dom@6 zustand lucide-react
-npm install -D tailwindcss@3 postcss autoprefixer
-```
-
-The lockfile records the verified dependency versions. TypeScript strict mode is enabled for both the app and Vite configuration. The font stack uses Inter when locally available, then Segoe UI and system sans-serif; no remote fonts are requested.
-
-## Phase 1 behavior
-
-- Main shell: icon rail, config-driven secondary navigation, accordions, sidebar collapse, responsive mobile drawer with focus containment, topbar, breadcrumb header and footer.
-- Topbar: local page search, twelve quick actions, three-branch switcher, language selection UI, density control, Fullscreen API, three mock notifications and user menu.
-- Theme: light by default, dark mode using Tailwind classes and a persisted Zustand preference in `localStorage` under `tindapos-theme`.
-- Dashboard: six rows of PHP-denominated mock summaries, inventory and customer cards, explicit chart placeholders and 23 recent orders with seven rows per page. Four pages are necessary to show all 23 orders. Selection and pagination work; view/edit/delete show previews without mutating orders.
-- POS: separate viewport layout, live local date/time chips, eight product categories, eight products, local search and category/brand filters, customer summary and an empty-cart illustration. Cart, payment and order actions show preview feedback only.
-- Authentication: seven static form previews, native validation, password visibility controls, six-digit input with paste support and password-confirmation validation. Submitting Sign In navigates to the dashboard; no credentials are stored or verified.
-- Errors: dedicated 404/500 screens and a catch-all with dashboard recovery.
-- All other routes use the same reusable placeholder component with three route-specific planned features.
-
-## Data and configuration boundaries
+## Data and service boundaries
 
 ```text
 src/
-  app/                 Router generation, theme application and providers
-  layouts/             MainLayout, AuthLayout, PosLayout
-  components/layout/   Shell and navigation components
-  components/common/   Shared cards, tables, badges, avatars and placeholders
-  config/              Menu, page registry, quick actions, feature status
-  services/            Synchronous dashboard, product and order mock services
-  store/               Theme, active branch and UI stores
-  data/                In-code mock records
-  pages/               Lazy-loaded screens and reserved module directories
-  types/               Product/order types and Philippine Peso formatting
+  types/               Zod-backed product, variant, catalog and movement models
+  store/               Persisted catalog, product and stock stores; toast store
+  services/            Product/catalog/stock/image/data services and subscriptions
+  data/seed/           Filipino store catalog, 25 products, variants and initial movements
+  components/common/   Tables, dialogs, drawers, notifications, images and badges
+  components/forms/    Accessible fields, upload and Zod form schemas
+  pages/products/      Product and catalog screens
+  pages/inventory/     Stock list, movement forms and history
+  pages/settings/      General placeholder with the working Data card
+  utils/               PHP money, dates, IDs, CSV, attributes and compression
+  config/              Typed navigation, page loaders, route status and quick actions
 ```
 
-Pages call services and do not import `src/data` directly. Services make no network requests. Only the theme preference persists in this phase; business records and branch selection reset on reload. Branch selection is shared globally and appears in the dashboard; the mock figures are not branch-specific.
+New pages and components call services, including the `useLocalData` subscription hook; they do not access business stores or browser storage directly. Services wrap the stores so their implementation can later be replaced by a backend.
 
-The branch store is `useBranchStore`. Menu sections and leaf route metadata come from `src/config/menu.ts`. Duplicate Help Center and Licenses rail destinations share their canonical page routes.
+Structured business data uses Zustand persist and localStorage keys `tindapos:catalog`, `tindapos:products` and `tindapos:stock`. Product records contain only an `imageId`. JPEG/PNG/WebP uploads are compressed in-browser to JPEG at quality 0.8 with a maximum dimension of 800px, then stored with idb-keyval in IndexedDB `tindapos:images`. Missing/inaccessible images show a neutral placeholder. No remote image requests are made.
 
-Every page route is lazy-loaded. `src/config/pageRegistry.ts` selects implemented screens; unknown entries use the shared placeholder. `src/config/featureStatus.ts` contains the route status map and planned features. Status `done` means the requested Phase 1 UI is built, not that the future business workflow is implemented.
+The first empty browser is seeded with eight categories and sixteen subcategories, eight brands, six units, 25 products and six variants. Some items have low or zero stock. Empty catalogs saved intentionally are not reseeded on refresh. Reset restores the demo catalog and stock history; export first to preserve your work. Branch switching remains a Phase 1 display control; Phase 2 uses one shared local catalog.
 
-There is no backend, database, server API, real authentication, payment processing or email delivery. No remote assets or chart libraries are used.
+## Business rules
+
+- Stock is derived from movements. `stockService.getStock(productId, variantId?)` returns item stock, or aggregates variants when a variant ID is omitted. Stock List shows each variant as an individual stock item.
+- Initial/in/out quantities are positive. An adjustment stores its signed delta. Stock-out and adjustments cannot make current stock negative; a matching counted quantity creates no movement.
+- SKU uniqueness is case-insensitive across products and variants. Product and variant IDs must also be unique. Services validate classification references and variant ownership.
+- Used categories, subcategories, brands and units cannot be deleted; deactivate them instead. A category containing subcategories must have those moved/removed first.
+- Stock tracking mode cannot be changed after movements exist, and variants with history cannot be removed. This preserves historical stock ownership. Product deletion explicitly confirms cascading removal of its variants and movements.
+- JSON imports validate version, field types, IDs, SKUs, references, variant tracking and resulting stock before replacing data. Imported image payloads must be JPEGs of at most 800px. Confirmation is required, and failed browser storage writes attempt to restore the previous in-memory and persisted state.
+- The browser is the only persistence layer. Clearing site data removes it. JSON export/import is the portable backup and recovery path; it is not a multi-user or multi-tab transactional database.
+
+## Manual test checklist
+
+1. Open `/products/categories`, add **Test Pantry**, then edit it. Check search, sorting and Escape dismissal.
+2. Open `/products/add`. Enter **Test Rice**, generate a SKU, choose Test Pantry and kg, set cost **40**, price **55**, reorder level **10**, opening stock **8** and upload an image. Save; verify the thumbnail and low-stock badge.
+3. Open its View drawer; confirm classification, pricing and its initial movement. Edit it and verify opening stock is no longer editable. Try leaving with an unsaved name change; cancel or confirm the warning.
+4. In `/inventory/stock-in`, select Test Rice, receive **5** with Purchase, a reference and note. Stock becomes **13** and history shows +5.
+5. In `/inventory/stock-out`, remove **3** as Damaged. Stock becomes **10**. Attempt more than current stock and confirm no movement is recorded.
+6. In `/inventory/adjustment`, count **9**, supply a reason, review **10 → 9 (-1)** and confirm. Check all history filters and the stock drawer.
+7. Refresh or reopen the same origin. Verify stock **9**, the uploaded image, category and movements persist. Check POS search/category filtering and its disabled out-of-stock buttons; the cart stays empty.
+8. Create a second product with variants (for example Regular/Large), distinct SKUs, attributes and separate opening quantities. Check the Variants page and individual Stock List rows. Try a duplicate SKU and deletion of an in-use catalog record.
+9. In Settings → General, export JSON. Import the file and confirm replacement; check image and stock preservation. Try malformed JSON, a duplicate SKU or an invalid reference and verify current data is preserved.
+10. Export anything you want to keep, then click Reset demo data and confirm. Verify 25 products, six variants and restored opening stock. Check the pages in dark mode and at mobile width; tables should scroll without widening the page.
 
 ## Route status
 
-**112 destinations: 12 built screens including the catch-all, 100 placeholders.** Built means a Phase 1 UI/skeleton. The complete table below follows the configured menu order.
+`done` means implemented for its current phase. Dashboard sales and POS cart behavior retain their documented mock/preview limits. All routes not marked done remain placeholders. Existing menu URLs and the shorter Phase 2 URLs are both supported.
 
 | Route | Screen | Layout | Status |
 | --- | --- | --- | --- |
-| `/` | Dashboards > Main | main | built |
-| `/pos` | Dashboard > POS | pos | built |
+| `/` | Dashboards > Main | main | done |
+| `/pos` | Dashboard > POS | pos | done |
 | `/landing` | Dashboard > Landing | main | placeholder |
 | `/chat/default` | Apps > Chat > Default | main | placeholder |
 | `/chat/group` | Apps > Chat > Group | main | placeholder |
@@ -91,22 +107,22 @@ There is no backend, database, server API, real authentication, payment processi
 | `/calendar/timeline` | Apps > Calendar > Timeline | main | placeholder |
 | `/email/mailbox` | Apps > Email > Mailbox | main | placeholder |
 | `/email/templates` | Apps > Email > Templates | main | placeholder |
-| `/products/all-products` | Apps > Products > All Products | main | placeholder |
-| `/products/add-product` | Apps > Products > Add Product | main | placeholder |
-| `/products/variants` | Apps > Products > Variants | main | placeholder |
-| `/products/categories` | Apps > Products > Categories | main | placeholder |
-| `/products/subcategories` | Apps > Products > Subcategories | main | placeholder |
-| `/products/brands` | Apps > Products > Brands | main | placeholder |
-| `/products/units` | Apps > Products > Units | main | placeholder |
+| `/products/all-products` | Apps > Products > All Products | main | done |
+| `/products/add-product` | Apps > Products > Add Product | main | done |
+| `/products/variants` | Apps > Products > Variants | main | done |
+| `/products/categories` | Apps > Products > Categories | main | done |
+| `/products/subcategories` | Apps > Products > Subcategories | main | done |
+| `/products/brands` | Apps > Products > Brands | main | done |
+| `/products/units` | Apps > Products > Units | main | done |
 | `/products/reviews` | Apps > Products > Reviews | main | placeholder |
 | `/products/print-barcode` | Apps > Products > Print Barcode | main | placeholder |
 | `/products/bulk-import` | Apps > Products > Bulk Import | main | placeholder |
 | `/products/bulk-export` | Apps > Products > Bulk Export | main | placeholder |
 | `/products/warranty` | Apps > Products > Warranty | main | placeholder |
-| `/inventory/stock-list` | Apps > Inventory > Stock List | main | placeholder |
-| `/inventory/stock-in` | Apps > Inventory > Stock In | main | placeholder |
-| `/inventory/stock-out` | Apps > Inventory > Stock Out | main | placeholder |
-| `/inventory/stock-adjustment` | Apps > Inventory > Stock Adjustment | main | placeholder |
+| `/inventory/stock-list` | Apps > Inventory > Stock List | main | done |
+| `/inventory/stock-in` | Apps > Inventory > Stock In | main | done |
+| `/inventory/stock-out` | Apps > Inventory > Stock Out | main | done |
+| `/inventory/stock-adjustment` | Apps > Inventory > Stock Adjustment | main | done |
 | `/inventory/stock-transfer` | Apps > Inventory > Stock Transfer | main | placeholder |
 | `/inventory/batch-management` | Apps > Inventory > Batch Management | main | placeholder |
 | `/inventory/lost-items` | Apps > Inventory > Lost Items | main | placeholder |
@@ -149,19 +165,19 @@ There is no backend, database, server API, real authentication, payment processi
 | `/multi-store/add-store` | Apps > Multi-Store > Add Store | main | placeholder |
 | `/settings/tax` | Apps > Settings > Tax | main | placeholder |
 | `/settings/coupons` | Apps > Settings > Coupons | main | placeholder |
-| `/settings/general` | Apps > Settings > General | main | placeholder |
+| `/settings/general` | Apps > Settings > General (Data card done) | main | placeholder |
 | `/settings/pos` | Apps > Settings > POS | main | placeholder |
 | `/settings/payment-gateway` | Apps > Settings > Payment Gateway | main | placeholder |
 | `/settings/currencies` | Apps > Settings > Currencies | main | placeholder |
 | `/settings/invoices` | Apps > Settings > Invoices | main | placeholder |
 | `/settings/manager` | Apps > Settings > Manager | main | placeholder |
-| `/auth/sign-in` | Authentication > Sign In | auth | built |
-| `/auth/sign-up` | Authentication > Sign Up | auth | built |
-| `/auth/forgot-password` | Authentication > Forgot Password | auth | built |
-| `/auth/two-step-verification` | Authentication > Two Step Verification | auth | built |
-| `/auth/reset-password` | Authentication > Reset Password | auth | built |
-| `/auth/successful-password` | Authentication > Successful Password | auth | built |
-| `/auth/account-deactivation` | Authentication > Account Deactivation | auth | built |
+| `/auth/sign-in` | Authentication > Sign In | auth | done |
+| `/auth/sign-up` | Authentication > Sign Up | auth | done |
+| `/auth/forgot-password` | Authentication > Forgot Password | auth | done |
+| `/auth/two-step-verification` | Authentication > Two Step Verification | auth | done |
+| `/auth/reset-password` | Authentication > Reset Password | auth | done |
+| `/auth/successful-password` | Authentication > Successful Password | auth | done |
+| `/auth/account-deactivation` | Authentication > Account Deactivation | auth | done |
 | `/blank` | Pages > Blank | main | placeholder |
 | `/account/account` | Pages > Account > Account | main | placeholder |
 | `/account/security` | Pages > Account > Security | main | placeholder |
@@ -182,46 +198,36 @@ There is no backend, database, server API, real authentication, payment processi
 | `/maintenance` | Pages > Maintenance | main | placeholder |
 | `/privacy-policy` | Pages > Privacy Policy | main | placeholder |
 | `/help-center` | Pages > Help Center | main | placeholder |
-| `/errors/404` | Pages > Error Pages > 404 | main | built |
-| `/errors/500` | Pages > Error Pages > 500 | main | built |
+| `/errors/404` | Pages > Error Pages > 404 | main | done |
+| `/errors/500` | Pages > Error Pages > 500 | main | done |
 | `/components` | Components > Components | main | placeholder |
 | `/forms` | Forms > Forms | main | placeholder |
 | `/tables` | Tables > Tables | main | placeholder |
 | `/charts` | Charts > Charts | main | placeholder |
 | `/maps` | Maps > Maps | main | placeholder |
 | `/activity-history` | Activity History > Activity History | main | placeholder |
-| `*` | Unknown route (404) | main | built |
+| `*` | Unknown route (404) | main | done |
+| `/products` | All Products alias | main | done |
+| `/products/add` | Add Product alias | main | done |
+| `/products/:id/edit` | Edit Product | main | done |
+| `/inventory/stock` | Stock List alias | main | done |
+| `/inventory/adjustment` | Stock Adjustment alias | main | done |
 
-## Verification
+## Verification and local history
 
-- `npm run build`: passes TypeScript project builds and Vite production bundling without application warnings.
-- `npm run lint`: passes with zero lint errors or warnings.
-- Local Vite development server: starts successfully and serves the app.
-- Configuration audit: 12 rail sections, 111 unique menu routes, one catch-all, 12 valid quick actions, complete status coverage and 3–6 planned features for every placeholder.
-- Browser checks: desktop and mobile rendering, active sidebar accordions, branch propagation, quick-action navigation, dropdown bounds and Escape dismissal, mobile drawer, persisted dark mode, order pagination, POS filtering with an unchanged empty cart, demo sign-in, verification inputs and both error screens.
-- Browser console: no application warnings or errors after the React Router transition flag correction.
-
-## Local Git history
-
-All 30 requested steps are separate commits on `main`. The pre-existing `TindaPOS` commit is preserved. Corrections discovered during validation are separate `fix(...)` commits, and source formatting is a separate `style` commit. An initial HTML encoding failure was corrected in its own fix commit; no history was rewritten. No remote was added and nothing was pushed.
+- `npm run build`: TypeScript and production build pass.
+- `npm run lint`: zero errors and warnings.
+- `npm run test:phase2`: 20 isolated service regression checks pass. These use in-memory storage and do not alter browser data. They cover seeding, create-form IDs, uniqueness, references, catalog deletion/deactivation, movement calculations, negative stock, variant ownership/history, import validation, persistence initialization, cascade deletion, JSON round trips, storage failure rollback and reset.
+- Browser smoke checks: category creation, product creation with a compressed image, live margin, opening stock, stock in, stock out, confirmed adjustment, persistence after reopening, variant editing, image-inclusive JSON export/import and demo reset. The exported file was inspected for products, movements and its image payload.
+- All 32 requested Phase 2 steps have their own local commits on `main`, plus a separate validation fix commit. Each requested step was built before committing. Existing history is preserved; nothing was pushed.
 
 ```sh
 git log --oneline
 git status --short
 ```
 
-`node_modules/`, `dist/` and `.env` files are ignored. The existing Vite scaffold dependencies were installed in step 1 so subsequent steps could be built independently. The dashboard service boundary was introduced alongside the first dashboard row and finalized with product and order services in step 23.
+The regression runner uses Rolldown already included by Vite; it does not add a testing framework or backend dependency. Build output and node_modules remain ignored.
 
-## Phase 2 notes — planning only
+## Phase 3 notes
 
-No Phase 2 implementation is included. Choose a route from the table before proceeding.
-
-For a selected feature:
-
-1. Define its domain types and a small service contract.
-2. Add localStorage/IndexedDB persistence behind the service layer; keep pages independent of storage and mock files.
-3. Implement the screen and its loading, validation, empty and error states.
-4. Register its lazy loader and route in `src/config/pageRegistry.ts`; update the central feature status and planned feature checklist.
-5. Verify the chosen workflow, responsive behavior and keyboard access, then update this route table.
-
-Potential next modules include Products, Inventory, Customers or the POS cart. Authentication, payments and email remain UI-only unless a later brief explicitly changes the frontend-only scope.
+Phase 3 has not started. Cart, variant selection during a sale, checkout, orders and payment behavior require a separate brief. Authentication, customers, suppliers and reports also remain outside this phase. Stop here until instructed to continue.

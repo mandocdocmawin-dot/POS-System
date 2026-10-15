@@ -2,14 +2,11 @@ import { productSchema, variantSchema, type Product, type Variant, type StockMov
 import { useProductStore } from '../store/useProductStore';
 import { useStockStore } from '../store/useStockStore';
 import { useCatalogStore } from '../store/useCatalogStore';
-import { products as legacyProducts, categories as legacyCategories } from '../data/products';
 export type ProductInput = Omit<Product, 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
 export type VariantInput = Omit<Variant, 'id' | 'productId'> & { id?: string };
 function validateSKU(products: Product[], variants: Variant[]) { const skus = [...products, ...variants].map(p => p.sku.trim().toLowerCase()); if (new Set(skus).size !== skus.length) throw new Error('SKU must be unique across all products and variants.'); }
 function validateClassification(p: Product) { const c = useCatalogStore.getState(); if (!c.categories.some(x => x.id === p.categoryId) || !c.units.some(x => x.id === p.unitId)) throw new Error('Choose an existing category and unit.'); if (p.brandId && !c.brands.some(x => x.id === p.brandId)) throw new Error('Brand does not exist.'); if (p.subcategoryId && !c.subcategories.some(x => x.id === p.subcategoryId && x.categoryId === p.categoryId)) throw new Error('Subcategory must belong to the selected category.'); }
 export const productService = {
-  // Phase 1 compatibility; the POS consumer is migrated in step 28.
-  getProducts: () => legacyProducts.map(p => ({ ...p })), getCategories: () => legacyCategories.map(c => ({ ...c })), getBrands: () => [...new Set(legacyProducts.map(p => p.brand))],
   list: () => structuredClone(useProductStore.getState().products),
   get: (id: string) => structuredClone(useProductStore.getState().products.find(p => p.id === id)),
   variants: (productId?: string) => structuredClone(useProductStore.getState().variants.filter(v => !productId || v.productId === productId)),

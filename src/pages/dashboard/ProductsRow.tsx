@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { CardHeading, PeriodSelect } from "../../components/common/CardHeading";
 import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
-import { ProductThumb } from "../../components/common/ProductThumb";
+import { ProductImage } from "../../components/common/ProductImage";
+import { useLocalData } from "../../services/useLocalData";
 import { DataTable } from "../../components/common/DataTable";
 import { dashboardService } from "../../services/dashboardService";
 export function ProductsRow() {
+  useLocalData();
   const stock = dashboardService.getLowStock();
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
@@ -17,6 +19,7 @@ export function ProductsRow() {
             View All →
           </Link>
         </CardHeading>
+        {!stock.length && <p className="mt-4 text-xs text-slate-500">No low stock items.</p>}
         <div className="-mx-5 mt-4">
           <DataTable
             caption="Low stock products"
@@ -28,7 +31,7 @@ export function ProductsRow() {
                 header: "Product",
                 cell: (r) => (
                   <div className="flex items-center gap-2">
-                    <ProductThumb />
+                    <ProductImage imageId={r.imageId} name={r.name} />
                     <div>
                       <span className="text-xs font-medium">{r.name}</span>
                       <p className="mt-1 text-xs text-red-400">
@@ -85,10 +88,11 @@ export function ProductsRow() {
       </section>
       <section className="card xl:col-span-3">
         <CardHeading title="Top Selling Products" />
+        <p className="mt-2 text-xs text-slate-500">Demo sales numbers</p>
         <ul className="mt-5 space-y-5">
           {dashboardService.getTopProducts().map((p) => (
             <li key={p.sku} className="flex items-center gap-2.5">
-              <ProductThumb />
+              <ProductImage imageId={p.imageId} name={p.name} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-medium text-slate-800 dark:text-slate-100">
                   {p.name}

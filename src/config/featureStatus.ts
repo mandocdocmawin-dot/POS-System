@@ -15,3 +15,5 @@ function plans(path: string, title: string, module: string): string[] {
  return [`View ${title.toLowerCase()} information`, `Search and filter ${module.toLowerCase()} records`, 'Review details and activity history']
 }
 export const featureStatus: Record<string, FeatureDefinition> = Object.fromEntries(routes.map(route => [route.path, { status: 'placeholder', description: `Your ${route.title.toLowerCase()} workspace is taking shape. This feature is planned for a future phase.`, plannedFeatures: plans(route.path, route.title, route.breadcrumb[1] ?? route.title) }]))
+
+for (const path of ['/', '/pos', '/auth/sign-in', '/auth/sign-up', '/auth/forgot-password']) featureStatus[path].status = 'done'

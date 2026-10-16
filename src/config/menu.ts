@@ -940,12 +940,26 @@ export const routes = entries.filter(
 );
 export function resolveMenuPath(path: string): string {
   const aliases: Record<string, string> = {
+    "/orders": "/orders/all-orders",
+    "/customers": "/customers/customer-list",
+    "/customers/add": "/customers/add-customer",
+    "/customers/wallet": "/customers/wallet-balance",
+    "/customers/activity": "/customers/activity-log",
+    "/suppliers": "/suppliers/supplier-list",
+    "/suppliers/add": "/suppliers/add-supplier",
+    "/suppliers/balance": "/suppliers/balance-report",
+    "/purchases": "/purchases/purchase",
+    "/purchases/add": "/purchases/add-purchase",
     "/products": "/products/all-products",
     "/products/add": "/products/add-product",
     "/inventory/stock": "/inventory/stock-list",
     "/inventory/adjustment": "/inventory/stock-adjustment",
   };
   if (/^\/products\/[^/]+\/edit$/.test(path)) return "/products/add-product";
+  for(const [prefix,list,add] of [['orders','all-orders','all-orders'],['customers','customer-list','add-customer'],['suppliers','supplier-list','add-supplier'],['purchases','purchase','add-purchase']]){
+   if(new RegExp(`^/${prefix}/[^/]+/edit$`).test(path))return `/${prefix}/${add}`;
+   if(new RegExp(`^/${prefix}/[^/]+$`).test(path)&&!routes.some(r=>r.path===path)&&!aliases[path])return `/${prefix}/${list}`;
+  }
   return aliases[path] ?? path;
 }
 export function findRoute(path: string) {

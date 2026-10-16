@@ -1,3 +1,5 @@
+import {useLocalData} from '../../services/useLocalData';
+import {navigationService} from '../../services/navigationService';
 import { ChevronDown, ChevronUp, Store, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
@@ -5,6 +7,7 @@ import { menu, resolveMenuPath } from "../../config/menu";
 import { useUiStore } from "../../store/useUiStore";
 import { Brand } from "./Brand";
 export function Sidebar() {
+  useLocalData();
   const section = useUiStore((s) => s.section);
   const close = useUiStore((s) => s.setMobileOpen);
   const { pathname } = useLocation();
@@ -55,7 +58,7 @@ export function Sidebar() {
                       className={`flex h-10 w-full items-center gap-3 rounded-lg border px-3 text-sm ${open === label ? "border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white" : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                     >
                       <Icon size={17} />
-                      <span className="flex-1 text-left">{label}</span>
+                      <span className="flex-1 text-left">{label}</span>{navigationService.badge(path)>0&&<span aria-label={`${navigationService.badge(path)} requiring attention`} className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs text-indigo-700 dark:bg-indigo-950 dark:text-indigo-200">{navigationService.badge(path)}</span>}
                       {open === label ? (
                         <ChevronUp size={14} />
                       ) : (

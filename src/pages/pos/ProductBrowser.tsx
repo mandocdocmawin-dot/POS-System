@@ -38,10 +38,10 @@ export function ProductBrowser() {
   );
   return (
     <><Modal open={brandModal} title="View All Brands" onClose={()=>{setBrandModal(false);focusSearch();}}><div className="flex flex-wrap gap-2">{[{id:'',name:'All brands'},...brandService.list().filter(b=>b.status==='active')].map(b=><button className="btn" aria-pressed={brand===b.id} key={b.id} onClick={()=>{setBrand(b.id);setBrandModal(false);focusSearch();}}>{b.name}</button>)}</div></Modal>
-    <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/>In-stock products only</label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}>Apply filters</button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex min-w-0 shrink-0 flex-col sm:flex-row xl:min-h-0 xl:flex-1">
+    <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/>In-stock products only</label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}>Apply filters</button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex min-w-0 shrink-0 flex-col sm:flex-row md:min-h-0 md:flex-1">
       <nav
         aria-label="Product categories"
-        className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-28 sm:flex-col sm:border-b-0 sm:border-r xl:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
+        className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-28 sm:flex-col sm:border-b-0 sm:border-r md:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
       >
         {[{ id: "", name: "All" }, ...categories].map((c) => {
           const Icon = c.id ? Package : LayoutGrid;
@@ -58,7 +58,7 @@ export function ProductBrowser() {
           );
         })}
       </nav>
-      <main className="min-w-0 flex-1 p-4 md:p-6 xl:overflow-y-auto">
+      <main className="min-w-0 flex-1 p-4 md:p-6 md:overflow-y-auto">
         <div className="mb-6 flex flex-wrap gap-3">
           <label className="relative min-w-40 flex-1">
             <span className="sr-only">Search by name, SKU or barcode</span>
@@ -94,7 +94,7 @@ export function ProductBrowser() {
             {products.length} products
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
           {products.map(p=><ProductCard key={p.id} product={p} onAdd={()=>add(p)}/>)}
 
         </div>

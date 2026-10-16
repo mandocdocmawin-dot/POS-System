@@ -107,4 +107,3 @@ export function ProductBrowser() {
     </div></>
   );
 }
-

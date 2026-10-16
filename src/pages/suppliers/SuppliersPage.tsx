@@ -1,0 +1,10 @@
+import {useState} from 'react';
+import {Link,useNavigate} from 'react-router-dom';
+import {PageActions} from '../../components/common/PageActions';
+import {DataTable} from '../../components/common/DataTable';
+import {StatusBadge} from '../../components/common/StatusBadge';
+import {EntityLink} from '../../components/common/EntityLink';
+import {supplierService} from '../../services/supplierService';
+import {useLocalData} from '../../services/useLocalData';
+import {formatPHP} from '../../utils/money';
+export function Component(){useLocalData();const [status,setStatus]=useState(''),navigate=useNavigate(),rows=supplierService.list().filter(s=>!status||s.status===status);return <><PageActions title="Suppliers"><Link className="btn-primary" to="/suppliers/add">Add Supplier</Link></PageActions><select aria-label="Supplier status" className="mb-4" value={status} onChange={e=>setStatus(e.target.value)}><option value="">All statuses</option><option>active</option><option>inactive</option></select><div className="panel"><DataTable caption="Suppliers" rows={rows} rowKey={s=>s.id} searchText={s=>`${s.name} ${s.contactPerson??''} ${s.phone??''}`} onRowClick={s=>navigate(`/suppliers/${s.id}`)} columns={[{id:'name',header:'Supplier',cell:s=><EntityLink type="suppliers" id={s.id}>{s.name}</EntityLink>},{id:'contact',header:'Contact person',cell:s=>s.contactPerson??'—'},{id:'phone',header:'Phone',cell:s=>s.phone??'—'},{id:'email',header:'Email',cell:s=>s.email??'—'},{id:'total',header:'Total purchased',cell:s=>formatPHP(supplierService.report(s.id).total)},{id:'paid',header:'Total paid',cell:s=>formatPHP(supplierService.report(s.id).paid)},{id:'balance',header:'Balance owed',cell:s=>formatPHP(supplierService.report(s.id).balance)},{id:'status',header:'Status',cell:s=><StatusBadge>{s.status}</StatusBadge>}]} actions={s=><div className="flex gap-2"><EntityLink type="suppliers" id={s.id}>View</EntityLink><Link className="text-indigo-600" to={`/suppliers/${s.id}/edit`}>Edit</Link></div>}/></div></>;}

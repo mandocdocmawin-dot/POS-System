@@ -1,10 +1,8 @@
-import { Crown } from "lucide-react";
-import { Avatar } from "../../components/common/Avatar";
+import { StaffPerformanceCard } from "../../components/staff/StaffPerformanceCard";
 import { CardHeading, PeriodSelect } from "../../components/common/CardHeading";
 import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
 import { dashboardService } from "../../services/dashboardService";
 export function PerformanceRow() {
-  const staff = dashboardService.getStaff();
   const overview = dashboardService.getOverview();
   const gross = dashboardService.getGrossProfit();
   return (
@@ -34,49 +32,7 @@ export function PerformanceRow() {
         </div>
         <ChartPlaceholder height="h-44" />
       </section>
-      <section className="card xl:col-span-3">
-        <CardHeading title="Staff Performance" />
-        <div className="relative mx-auto mt-4 flex h-28 max-w-60 items-center justify-center">
-          <div className="absolute left-1 top-1">
-            <Avatar name={staff.names[0]} index={0} />
-          </div>
-          <div className="absolute right-2 top-1">
-            <Avatar name={staff.names[1]} index={1} />
-          </div>
-          <div className="absolute bottom-1 left-5">
-            <Avatar name={staff.names[3]} index={2} />
-          </div>
-          <div className="absolute bottom-1 right-5">
-            <Avatar name={staff.names[4]} index={3} />
-          </div>
-          <div className="relative rounded-full border border-dashed border-indigo-300 p-2">
-            <Avatar name={staff.best} size="h-16 w-16" index={2} />
-            <Crown
-              className="absolute -right-1 top-0 rounded-full bg-amber-100 p-1 text-amber-600"
-              size={23}
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-center text-xs font-semibold text-slate-800 dark:text-slate-100">
-          Top Performing Staff
-        </p>
-        <p className="mt-1 text-center text-xs text-slate-400">
-          based on sales &amp; order completion
-        </p>
-        <div className="mt-5 grid grid-cols-3 gap-2">
-          {staff.stats.map((s) => (
-            <div
-              key={s.label}
-              className="rounded-lg bg-slate-50 p-2 text-center dark:bg-slate-800"
-            >
-              <p className="text-xs font-semibold text-slate-800 dark:text-white">
-                {s.value}
-              </p>
-              <p className="mt-1 text-xs text-slate-400">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <StaffPerformanceCard />
       <section className="card xl:col-span-3">
         <CardHeading title="Gross Profit" />
         <div className="mb-5 mt-3 flex items-center gap-2">

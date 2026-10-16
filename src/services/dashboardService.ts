@@ -1,3 +1,7 @@
+import {staffPerformance} from '../utils/staffPerformance';
+import {localDate} from '../utils/attendance';
+import {weekStart} from '../utils/schedule';
+import {authService} from './authService';
 import {salesMetrics,paymentShares,recordedPayments} from './salesMetrics';
 import {fromCentavos} from '../utils/pos';
 import {formatPHP} from '../utils/money';
@@ -8,10 +12,10 @@ import { orderService } from "./orderService";
 import { dashboardData } from "../data/dashboard";
 // Real sales and payments are branch-filtered. Other analytics retain demo data.
 export const dashboardService = {
-  getOverview: () => ({ ...dashboardData.overview }),
+  getOverview: () => ({ ...dashboardData.overview, ownerName:authService.getCurrentUser()?.name??"Guest" }),
   getStats: () => {const m=salesMetrics();const values=[formatPHP(m.todaySales),String(m.totalOrders),formatPHP(m.netProfit),formatPHP(m.salesReturn)];return dashboardData.stats.map((s,i)=>({...s,value:values[i],trend:'',caption:i===1?'All orders · current branch':'Today · current branch'}));},
   getSummary: () => dashboardData.summary,
-  getStaff: () => dashboardData.staff,
+  getStaff: (period:'today'|'week'='today', now=new Date()) => {const end=localDate(now);return staffPerformance(orderService.list(),period==='week'?weekStart(end):end,end);},
   getGrossProfit: () => dashboardData.gross,
   getLowStock: () =>
     productService

@@ -2,7 +2,7 @@ import {supplierPaymentService} from './supplierPaymentService';
 import {paymentSchema,type PaymentMethod} from '../types/pos';
 import {useProductStore} from '../store/useProductStore';
 import {purchaseReturnSchema} from '../types/phase4';
-import {purchaseBalance} from '../utils/supplierBalance';
+import {purchaseFinancials} from '../utils/supplierBalance';
 import {stockService} from './stockService';
 import {usePurchaseStore} from '../store/usePurchaseStore';
 import {purchaseSchema,type PurchaseLine} from '../types/phase4';
@@ -50,7 +50,7 @@ export const purchaseService={
  },
  returnItems:(id:string,quantities:{id:string;quantity:number}[],reason:string)=>{
   const record=purchaseService.returnPreview(id,quantities,reason),purchase=purchaseService.get(id)!;
-  return localTransaction(()=>{for(const q of record.items){const l=purchase.items.find(x=>x.id===q.purchaseLineId)!;stockService.record({productId:l.productId,variantId:l.variantId,type:'out',quantity:q.quantity,reason:'Supplier return',reference:record.returnNo,createdAt:record.createdAt});}usePurchaseStore.setState(s=>{const returns=[...s.returns,record];return {returns,returnCounter:s.returnCounter+1,purchases:s.purchases.map(x=>x.id===id?{...x,...purchaseBalance(x,returns,s.payments)}:x)};});activityService.log('purchase',id,'return',`${record.returnNo}: ${record.creditAmount.toFixed(2)} credit`);activityService.log('supplier',purchase.supplierId,'return',`${record.returnNo}: ${record.creditAmount.toFixed(2)} credit`);return record;});
+  return localTransaction(()=>{for(const q of record.items){const l=purchase.items.find(x=>x.id===q.purchaseLineId)!;stockService.record({productId:l.productId,variantId:l.variantId,type:'out',quantity:q.quantity,reason:'Supplier return',reference:record.returnNo,createdAt:record.createdAt});}usePurchaseStore.setState(s=>{const returns=[...s.returns,record];return {returns,returnCounter:s.returnCounter+1,purchases:s.purchases.map(x=>x.id===id?{...x,...purchaseFinancials(x,returns,s.payments)}:x)};});activityService.log('purchase',id,'return',`${record.returnNo}: ${record.creditAmount.toFixed(2)} credit`);activityService.log('supplier',purchase.supplierId,'return',`${record.returnNo}: ${record.creditAmount.toFixed(2)} credit`);return record;});
  },
  cancel:(id:string)=>{const purchase=purchaseService.get(id);if(!purchase||purchase.receiveStatus==='cancelled'||purchase.items.some(l=>l.receivedQty>0)||purchase.amountPaid>0)throw new Error('Only unreceived, unpaid purchases can be cancelled.');return localTransaction(()=>{usePurchaseStore.setState(s=>({purchases:s.purchases.map(x=>x.id===id?{...x,receiveStatus:'cancelled',balanceDue:0}:x)}));activityService.log('purchase',id,'cancel',`${purchase.purchaseNo} cancelled`);});},
 };

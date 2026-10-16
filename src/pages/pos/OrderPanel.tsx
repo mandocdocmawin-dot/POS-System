@@ -1,3 +1,6 @@
+import {ShortcutsHelp} from '../../components/pos/ShortcutsHelp';
+import {usePosShortcuts} from '../../hooks/usePosShortcuts';
+import {errorMessage} from '../../services/toastService';
 import {PosHistoryDrawer} from '../../components/pos/PosHistoryDrawer';
 import {receiptService,type ReceiptDocument} from '../../services/receiptService';
 import {PayLaterModal} from '../../components/pos/PayLaterModal';
@@ -33,8 +36,9 @@ export function OrderPanel(){
  const [customerOpen,setCustomerOpen]=useState(false);
  const [discountOpen,setDiscountOpen]=useState(false);
  const [selected,setSelected]=useState(''),[clear,setClear]=useState(false);
+ usePosShortcuts({customer:()=>setCustomerOpen(true),payment:()=>{if(s.cart.length)setPaymentOpen(true);},hold:()=>{if(s.cart.length)setHolding(true);},clear:()=>setClear(true),quantity:delta=>{const line=s.cart.find(l=>l.id===selected)??s.cart.at(-1);if(!line)return;try{posService.quantity(line.id,Math.max(Number.isInteger(line.quantity)?1:0.001,line.quantity+delta));}catch(e){toast.error(errorMessage(e));}}});
  return <aside aria-label="Current order" className="flex w-full shrink-0 flex-col border-l border-slate-200 bg-white p-5 xl:w-[380px] xl:overflow-y-auto 2xl:w-[420px] dark:border-slate-800 dark:bg-slate-900">
- <div className="flex items-center justify-between border-b pb-4"><h2 className="text-sm font-semibold">Order ID: #{orderService.nextOrderNo()}</h2><div className="flex gap-1"><Popover label="Order options" trigger={<MoreHorizontal size={15}/>} className="btn px-2"><button className="btn" onClick={()=>setHeldOpen(true)}>Held orders ({holdService.list().length})</button></Popover><button className="btn px-2" aria-label="Edit order note" onClick={()=>setNoteOpen(true)}><Pencil size={14}/></button><button className="btn text-red-500" aria-label="Clear cart" onClick={()=>setClear(true)}><Trash2 size={15}/></button></div></div>
+ <div className="flex items-center justify-between border-b pb-4"><h2 className="text-sm font-semibold">Order ID: #{orderService.nextOrderNo()}</h2><div className="flex gap-1"><ShortcutsHelp/><Popover label="Order options" trigger={<MoreHorizontal size={15}/>} className="btn px-2"><button className="btn" onClick={()=>setHeldOpen(true)}>Held orders ({holdService.list().length})</button></Popover><button className="btn px-2" aria-label="Edit order note" onClick={()=>setNoteOpen(true)}><Pencil size={14}/></button><button className="btn text-red-500" aria-label="Clear cart" onClick={()=>setClear(true)}><Trash2 size={15}/></button></div></div>
  <CustomerCard customer={customerService.get(s.customerId)} onSelect={()=>setCustomerOpen(true)}/><CustomerSelectModal open={customerOpen} onClose={()=>setCustomerOpen(false)}/>
  <div className="my-5 flex items-center justify-between"><h3 className="text-sm font-semibold">Order Detail (Items: {s.cart.length})</h3><button className="text-xs text-red-500" onClick={()=>setClear(true)}>Clear All</button></div>
  {s.cart.length?totals.items.map(l=><CartLine key={`${l.id}-${l.quantity}`} line={l} selected={selected===l.id} onSelect={()=>setSelected(l.id)}/>):<div className="flex flex-1 flex-col items-center justify-center gap-3 py-20 text-slate-400"><ShoppingBag size={65} strokeWidth={1}/><p>Your cart is empty</p><p className="text-xs">Select products to start a sale.</p></div>}

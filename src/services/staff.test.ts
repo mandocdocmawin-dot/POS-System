@@ -51,3 +51,17 @@ describe('holiday and schedule services',()=>{
  it('rejects duplicate holiday names on a date',()=>{const holiday=useHolidayStore.getState().holidays[0];expect(()=>holidayService.save({...holiday,id:'duplicate'})).toThrow('unique');});
  it('warns for holiday shifts and validates a whole week before copying',()=>{const shift={id:'holiday-shift',staffId:'staff-cashier',date:'2026-12-25',startTime:'09:00',endTime:'17:00',branchId:'Main Branch'};expect(scheduleService.warnings(shift)).toContain('This shift is on a holiday.');scheduleService.save(shift);const before=structuredClone(useShiftStore.getState().shifts);expect(()=>scheduleService.copyPreviousWeek('2026-10-19')).not.toThrow();const copied=structuredClone(useShiftStore.getState().shifts);expect(()=>scheduleService.copyPreviousWeek('2026-10-19')).toThrow('overlap');expect(useShiftStore.getState().shifts).toEqual(copied);expect(copied.length).toBeGreaterThan(before.length);});
 });
+
+import { navigationService } from './navigationService';
+import { useBranchStore } from '../store/useBranchStore';
+describe('staff status sidebar badge', () => {
+ it('waits for shift grace time and scopes attention counts to the current branch', () => {
+  useBranchStore.getState().setBranch('Main Branch');
+  expect(navigationService.badge('/staff/staff-list',new Date('2026-10-16T01:05:00Z'))).toBe(0);
+  expect(navigationService.badge('/staff/staff-list',new Date('2026-10-16T01:11:00Z'))).toBe(4);
+  useBranchStore.getState().setBranch('Branch 2');
+  expect(navigationService.badge('/staff/staff-list',new Date('2026-10-16T01:11:00Z'))).toBe(3);
+  expect(navigationService.badge('/staff/staff-list',new Date('2026-12-25T10:00:00Z'))).toBe(0);
+  useBranchStore.getState().setBranch('Main Branch');
+ });
+});

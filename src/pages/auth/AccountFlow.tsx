@@ -1,10 +1,12 @@
+import {staffService} from '../../services/staffService';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CheckCheck, ShieldCheck, KeyRound, UserRoundX } from "lucide-react";
 import { useState } from "react";
 import { AuthField } from "./AuthField";
 import { VerificationCode } from "./VerificationCode";
 export function AccountFlow() {
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
+  const deactivated=!!(state as {deactivated?:boolean}|null)?.deactivated;
   const navigate = useNavigate();
   const [notice, setNotice] = useState("");
   const verify = pathname.endsWith("/two-step-verification");
@@ -16,7 +18,7 @@ export function AccountFlow() {
       ? "Set a new password"
       : success
         ? "Password updated!"
-        : "Deactivate your account";
+        : deactivated?"Account deactivated":"Deactivate your account";
   const Icon = verify
     ? ShieldCheck
     : reset
@@ -39,9 +41,9 @@ export function AccountFlow() {
             ? "Enter any password to continue the demo reset flow."
             : success
               ? "Your password reset preview is complete. You can return to sign in."
-              : "Review your choice before previewing account deactivation."}
+              : deactivated?"Your staff account is inactive and you have been signed out. You can still use demo login.":"Deactivation marks your staff record inactive and signs you out."}
       </p>
-      {success ? (
+      {success||deactivated ? (
         <Link className="btn-primary w-full" to="/auth/sign-in">
           Back to Sign In
         </Link>
@@ -50,6 +52,7 @@ export function AccountFlow() {
           noValidate className="space-y-5"
           onSubmit={(e) => {
             e.preventDefault();
+            if(!verify&&!reset){try{staffService.deactivateSelf();navigate('/auth/account-deactivation',{replace:true,state:{deactivated:true}});}catch(error){setNotice(error instanceof Error?error.message:'Unable to deactivate.');}return;}
             navigate(
               verify
                 ? "/auth/reset-password"
@@ -81,8 +84,7 @@ export function AccountFlow() {
           ) : (
             <>
               <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-700 dark:border-amber-900 dark:bg-amber-500/10 dark:text-amber-300">
-                Account access would be disabled in a complete application. This
-                preview does not change any account.
+                Your staff history is retained. The last active Admin cannot be deactivated.
               </div>
               <AuthField
                 label="Password"
@@ -92,7 +94,7 @@ export function AccountFlow() {
               />
               <label className="flex items-start gap-2 text-xs">
                 <input type="checkbox" required className="mt-0.5" />I
-                understand and want to preview deactivation.
+                understand and want to deactivate my account.
               </label>
             </>
           )}

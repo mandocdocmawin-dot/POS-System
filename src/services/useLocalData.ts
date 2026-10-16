@@ -1,3 +1,8 @@
+import {useRefundStore} from '../store/useRefundStore';
+import {useSupplierStore} from '../store/useSupplierStore';
+import {usePurchaseStore} from '../store/usePurchaseStore';
+import {useWalletStore} from '../store/useWalletStore';
+import {useActivityStore} from '../store/useActivityStore';
 import {usePosStore} from '../store/usePosStore';
 import {useOrderStore} from '../store/useOrderStore';
 import {useHeldOrderStore} from '../store/useHeldOrderStore';
@@ -21,6 +26,12 @@ useOrderStore.subscribe(changed);
 useHeldOrderStore.subscribe(changed);
 useCustomerStore.subscribe(changed);
 useBranchStore.subscribe(changed);
+useRefundStore.subscribe(changed);
+useSupplierStore.subscribe(changed);
+usePurchaseStore.subscribe(changed);
+useWalletStore.subscribe(changed);
+useActivityStore.subscribe(changed);
+
 const subscribe = (fn: () => void) => {
   listeners.add(fn);
   return () => {

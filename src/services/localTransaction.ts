@@ -1,3 +1,8 @@
+import {useRefundStore} from '../store/useRefundStore';
+import {useSupplierStore} from '../store/useSupplierStore';
+import {usePurchaseStore} from '../store/usePurchaseStore';
+import {useWalletStore} from '../store/useWalletStore';
+import {useActivityStore} from '../store/useActivityStore';
 import {usePosStore} from '../store/usePosStore';
 import {useOrderStore} from '../store/useOrderStore';
 import {useHeldOrderStore} from '../store/useHeldOrderStore';
@@ -14,10 +19,12 @@ export function localTransaction<T>(write: () => T): T {
   const order = useOrderStore.getState();
   const heldorder = useHeldOrderStore.getState();
   const customer = useCustomerStore.getState();
+  const restores = [(()=>{const snapshot=useRefundStore.getState();return ()=>useRefundStore.setState(snapshot,true);})(),(()=>{const snapshot=useSupplierStore.getState();return ()=>useSupplierStore.setState(snapshot,true);})(),(()=>{const snapshot=usePurchaseStore.getState();return ()=>usePurchaseStore.setState(snapshot,true);})(),(()=>{const snapshot=useWalletStore.getState();return ()=>useWalletStore.setState(snapshot,true);})(),(()=>{const snapshot=useActivityStore.getState();return ()=>useActivityStore.setState(snapshot,true);})()];
   try {
     return write();
   } catch (cause) {
     for (const restore of [
+      ...restores,
       () => usePosStore.setState(pos, true),
       () => useOrderStore.setState(order, true),
       () => useHeldOrderStore.setState(heldorder, true),
@@ -33,7 +40,7 @@ export function localTransaction<T>(write: () => T): T {
       }
     }
     throw new Error(
-      "Unable to save data in this browser. Check available browser storage and try again.",
+      cause instanceof Error ? cause.message : "Unable to save data in this browser. Check available browser storage and try again.",
       { cause },
     );
   }

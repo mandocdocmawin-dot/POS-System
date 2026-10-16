@@ -1,3 +1,10 @@
+import {useCustomerStore} from '../store/useCustomerStore';
+import {useOrderStore} from '../store/useOrderStore';
+import {useHeldOrderStore} from '../store/useHeldOrderStore';
+import {usePosStore} from '../store/usePosStore';
+import {createPosSeed} from '../data/seed/pos';
+import {WALK_IN_ID} from '../config/pos';
+import {formatOrderNo} from '../utils/orderNo';
 import { localTransaction } from "./localTransaction";
 import { validateBackup, type Backup } from "./backupSchema";
 import { imageService } from "./imageService";
@@ -12,6 +19,10 @@ import { useStockStore } from "../store/useStockStore";
 function snapshot(): Backup {
   return {
     version: 1,
+    ...structuredClone(useCustomerStore.getState()),
+    ...structuredClone(useOrderStore.getState()),
+    ...structuredClone(useHeldOrderStore.getState()),
+    pos:structuredClone(usePosStore.getState()),
     ...structuredClone(useCatalogStore.getState()),
     ...structuredClone(useProductStore.getState()),
     ...structuredClone(useStockStore.getState()),
@@ -33,12 +44,17 @@ function replace(data: Backup) {
       true,
     );
     useStockStore.setState({ movements: data.movements }, true);
+    useCustomerStore.setState({customers:data.customers},true);
+    useOrderStore.setState({orders:data.orders,counter:data.counter},true);
+    useHeldOrderStore.setState({heldOrders:data.heldOrders},true);
+    usePosStore.setState(data.pos,true);
   });
 }
 export const dataService = {
   export: async () => {
     const data = snapshot();
-    const all = data.products.some((p) => p.imageId)
+    const imageRefs=[...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)];
+    const all = imageRefs.some((p) => p.imageId)
       ? await imageService.export()
       : {};
     return JSON.stringify(
@@ -46,7 +62,7 @@ export const dataService = {
         ...data,
         images: Object.fromEntries(
           Object.entries(all).filter(([id]) =>
-            data.products.some((p) => p.imageId === id),
+            imageRefs.some((p) => p.imageId === id),
           ),
         ),
       },
@@ -74,7 +90,7 @@ export const dataService = {
     const mapped: [string, Blob][] = [];
     for (const [id, blob] of images) {
       const freshId = crypto.randomUUID();
-      data.products.forEach((p) => {
+      [...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)].forEach((p) => {
         if (p.imageId === id) p.imageId = freshId;
       });
       mapped.push([freshId, blob]);
@@ -87,19 +103,10 @@ export const dataService = {
       throw e;
     }
   },
-  reset: () =>
-    replace(
-      structuredClone({
-        version: 1,
-        categories,
-        subcategories,
-        brands,
-        units,
-        products,
-        variants,
-        movements,
-      }),
-    ),
+  reset: () => {
+    const seed=createPosSeed();
+    replace(structuredClone({version:1,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
+  },
   initialize: () => {
     if (
       ["catalog", "products", "stock"].every(

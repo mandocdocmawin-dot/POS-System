@@ -2,6 +2,7 @@ import {WALK_IN_ID} from '../../config/pos';
 import type {Customer,Order,PaymentMethod} from '../../types/pos';
 import type {StockMovement} from '../../types/models';
 import {products} from './products';
+import {movements as openingMovements} from './movements';
 import {units} from './units';
 import {calculateTotals} from '../../utils/pos';
 import {formatOrderNo} from '../../utils/orderNo';
@@ -9,8 +10,8 @@ export function createPosSeed() {
  const now=new Date();
  const customers:Customer[]=['Walk-in Customer','Maria Santos','Jose Cruz','Ana Reyes','Carlo Garcia','Bea Dela Cruz'].map((name,i)=>({id:i===0?WALK_IN_ID:`customer-${i}`,name,phone:i ? `0917000000${i}`:undefined,points:0,tier:'Regular',creditBalance:0,createdAt:now.toISOString(),isWalkIn:i===0}));
  const orders:Order[]=Array.from({length:12},(_,i)=>{
-  const p=products.filter(p=>!p.hasVariants)[i];
-  const date=new Date(now);date.setDate(date.getDate()-Math.floor(i*7/12));date.setHours(Math.max(0,now.getHours()-1),i*3,0,0);
+  const p=products.filter(p=>!p.hasVariants&&openingMovements.some(m=>m.productId===p.id&&m.quantity>=3))[i];
+  const date=new Date(now.getTime()-Math.floor(i*7/12)*86400000-3600000-i*60000);
   const createdAt=date.toISOString();
   const totals=calculateTotals([{id:`seed-line-${i}`,productId:p.id,name:p.name,sku:p.sku,unitPrice:p.sellingPrice,costPrice:p.costPrice,quantity:1+(i%3),taxRate:p.taxRate,unitShortName:units.find(u=>u.id===p.unitId)!.shortName}]);
   const customer=customers[i%customers.length];

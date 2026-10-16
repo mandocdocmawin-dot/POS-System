@@ -36,7 +36,7 @@ export function AccountFlow() {
         {verify
           ? "Enter any six digits to preview verification. No message was sent."
           : reset
-            ? "Choose a password with at least 8 characters."
+            ? "Enter any password to continue the demo reset flow."
             : success
               ? "Your password reset preview is complete. You can return to sign in."
               : "Review your choice before previewing account deactivation."}
@@ -47,14 +47,9 @@ export function AccountFlow() {
         </Link>
       ) : (
         <form
-          className="space-y-5"
+          noValidate className="space-y-5"
           onSubmit={(e) => {
             e.preventDefault();
-            const data = new FormData(e.currentTarget);
-            if (reset && data.get("password") !== data.get("confirm")) {
-              setNotice("Passwords must match.");
-              return;
-            }
             navigate(
               verify
                 ? "/auth/reset-password"
@@ -72,14 +67,14 @@ export function AccountFlow() {
                 label="New password"
                 name="password"
                 type="password"
-                minLength={8}
+                
                 autoComplete="new-password"
               />
               <AuthField
                 label="Confirm password"
                 name="confirm"
                 type="password"
-                minLength={8}
+                
                 autoComplete="new-password"
               />
             </>
@@ -135,7 +130,7 @@ export function AccountFlow() {
         </Link>
       </div>
       <p className="mt-5 text-center text-xs text-slate-400">
-        UI preview only. No account data is saved.
+        Demo password flow. No credentials are checked or stored.
       </p>
     </>
   );

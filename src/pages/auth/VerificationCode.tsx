@@ -20,7 +20,6 @@ export function VerificationCode() {
             pattern="[0-9]"
             maxLength={1}
             autoComplete={i === 0 ? "one-time-code" : "off"}
-            required
             className="h-12 min-w-0 flex-1 px-0 text-center text-lg font-semibold"
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, "").slice(-1);

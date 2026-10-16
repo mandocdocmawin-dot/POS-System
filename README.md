@@ -1,6 +1,6 @@
 # TindaPOS
 
-A frontend-only POS web app for Filipino stores. **Phase 3 is complete: working local POS, checkout, credit sales, receipts and live Dashboard sales. Phase 4 has not started.** Built with Vite, React, strict TypeScript, React Router v6, Tailwind, lucide-react and Zustand. No backend, API calls or database server.
+A frontend-only POS web app for Filipino stores. **Phase 4 is complete: Orders/refunds, Customers/wallets, Suppliers and Purchases, connected to the existing POS and Dashboard. Phase 5 has not started.** Built with Vite, React, strict TypeScript, React Router v6, Tailwind, lucide-react and Zustand. No backend, API calls or database server.
 
 ## Run locally
 
@@ -11,11 +11,7 @@ npm install
 npm run dev
 ```
 
-New Phase 3 dependency only (development):
-
-```sh
-npm install -D vitest
-```
+Phase 4 adds no dependencies. No new install command is required for an existing checkout.
 
 `@hookform/resolvers` connects React Hook Form to Zod. The lockfile records the installed versions.
 
@@ -42,7 +38,7 @@ The build runs TypeScript checking and produces `dist/`. Static hosting must rew
 
 Reusable components include `DataTable<T>`, native modal dialogs and drawers with focus containment/Escape/focus restoration, confirmation dialogs, labeled form fields, switches, compressed image upload, toasts, page actions and stock badges. Tables scroll horizontally on narrow screens. New components support the existing dark theme.
 
-Reviews, Print Barcode, Bulk Import, Bulk Export, Warranty, Stock Transfer, Batch Management, Lost Items, Alerts, Valuation and Warehouse remain placeholders. JSON backups in Settings and CSV export from All Products do not implement the reserved Bulk Import/Export pages. Full Orders and Customers management, suppliers, reports and real authentication remain outside the implemented scope. POS history and quick customer creation are available inside `/pos`.
+Reviews, Print Barcode, Bulk Import, Bulk Export, Warranty, Stock Transfer, Batch Management, Lost Items, Alerts, Valuation and Warehouse remain placeholders. JSON backups in Settings and CSV export from All Products do not implement the reserved Bulk Import/Export pages. Orders, Customers, Suppliers and Purchases are implemented in Phase 4. Accounts, Reports, Staff, Multi-Store, Settings (apart from the existing Data card), Calendar, Chat and Email remain placeholders. Real authentication is not implemented.
 
 ## Data and service boundaries
 
@@ -66,7 +62,7 @@ src/
 
 New pages and components call services, including the `useLocalData` subscription hook; they do not access business stores or browser storage directly. Services wrap the stores so their implementation can later be replaced by a backend.
 
-Structured business data uses Zustand persist and localStorage keys `tindapos:catalog`, `tindapos:products`, `tindapos:stock`, `tindapos:pos`, `tindapos:orders`, `tindapos:customers` and `tindapos:held-orders`. Product records contain only an `imageId`. JPEG/PNG/WebP uploads are compressed in-browser to JPEG at quality 0.8 with a maximum dimension of 800px, then stored with idb-keyval in IndexedDB `tindapos:images`. Missing/inaccessible images show a neutral placeholder. No remote image requests are made.
+Structured business data uses Zustand persist and localStorage keys `tindapos:catalog`, `tindapos:products`, `tindapos:stock`, `tindapos:pos`, `tindapos:orders`, `tindapos:customers`, `tindapos:held-orders`, `tindapos:refund`, `tindapos:supplier`, `tindapos:purchase`, `tindapos:wallet` and `tindapos:activity`. Product records contain only an `imageId`. JPEG/PNG/WebP uploads are compressed in-browser to JPEG at quality 0.8 with a maximum dimension of 800px, then stored with idb-keyval in IndexedDB `tindapos:images`. Missing/inaccessible images show a neutral placeholder. No remote image requests are made.
 
 The first empty browser is seeded with eight categories and sixteen subcategories, eight brands, six units, 25 products and six variants. Some items have low or zero stock. Empty catalogs saved intentionally are not reseeded on refresh. Reset restores the demo catalog, six customers, 12 dated orders and matching Sale movements, and clears held orders and the open cart; export first to preserve your work. The catalog and stock remain shared, while saved orders and Dashboard figures are filtered by the selected branch.
 
@@ -102,7 +98,7 @@ The first empty browser is seeded with eight categories and sixteen subcategorie
 - Pay Later with optional down payment, informational due date, pending order, partial/unpaid status and customer credit balance. Stock is deducted for credit sales too. No repayment management is included.
 - Receipt dialog after checkout, customer and branch snapshots, discounts/VAT, payments/change, points and BALANCE DUE. Draft invoice previews do not allocate an order number or alter stock. Today's branch-filtered POS history supports search and receipt reprint.
 - Desktop/tablet order panel stays on the right. Phones use a floating cart count/total button and a bottom sheet with focus containment. F2 search, F4 customer, F8 payment, F9 hold, F10 confirmed clear, and +/− for the selected or last cart line; typing and open dialogs are protected from conflicting shortcuts. The ? menu lists shortcuts.
-- Dashboard Today Sales, Total Orders, Net Profit, Sales Return (zero), Recent Orders, Recent Transactions and Payment Methods read real orders. Today Sales includes completed and pending credit-sale totals; Net Profit is today's grand totals minus snapshot cost of goods. Payment shares use amounts actually retained, after cash change, across this branch's recorded orders. Other cards/charts remain demo placeholders.
+- Dashboard Today Sales, Total Orders, Net Profit, Sales Return, Recent Orders, Recent Transactions and Payment Methods read real orders. Today Sales includes non-cancelled order totals; Net Profit subtracts snapshot cost of goods and refunds, returning COGS for restocked refund lines. Today's branch-filtered refund records drive Sales Return. Cancelled orders are excluded from revenue and their refunds are not subtracted twice. Payment shares use amounts actually retained, after cash change, across this branch's recorded orders. Other cards/charts remain demo placeholders.
 - Reset/export/import include customers, orders, held orders, the persisted order counter, open cart and referenced images. Legacy Phase 2 JSON imports remain supported and create no fictional sales. Imports validate protected Walk-in, numbering, totals and relationships before replacing data.
 
 ### Money and checkout rules
@@ -174,21 +170,21 @@ Browser verification confirmed receipt rendering and the Print action; the embed
 | `/inventory/alerts` | Apps > Inventory > Alerts | main | placeholder |
 | `/inventory/valuation` | Apps > Inventory > Valuation | main | placeholder |
 | `/inventory/warehouse` | Apps > Inventory > Warehouse | main | placeholder |
-| `/orders/all-orders` | Apps > Orders > All Orders | main | placeholder |
-| `/orders/refunded` | Apps > Orders > Refunded | main | placeholder |
-| `/orders/invoices` | Apps > Orders > Invoices | main | placeholder |
-| `/customers/customer-list` | Apps > Customers > Customer List | main | placeholder |
-| `/customers/add-customer` | Apps > Customers > Add Customer | main | placeholder |
-| `/customers/wallet-balance` | Apps > Customers > Wallet Balance | main | placeholder |
-| `/customers/activity-log` | Apps > Customers > Activity Log | main | placeholder |
-| `/suppliers/supplier-list` | Apps > Suppliers > Supplier List | main | placeholder |
-| `/suppliers/add-supplier` | Apps > Suppliers > Add Supplier | main | placeholder |
-| `/suppliers/payments` | Apps > Suppliers > Payments | main | placeholder |
-| `/suppliers/balance-report` | Apps > Suppliers > Balance Report | main | placeholder |
-| `/purchases/purchase` | Apps > Purchases > Purchase | main | placeholder |
-| `/purchases/add-purchase` | Apps > Purchases > Add Purchase | main | placeholder |
-| `/purchases/returns` | Apps > Purchases > Returns | main | placeholder |
-| `/purchases/payments` | Apps > Purchases > Payments | main | placeholder |
+| `/orders/all-orders` | Apps > Orders > All Orders | main | done |
+| `/orders/refunded` | Apps > Orders > Refunded | main | done |
+| `/orders/invoices` | Apps > Orders > Invoices | main | done |
+| `/customers/customer-list` | Apps > Customers > Customer List | main | done |
+| `/customers/add-customer` | Apps > Customers > Add Customer | main | done |
+| `/customers/wallet-balance` | Apps > Customers > Wallet Balance | main | done |
+| `/customers/activity-log` | Apps > Customers > Activity Log | main | done |
+| `/suppliers/supplier-list` | Apps > Suppliers > Supplier List | main | done |
+| `/suppliers/add-supplier` | Apps > Suppliers > Add Supplier | main | done |
+| `/suppliers/payments` | Apps > Suppliers > Payments | main | done |
+| `/suppliers/balance-report` | Apps > Suppliers > Balance Report | main | done |
+| `/purchases/purchase` | Apps > Purchases > Purchase | main | done |
+| `/purchases/add-purchase` | Apps > Purchases > Add Purchase | main | done |
+| `/purchases/returns` | Apps > Purchases > Returns | main | done |
+| `/purchases/payments` | Apps > Purchases > Payments | main | done |
 | `/accounts/income` | Apps > Accounts > Income | main | placeholder |
 | `/accounts/expenses` | Apps > Accounts > Expenses | main | placeholder |
 | `/accounts/bank-accounts` | Apps > Accounts > Bank Accounts | main | placeholder |
@@ -257,6 +253,22 @@ Browser verification confirmed receipt rendering and the Print action; the embed
 | `/products/:id/edit` | Edit Product | main | done |
 | `/inventory/stock` | Stock List alias | main | done |
 | `/inventory/adjustment` | Stock Adjustment alias | main | done |
+| `/orders` | All Orders alias | main | done |
+| `/orders/:id` | Order Details | main | done |
+| `/customers` | Customer List alias | main | done |
+| `/customers/add` | Add Customer alias | main | done |
+| `/customers/:id` | Customer Profile | main | done |
+| `/customers/:id/edit` | Edit Customer | main | done |
+| `/customers/wallet` | Wallet Balance alias | main | done |
+| `/customers/activity` | Customer Activity alias | main | done |
+| `/suppliers` | Supplier List alias | main | done |
+| `/suppliers/add` | Add Supplier alias | main | done |
+| `/suppliers/:id` | Supplier Profile drawer | main | done |
+| `/suppliers/:id/edit` | Edit Supplier | main | done |
+| `/suppliers/balance` | Supplier Balance alias | main | done |
+| `/purchases` | Purchases alias | main | done |
+| `/purchases/add` | Add Purchase alias | main | done |
+| `/purchases/:id` | Purchase Details | main | done |
 
 ## Verification and local history
 
@@ -277,6 +289,54 @@ git status --short
 
 The Phase 2 regression runner uses Rolldown already included by Vite. Phase 3 adds Vitest as a development dependency; no runtime or backend dependency was added. Build output and node_modules remain ignored.
 
-## Phase 4 notes
+## Phase 4 completed
 
-Phase 4 has not started. Full Orders (All Orders, Refunded, Invoices), Customers management, suppliers, purchases, accounts, reports, staff and general Settings remain placeholders as shown in the route table. Future scope may add repayment management, refunds/returns, cancellation and broader reporting only after a new instruction. Real authentication, online payment processing and PDF export are not included. Stop at Phase 3.
+- Orders: all orders, branch/date/customer/status/method filters, CSV, detail pages, receipt printing, pending-order cancellation, balance collection, three-step partial refunds, refund slips and invoices with overdue filtering.
+- Customers: list and profile tabs, create/edit forms with PH mobile validation, duplicate phone warnings, opening wallet funds, unsaved-change warnings, save-and-add-another, top-up/adjustment records, history and customer-related activity filters. Walk-in is protected; customers with orders or balances cannot be deleted.
+- Suppliers: list and validated forms, profile drawer, recorded payments allocated to a purchase or oldest first, derived balances/credits and aging report with CSS bars and CSV.
+- Purchases: list/filters, editable product/variant lines, centavo totals, optional initial payment and immediate receiving, partial receiving with optional latest-cost update, returns with stock-impact confirmation, purchase-order printing and purchase-linked payment history.
+- Connections: wallet split payments at POS, View order in POS history, real quick-action destinations, refund-aware Dashboard metrics, real Recent Orders actions and configured sidebar count selectors.
+- Every monetary or stock operation validates inputs in services. Transactions restore in-memory and persisted store snapshots on a failed write. Supplier payments and customer refunds are demo records only; they move no real money.
+- Refunds use immutable line totals and cumulative centavo allocations, including decimal quantities and final-unit remainders. Loyalty reversals use a cumulative floor and recompute the customer tier.
+- Purchase return credit uses the returned quantity times its snapshot unit cost. Discounts, shipping and tax remain purchase-level charges; this keeps the requested supplier credit model simple.
+- JSON export/import/reset includes refunds, suppliers, purchases, purchase returns, supplier payments, wallet transactions, customer payments and activity logs. Zod plus relational/financial checks reject corrupt imports before writing. Older Phase 2/3 backups receive empty Phase 4 ledgers and defaults for extended records.
+- First-run/reset demo data includes 6 suppliers, 8 purchases with mixed receiving/payment statuses, 2 purchase returns, 3 refunds, 3 wallet top-ups and 23 activity entries, with matching stock movements.
+
+## Phase 4 manual checklist
+
+Use one origin throughout; browser storage is separate for each host/port. Export existing data before resetting a browser you use for real demonstrations. The checklist is repeatable; unchecked boxes describe manual verification steps, not missing features.
+
+1. [ ] At POS, select a named customer, add at least two units, pay, then follow View order from history. Find the same sale in All Orders; inspect totals, receipt and activity.
+2. [ ] Refund one unit with Return items to stock enabled. Confirm the review amount, stock impact, RF number and slip. Check Stock List and Dashboard Sales Return/Net Profit.
+3. [ ] Refund a remaining unit to Wallet. Check customer wallet/history, loyalty points and order status. Try excess quantity and amount-paid limits; neither may change any record.
+4. [ ] Make a partially paid Pay Later sale with a due date. Cancel it with a reason and confirmation; verify stock restoration, credit reduction and the refund record for its down payment. Completed orders expose Refund instead of Cancel.
+5. [ ] Create two Pay Later orders for one customer. Collect part of the first, then Collect all balances on the profile. Verify oldest-first allocation, payment records, unpaid → partial → paid and pending → completed.
+6. [ ] Add/edit a customer with a PH phone number, email, notes and opening wallet funds. Try a duplicate phone, invalid phone, unsaved navigation and Save and add another. Walk-in cannot be edited.
+7. [ ] Top up a wallet and make a signed adjustment with a required reason. Inspect balanceAfter records. Spend wallet funds in a POS split payment; excess spending and Walk-in wallet use must be blocked.
+8. [ ] Open customer Overview, Orders, Payments, Wallet and Activity tabs; filter the Customer Activity Log. Deactivate a customer and inspect retained history.
+9. [ ] Add a supplier, edit it, then inspect its profile tabs. Add a purchase as pending with quantities, costs, tax, discount, shipping and an optional down payment. Confirm the live totals and saved balance.
+10. [ ] Receive part of a purchase; verify remaining quantity, stock movements and the latest-cost checkbox. Receive the rest; status becomes received. Attempts to over-receive must leave all stores unchanged.
+11. [ ] Record a partial supplier payment, then use oldest-first allocation across purchases. Check before/after balance preview and both payment history screens. Excess payments must be blocked.
+12. [ ] Return some received items. Check stock-impact confirmation, out movements and balance reduction; a return on a fully paid purchase becomes supplier credit. Reject quantities beyond received-minus-returned or available stock.
+13. [ ] Inspect Supplier Balance Report totals, credits, last purchase and 0–30 / 31–60 / 60+ aging; download its CSV. Cancel an unpaid/unreceived purchase; receiving or payment prevents cancellation.
+14. [ ] Open invoices; filter paid/unpaid/overdue, preview/print, and confirm Send only shows the demo email toast. Check order/refund CSVs and quick actions.
+15. [ ] Refresh and reopen the browser at the same origin. Export JSON, reset, import it and compare all ledgers. Try a corrupt wallet balance or refund reference; import must reject it without changing data. Reset again and verify 8 purchases, 6 suppliers and 3 refunds.
+16. [ ] Check dialogs, tables and forms with keyboard navigation, dark theme and a narrow viewport. Preview a receipt, refund slip and purchase order before printing.
+
+## Phase 4 verification and local history
+
+- `npm run build`: strict TypeScript and production build pass.
+- `npm run test`: 48 tests pass, including refund rounding/limits, loyalty reversal, cancellation, credit collection/oldest-first allocation, wallet rules, partial receiving, return limits, negative-stock protection, supplier credits/payment caps/aging, rollback and full-ledger backup round trips/corruption rejection.
+- `npm run lint`: zero errors or warnings.
+- `npm run test:phase2`: all 20 previous service regression checks pass.
+- `npm run dev -- --host 127.0.0.1`: Vite served successfully. Browser smoke checks on the isolated test origin covered a restocked wallet refund and slip, customer wallet/profile, opening wallet customer creation, pending purchase creation with initial payment, partial receipt, supplier payment, supplier return, derived report, refresh and demo reset. These complement the automated financial tests; the checklist above covers the wider manual pass, including print preview.
+- All 42 requested steps have individual local commits on `main`, plus separate focused fixes found by tests and browser QA. Nothing is pushed and existing commits are preserved. Phase 5 work has not begun.
+
+```sh
+git log --oneline b31dd44..HEAD
+git status --short
+```
+
+## Phase 5 notes
+
+Stop at Phase 4 and wait for a new instruction. Accounts (income/expenses/banking), Reports, Staff, Multi-Store, Settings, communication tools, charting, real authentication/roles, online payment processing and server integration remain future work. The existing product/inventory placeholder pages listed in the route table remain placeholders. No Phase 5 features have been implemented.

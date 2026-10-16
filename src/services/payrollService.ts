@@ -50,16 +50,24 @@ export const payrollService = {
     requirePermission('payroll:view');
     const run = usePayrollStore.getState().runs.find(r => r.id === id);
     if (!run || run.status !== 'draft') throw new Error('Finalized payroll runs are locked.');
-    if (!run.lines.some(l => l.staffId === staffId)) throw new Error('Payroll line not found.');
-    const next = payrollRunSchema.parse({ ...run, lines: run.lines.map(line => {
-      if (line.staffId !== staffId) return line;
-      const updated = { ...line, additions, deductions };
-      return { ...updated, netPay: payrollNet(updated) };
-    }) });
+    const next = payrollService.adjustPreview(run, staffId, additions, deductions);
     return localTransaction(() => {
       usePayrollStore.setState(s => ({ runs: s.runs.map(r => r.id === id ? next : r) }));
       activityService.log('payroll', id, 'adjust', 'Updated payroll adjustments', authService.getCurrentUser()!.name);
     });
+  },
+  adjustPreview: (run: PayrollRun, staffId: string, additions: PayrollLine['additions'], deductions: PayrollLine['deductions']) => {
+    requirePermission('payroll:view');
+    if (run.status !== 'draft') throw new Error('Finalized payroll runs are locked.');
+    const original = run.lines.find(l => l.staffId === staffId);
+    if (!original) throw new Error('Payroll line not found.');
+    const late = original.deductions.find(d => d.label === 'Late minutes');
+    if (late && !deductions.some(d => d.label === late.label && d.amount === late.amount)) throw new Error('The computed late deduction is locked. Add a manual adjustment instead.');
+    return payrollRunSchema.parse({ ...run, lines: run.lines.map(line => {
+      if (line.staffId !== staffId) return line;
+      const updated = { ...line, additions, deductions };
+      return { ...updated, netPay: payrollNet(updated) };
+    }) });
   },
   transition: (id: string, status: 'finalized' | 'paid') => {
     requirePermission('payroll:view');

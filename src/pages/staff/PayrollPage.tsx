@@ -6,7 +6,8 @@ import { DataTable } from '../../components/common/DataTable';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { Modal } from '../../components/common/Modal';
 import { NewPayrollRun } from '../../components/staff/NewPayrollRun';
-import { PayrollLines, payrollMoney } from '../../components/staff/PayrollLines';
+import { payrollMoney } from '../../components/staff/PayrollLines';
+import { PayrollReview } from '../../components/staff/PayrollReview';
 export function Component() {
   const runs = usePayrollStore(s => s.runs), [creating, setCreating] = useState(false), [selected, setSelected] = useState(''), [status, setStatus] = useState('');
   const run = runs.find(r => r.id === selected);
@@ -20,6 +21,6 @@ export function Component() {
       { id: 'total', header: 'Net pay', cell: r => payrollMoney(r.lines.reduce((n, l) => n + l.netPay, 0)) },
     ]} actions={r => <button className="text-indigo-500" onClick={() => setSelected(r.id)}>Review</button>} /></section>
     {creating && <NewPayrollRun onClose={() => setCreating(false)} onSaved={saved => { setCreating(false); setSelected(saved.id); }} />}
-    {run && <Modal open title={run.runNo} onClose={() => setSelected('')}><p className="mb-4">{run.periodStart} – {run.periodEnd} · {run.status}</p><PayrollLines lines={run.lines} /></Modal>}
+    {run && <Modal open title={run.runNo} onClose={() => setSelected('')}><PayrollReview key={run.id} run={run} /></Modal>}
   </StaffShell>;
 }

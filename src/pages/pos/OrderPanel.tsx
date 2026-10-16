@@ -1,3 +1,4 @@
+import {PosHistoryDrawer} from '../../components/pos/PosHistoryDrawer';
 import {receiptService,type ReceiptDocument} from '../../services/receiptService';
 import {PayLaterModal} from '../../components/pos/PayLaterModal';
 import type {Payment} from '../../types/pos';
@@ -23,6 +24,7 @@ import {CartLine} from '../../components/pos/CartLine';
 import {ConfirmDialog} from '../../components/common/ConfirmDialog';
 export function OrderPanel(){
  useLocalData();const s=posService.state(),totals=posService.totals();
+ const [historyOpen,setHistoryOpen]=useState(false);
  const [payLaterOpen,setPayLaterOpen]=useState(false);
  const [receipt,setReceipt]=useState<ReceiptDocument|null>(null);
  const complete=(payments:Payment[])=>{const order=posService.complete(payments);setPaymentOpen(false);setReceipt(order);toast.success('Sale saved: '+order.orderNo);};
@@ -46,6 +48,7 @@ export function OrderPanel(){
  <div className="mt-4 flex gap-2"><button disabled={!s.cart.length} className="btn flex-1 disabled:opacity-40" onClick={()=>setHolding(true)}><Pause size={14}/>Hold</button><button className="btn" onClick={()=>setHeldOpen(true)} aria-label="Open held orders">Held ({holdService.list().length})</button></div>
  {holding&&<OrderTextModal title="Hold order" label="Label (optional)" onSave={label=>{holdService.hold(label);}} onClose={()=>setHolding(false)}/>}
  {noteOpen&&<OrderTextModal title="Order note" label="Note" initial={s.note} onSave={note=>{posService.note(note);}} onClose={()=>setNoteOpen(false)}/>}
+ <button className="btn mt-3" onClick={()=>setHistoryOpen(true)}>History</button><PosHistoryDrawer open={historyOpen} onClose={()=>setHistoryOpen(false)}/>
  <HeldOrdersDrawer open={heldOpen} onClose={()=>setHeldOpen(false)}/>
  <ReceiptDialog receipt={receipt} onClose={()=>setReceipt(null)}/>
  <ConfirmDialog open={clear} title="Clear current cart?" message="All current items, discounts, customer and notes will be cleared." onClose={()=>setClear(false)} onConfirm={()=>{posService.clear();}}/>

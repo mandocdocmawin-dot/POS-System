@@ -1,3 +1,5 @@
+import {walletService} from './walletService';
+import {toCentavos,fromCentavos,sumCentavos} from '../utils/pos';
 import {usePosStore,type PosState} from '../store/usePosStore';
 import {useBranchStore} from '../store/useBranchStore';
 import {productService} from './productService';
@@ -46,12 +48,16 @@ export const posService={
  const c=customerService.get(s.customerId);if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
  const totals=calculateTotals(s.cart,s.orderDiscount);const paid=calculatePayments(totals.grandTotal,payments);
  if(!options.payLater&&paid.balanceDue>0)throw new Error('Payment does not cover the total.');
+ const wallet=sumCentavos(payments.filter(p=>p.method==='wallet').map(p=>toCentavos(p.amount)));
+ if(wallet&&(c.isWalkIn||c.status!=='active'||wallet>toCentavos(c.walletBalance)))throw new Error('Insufficient customer wallet balance.');
+ const orderId=crypto.randomUUID();
  orderSchema.shape.dueDate.parse(options.dueDate);
  return localTransaction(()=>{
  const orderNo=orderService.nextOrderNo();const createdAt=new Date().toISOString();
  for(const line of s.cart)stockService.record({productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});
+ if(wallet)walletService.change({customerId:c.id,type:"spend",amount:-fromCentavos(wallet),orderId});
  const pointsEarned=customerService.recordSale(c.id,paid.amountPaid,paid.balanceDue);
- const order=orderService.save({id:crypto.randomUUID(),orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:'Demo Admin',createdAt,refundedTotal:0,pointsEarned});
+ const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:'Demo Admin',createdAt,refundedTotal:0,pointsEarned});
  posService.clear();return order;
  });
  }

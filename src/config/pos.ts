@@ -7,5 +7,5 @@ export const POS_CONFIG = {
 export const WALK_IN_ID = 'customer-walk-in';
 export const PAYMENT_METHODS = [
   {id:'cash',label:'Cash'}, {id:'gcash',label:'GCash'},
-  {id:'maya',label:'Maya'}, {id:'card',label:'Card'}, {id:'bank',label:'Bank Transfer'},
+  {id:'maya',label:'Maya'}, {id:'card',label:'Card'}, {id:'bank',label:'Bank Transfer'}, {id:'wallet',label:'Customer Wallet'},
 ] as const;

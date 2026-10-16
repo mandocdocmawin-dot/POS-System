@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { compressImage } from "../../utils/image";
 export function ImageUpload({
   onChange,
+  label="Product image",
   preview,
   onBusyChange,
 }: {
   onChange: (blob: Blob | null) => void;
+  label?:string;
   preview?: string;
   onBusyChange?: (busy: boolean) => void;
 }) {
@@ -45,7 +47,7 @@ export function ImageUpload({
       className="rounded-lg border-2 border-dashed border-slate-300 p-5 dark:border-slate-600"
     >
       <label className="block space-y-3">
-        Product image
+        {label}
         <input
           ref={input}
           type="file"
@@ -61,7 +63,7 @@ export function ImageUpload({
       {(url || preview) && (
         <img
           src={url || preview}
-          alt="Product preview"
+          alt={`${label} preview`}
           className="mt-3 h-36 w-36 rounded-lg object-contain"
         />
       )}

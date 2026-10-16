@@ -1,3 +1,7 @@
+import type {Order,Payment} from '../../types/pos';
+import {Modal} from '../../components/common/Modal';
+import {toast} from '../../services/toastService';
+import {formatPHP} from '../../utils/money';
 import {PaymentModal} from '../../components/pos/PaymentModal';
 import {holdService} from '../../services/holdService';
 import {HeldOrdersDrawer} from '../../components/pos/HeldOrdersDrawer';
@@ -18,6 +22,8 @@ import {CartLine} from '../../components/pos/CartLine';
 import {ConfirmDialog} from '../../components/common/ConfirmDialog';
 export function OrderPanel(){
  useLocalData();const s=posService.state(),totals=posService.totals();
+ const [receipt,setReceipt]=useState<Order|null>(null);
+ const complete=(payments:Payment[])=>{const order=posService.complete(payments);setPaymentOpen(false);setReceipt(order);toast.success('Sale saved: '+order.orderNo);};
  const [paymentOpen,setPaymentOpen]=useState(false);
  const [holding,setHolding]=useState(false),[heldOpen,setHeldOpen]=useState(false),[noteOpen,setNoteOpen]=useState(false);
  const [customerOpen,setCustomerOpen]=useState(false);
@@ -31,11 +37,12 @@ export function OrderPanel(){
  <CartSummary totals={totals} onDiscount={()=>setDiscountOpen(v=>!v)}/>{discountOpen&&<DiscountEditor value={s.orderDiscount} onSave={v=>{posService.discount(v);}} onClose={()=>setDiscountOpen(false)}/>}
  {s.note&&<p className="mt-3 break-words text-xs text-slate-500">Note: {s.note}</p>}
  <button className="btn-primary mt-5 w-full disabled:opacity-40" disabled={!s.cart.length} onClick={()=>setPaymentOpen(true)}>Process to Payment →</button>
- {paymentOpen&&<PaymentModal onClose={()=>setPaymentOpen(false)}/>}
+ {paymentOpen&&<PaymentModal onComplete={complete} onClose={()=>setPaymentOpen(false)}/>}
  <div className="mt-4 flex gap-2"><button disabled={!s.cart.length} className="btn flex-1 disabled:opacity-40" onClick={()=>setHolding(true)}><Pause size={14}/>Hold</button><button className="btn" onClick={()=>setHeldOpen(true)} aria-label="Open held orders">Held ({holdService.list().length})</button></div>
  {holding&&<OrderTextModal title="Hold order" label="Label (optional)" onSave={label=>{holdService.hold(label);}} onClose={()=>setHolding(false)}/>}
  {noteOpen&&<OrderTextModal title="Order note" label="Note" initial={s.note} onSave={note=>{posService.note(note);}} onClose={()=>setNoteOpen(false)}/>}
  <HeldOrdersDrawer open={heldOpen} onClose={()=>setHeldOpen(false)}/>
+ <Modal open={!!receipt} title="Sale saved" onClose={()=>setReceipt(null)}>{receipt&&<p>{receipt.orderNo} · {formatPHP(receipt.grandTotal)} · {receipt.pointsEarned} points earned</p>}<button className="btn-primary mt-4" onClick={()=>setReceipt(null)}>New Sale</button></Modal>
  <ConfirmDialog open={clear} title="Clear current cart?" message="All current items, discounts, customer and notes will be cleared." onClose={()=>setClear(false)} onConfirm={()=>{posService.clear();}}/>
  </aside>;
 }

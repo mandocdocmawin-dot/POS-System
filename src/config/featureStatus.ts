@@ -555,3 +555,10 @@ for (const path of phase2Paths)
   };
 // General settings are still planned; only its local Data card is implemented.
 featureStatus["/settings/general"].status = "placeholder";
+// Phase 3 is complete; full Orders and Customers management remain placeholders.
+featureStatus['/pos'] = {
+  status: 'done',
+  description: 'Working local POS: cart, VAT and discounts, customers, held orders, split payments, credit sales, receipts and history.',
+  plannedFeatures: [],
+};
+featureStatus['/'].description = 'Live branch-filtered sales, order history, transactions and payment methods. Other analytics remain demo placeholders.';

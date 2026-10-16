@@ -16,8 +16,8 @@ export function Component() {
         <h2 className="text-base font-semibold">Data</h2>
         <p className="text-sm text-slate-500">
           Demo data is stored in this browser. JSON backups include product
-          images. Import and reset replace your current products and stock
-          history.
+          images, customers, orders, held orders and the open cart. Import and reset
+          replace all current local business data.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <button
@@ -85,7 +85,7 @@ export function Component() {
         <ConfirmDialog
           open
           title="Replace current data?"
-          message="The JSON structure and relationships are valid. Import will replace your catalog, products and stock movements."
+          message="The JSON structure and relationships are valid. Import will replace your catalog, products, stock movements, customers, orders, held orders and open cart."
           onClose={() => setPending(undefined)}
           onConfirm={async () => {
             await dataService.import(pending);
@@ -97,7 +97,7 @@ export function Component() {
         <ConfirmDialog
           open
           title="Reset demo data?"
-          message="This replaces your current catalog, products and stock history with the original demo data."
+          message="This replaces your catalog, products, stock, customers and orders with demo data, and clears held orders and the open cart."
           onClose={() => setReset(false)}
           onConfirm={() => {
             dataService.reset();

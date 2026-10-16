@@ -2,6 +2,7 @@
 export const pageLoaders = {
   orderDetails: () => import("../pages/orders/OrderDetailsPage"),
   refunded: () => import("../pages/orders/RefundedPage"),
+  invoices: () => import("../pages/orders/InvoicesPage"),
   orders: () => import("../pages/orders/OrdersPage"),
   categories: () => import("../pages/products/CategoriesPage"),
   subcategories: () => import("../pages/products/SubcategoriesPage"),
@@ -25,6 +26,7 @@ export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
   "/orders/:id": "orderDetails",
   "/orders/refunded": "refunded",
+  "/orders/invoices": "invoices",
   "/orders": "orders",
   "/orders/all-orders": "orders",
   "/products/categories": "categories",

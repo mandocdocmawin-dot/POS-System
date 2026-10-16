@@ -1,3 +1,4 @@
+import {Popover} from '../../components/common/Popover';
 import {useCurrentUser} from '../../hooks/useCurrentUser';
 import {Can} from '../../components/auth/Can';
 import { useEffect, useState } from "react";
@@ -48,6 +49,7 @@ export function PosTopbar() {
         </span>
       </div>
       <div className="flex items-center gap-2">
+        <Popover label="Open workspace" className="btn" trigger={<>Workspace</>}><nav aria-label="POS workspace links" className="w-48 p-2">{[['Orders','/orders','orders:view'],['Customers','/customers','customers:view'],['Products','/products','products:view'],['My attendance','/staff/attendance','attendance:view'],['My schedule','/staff/schedule','schedule:view']].map(([label,path,permission])=><Can key={path} permission={permission}><Link className="block rounded-lg p-3 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" to={path}>{label}</Link></Can>)}</nav></Popover>
         <Can permission="dashboard:view"><Link
           to="/"
           className="btn border-slate-900 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800"

@@ -940,6 +940,9 @@ export const routes = entries.filter(
 );
 export function resolveMenuPath(path: string): string {
   const aliases: Record<string, string> = {
+    "/staff":"/staff/staff-list",
+    "/staff/add":"/staff/add-staff",
+    "/staff/roles":"/staff/role-permission",
     "/orders": "/orders/all-orders",
     "/customers": "/customers/customer-list",
     "/customers/add": "/customers/add-customer",
@@ -955,6 +958,7 @@ export function resolveMenuPath(path: string): string {
     "/inventory/stock": "/inventory/stock-list",
     "/inventory/adjustment": "/inventory/stock-adjustment",
   };
+  if (/^\/staff\/[^/]+\/edit$/.test(path)) return "/staff/add-staff";
   if (/^\/products\/[^/]+\/edit$/.test(path)) return "/products/add-product";
   for(const [prefix,list,add] of [['orders','all-orders','all-orders'],['customers','customer-list','add-customer'],['suppliers','supplier-list','add-supplier'],['purchases','purchase','add-purchase']]){
    if(new RegExp(`^/${prefix}/[^/]+/edit$`).test(path))return `/${prefix}/${add}`;

@@ -124,3 +124,10 @@ describe('route permission mapping', () => {
     expect(routePermission('/unregistered')).toBe('pages:view');
   });
 });
+
+import {findRoute,resolveMenuPath} from '../config/menu';
+describe('staff navigation aliases',()=>{
+ it.each([['/staff','/staff/staff-list'],['/staff/add','/staff/add-staff'],['/staff/roles','/staff/role-permission'],['/staff/person-1/edit','/staff/add-staff']])('maps %s to its Staff menu entry',(path,expected)=>{
+  expect(resolveMenuPath(path)).toBe(expected);expect(findRoute(path)?.sectionId).toBe('apps');
+ });
+});

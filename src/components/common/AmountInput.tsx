@@ -1,0 +1,2 @@
+import {toCentavos,fromCentavos} from '../../utils/pos';
+export function AmountInput({value,onChange,label='Amount',signed=false,max,required=false}:{value:number;onChange:(n:number)=>void;label?:string;signed?:boolean;max?:number;required?:boolean}){return <label className="grid gap-1 text-sm">{label}<input required={required} type="number" step="0.01" min={signed?undefined:0} max={max} value={value} onChange={e=>{const n=Number(e.target.value);if(Number.isFinite(n))onChange(Math.sign(n)*fromCentavos(toCentavos(Math.abs(n))));}}/></label>;}

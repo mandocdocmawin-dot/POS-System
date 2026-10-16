@@ -1,11 +1,13 @@
+import {useAccessibleMenu} from '../../hooks/usePermission';
 import { Moon, Sun, UserRound, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { menu, findRoute } from "../../config/menu";
+import { findRoute } from "../../config/menu";
 import { useUiStore } from "../../store/useUiStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import { Brand } from "./Brand";
 export function IconRail() {
+ const menu=useAccessibleMenu();
   const { section, setSection } = useUiStore();
   const { pathname } = useLocation();
   const { theme, toggle } = useThemeStore();

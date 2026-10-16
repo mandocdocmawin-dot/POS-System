@@ -1,19 +1,21 @@
+import {useAccessibleMenu} from '../../hooks/usePermission';
 import {useLocalData} from '../../services/useLocalData';
 import {navigationService} from '../../services/navigationService';
 import { ChevronDown, ChevronUp, Store, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { menu, resolveMenuPath } from "../../config/menu";
+import { resolveMenuPath } from "../../config/menu";
 import { useUiStore } from "../../store/useUiStore";
 import { Brand } from "./Brand";
 export function Sidebar() {
+ const menu=useAccessibleMenu();
   useLocalData();
   const section = useUiStore((s) => s.section);
   const close = useUiStore((s) => s.setMobileOpen);
   const { pathname } = useLocation();
   const canonicalPath = resolveMenuPath(pathname);
   const current = menu.find((s) => s.id === section) ?? menu[0];
-  const activeParent = current.groups
+  const activeParent = current?.groups
     .flatMap((g) => g.items)
     .find((i) => i.children?.some((c) => c.path === canonicalPath))?.label;
   const [expanded, setExpanded] = useState<{
@@ -34,7 +36,7 @@ export function Sidebar() {
         <Brand />
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-5">
-        {current.groups.map((group, index) => (
+        {current?.groups.map((group, index) => (
           <div key={index} className="mb-6">
             {group.label && (
               <p className="mb-3 px-3 text-sm font-semibold tracking-[0.14em] text-slate-400">
@@ -104,7 +106,7 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      <div className="m-3 shrink-0 rounded-xl border border-indigo-100 bg-gradient-to-br from-orange-50 to-indigo-50 p-4 dark:border-indigo-900 dark:from-slate-800 dark:to-indigo-950">
+      {menu.some(s=>s.groups.some(g=>g.items.some(i=>i.path.startsWith("/reports"))))&&<div className="m-3 shrink-0 rounded-xl border border-indigo-100 bg-gradient-to-br from-orange-50 to-indigo-50 p-4 dark:border-indigo-900 dark:from-slate-800 dark:to-indigo-950">
         <Store size={24} className="mb-3 text-indigo-500" />
         <p className="text-sm text-slate-500">Live sales insights</p>
         <h3 className="mb-3 mt-1 text-sm font-semibold">Boost today's sales</h3>
@@ -115,7 +117,7 @@ export function Sidebar() {
         >
           View Sales <ArrowUpRight size={14} />
         </Link>
-      </div>
+      </div>}
     </aside>
   );
 }

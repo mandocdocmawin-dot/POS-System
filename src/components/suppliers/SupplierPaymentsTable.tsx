@@ -1,6 +1,7 @@
+import {inDateRange} from '../../utils/dateRange';
 import {useState} from 'react';
 import {DataTable} from '../common/DataTable';
-import {DateRangeFilter,inDateRange,type DateRange} from '../common/DateRangeFilter';
+import {DateRangeFilter,type DateRange} from '../common/DateRangeFilter';
 import {EntityLink} from '../common/EntityLink';
 import {supplierPaymentService} from '../../services/supplierPaymentService';
 import {supplierService} from '../../services/supplierService';

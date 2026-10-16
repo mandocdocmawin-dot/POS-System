@@ -1,6 +1,7 @@
+import {inDateRange} from '../../utils/dateRange';
 import {useState} from 'react';
 import {PageActions} from '../../components/common/PageActions';
-import {DateRangeFilter,inDateRange,type DateRange} from '../../components/common/DateRangeFilter';
+import {DateRangeFilter,type DateRange} from '../../components/common/DateRangeFilter';
 import {Timeline} from '../../components/common/Timeline';
 import {customerService} from '../../services/customerService';
 import {activityService} from '../../services/activityService';

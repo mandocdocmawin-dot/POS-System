@@ -555,10 +555,13 @@ for (const path of phase2Paths)
   };
 // General settings are still planned; only its local Data card is implemented.
 featureStatus["/settings/general"].status = "placeholder";
-// Phase 3 is complete; full Orders and Customers management remain placeholders.
+// Phase 3 POS remains complete; Phase 4 management routes are registered below.
 featureStatus['/pos'] = {
   status: 'done',
   description: 'Working local POS: cart, VAT and discounts, customers, held orders, split payments, credit sales, receipts and history.',
   plannedFeatures: [],
 };
 featureStatus['/'].description = 'Live branch-filtered sales, order history, transactions and payment methods. Other analytics remain demo placeholders.';
+
+export const phase4Paths=Object.keys(implementedPages).filter(path=>['/orders','/customers','/suppliers','/purchases'].some(prefix=>path===prefix||path.startsWith(prefix+'/')));
+for(const path of phase4Paths)featureStatus[path]={status:'done',description:'Working Phase 4 module with browser-persisted records, validated financial and stock actions, and activity history.',plannedFeatures:[]};

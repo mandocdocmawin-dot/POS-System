@@ -1,0 +1,1 @@
+export const payrollConfig={dailyHours:8,overtimeMultiplier:1.25,regularHolidayMultiplier:2,specialHolidayMultiplier:1.3,notice:'Demo computation, not statutory-compliant. No statutory deductions.'} as const;

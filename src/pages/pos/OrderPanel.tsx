@@ -1,8 +1,7 @@
 import {PayLaterModal} from '../../components/pos/PayLaterModal';
 import type {Order,Payment} from '../../types/pos';
-import {Modal} from '../../components/common/Modal';
+import {ReceiptDialog} from '../../components/pos/ReceiptDialog';
 import {toast} from '../../services/toastService';
-import {formatPHP} from '../../utils/money';
 import {PaymentModal} from '../../components/pos/PaymentModal';
 import {holdService} from '../../services/holdService';
 import {HeldOrdersDrawer} from '../../components/pos/HeldOrdersDrawer';
@@ -46,7 +45,7 @@ export function OrderPanel(){
  {holding&&<OrderTextModal title="Hold order" label="Label (optional)" onSave={label=>{holdService.hold(label);}} onClose={()=>setHolding(false)}/>}
  {noteOpen&&<OrderTextModal title="Order note" label="Note" initial={s.note} onSave={note=>{posService.note(note);}} onClose={()=>setNoteOpen(false)}/>}
  <HeldOrdersDrawer open={heldOpen} onClose={()=>setHeldOpen(false)}/>
- <Modal open={!!receipt} title="Sale saved" onClose={()=>setReceipt(null)}>{receipt&&<p>{receipt.orderNo} · {formatPHP(receipt.grandTotal)} · {receipt.pointsEarned} points earned</p>}<button className="btn-primary mt-4" onClick={()=>setReceipt(null)}>New Sale</button></Modal>
+ <ReceiptDialog receipt={receipt} onClose={()=>setReceipt(null)}/>
  <ConfirmDialog open={clear} title="Clear current cart?" message="All current items, discounts, customer and notes will be cleared." onClose={()=>setClear(false)} onConfirm={()=>{posService.clear();}}/>
  </aside>;
 }

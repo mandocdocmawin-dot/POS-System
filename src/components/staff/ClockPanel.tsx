@@ -1,0 +1,8 @@
+import {useClock} from '../../hooks/useClock';
+import {useCurrentUser} from '../../hooks/useCurrentUser';
+import {useAttendanceStore} from '../../store/useAttendanceStore';
+import {attendanceService} from '../../services/attendanceService';
+import {localDate,workedHours} from '../../utils/attendance';
+import {toast,errorMessage} from '../../services/toastService';
+import {StatusBadge} from '../common/StatusBadge';
+export function ClockPanel(){const now=useClock(),user=useCurrentUser(),records=useAttendanceStore(s=>s.records),record=records.find(r=>r.staffId===user?.id&&r.date===localDate(now));const clock=(action:'in'|'out')=>{try{attendanceService.clock(action);toast.success(`Clocked ${action}`);}catch(error){toast.error(errorMessage(error));}};return <section className="panel mb-6 flex flex-wrap items-center justify-between gap-5 p-6"><div><p className="text-sm text-slate-500">{user?.name} · {localDate(now)}</p><time className="my-2 block text-3xl font-semibold tabular-nums">{now.toLocaleTimeString('en-PH',{timeZone:'Asia/Manila'})}</time><p className="text-sm">Today's status: <StatusBadge>{record?.status??attendanceService.status(user?.id??'')}</StatusBadge></p><p className="mt-2 text-sm text-slate-500">Hours so far: {record?.clockIn?workedHours({...record,clockOut:record.clockOut??now.toISOString()}).toFixed(2):'0.00'}</p></div><div className="flex gap-3"><button className="btn-primary" disabled={!!record?.clockIn} onClick={()=>clock('in')}>Clock In</button><button className="btn" disabled={!record?.clockIn||!!record.clockOut} onClick={()=>clock('out')}>Clock Out</button></div></section>;}

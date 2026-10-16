@@ -1,0 +1,6 @@
+import type {ReactNode} from 'react';
+import {NavLink} from 'react-router-dom';
+import {usePermission} from '../../hooks/usePermission';
+import {PageActions} from '../common/PageActions';
+export function StaffShell({title,actions,children}:{title:string;actions?:ReactNode;children:ReactNode}){const {canPath}=usePermission();return <><PageActions title={title}>{actions}</PageActions><nav aria-label="Staff workspace" className="mb-6 flex gap-2 overflow-x-auto border-b border-slate-200 pb-3 dark:border-slate-700">{[['Staff','/staff'],['Roles','/staff/roles'],['Attendance','/staff/attendance'],['Schedule','/staff/schedule'],['Holidays','/staff/holidays'],['Payroll','/staff/payroll']].filter(([,path])=>canPath(path)).map(([label,path])=><NavLink end className={({isActive})=>`whitespace-nowrap rounded-lg px-3 py-2 text-sm ${isActive?'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-200':'hover:bg-slate-100 dark:hover:bg-slate-800'}`} key={path} to={path}>{label}</NavLink>)}</nav>{children}</>;}
+export function StaffSummary({items}:{items:[string,string|number][]}){return <div className="mb-6 grid grid-cols-2 gap-3 xl:grid-cols-4">{items.map(([label,value])=><section className="panel p-4" key={label}><p className="text-xs text-slate-500">{label}</p><p className="mt-2 text-2xl font-semibold">{value}</p></section>)}</div>;}

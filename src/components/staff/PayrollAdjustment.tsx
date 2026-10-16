@@ -7,7 +7,7 @@ import { useStaffStore } from '../../store/useStaffStore';
 import { toCentavos } from '../../utils/pos';
 import { errorMessage } from '../../services/toastService';
 import { Modal } from '../common/Modal';
-import { payrollMoney } from './PayrollLines';
+import { payrollMoney } from '../../utils/money';
 const item = z.object({ label: z.string().trim().min(1, 'An adjustment label is required.'), amount: z.number().finite().nonnegative() });
 const schema = z.object({ additions: z.array(item), deductions: z.array(item) });
 type Values = z.infer<typeof schema>;

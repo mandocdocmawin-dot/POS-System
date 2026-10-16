@@ -7,7 +7,8 @@ import { toast, errorMessage } from '../../services/toastService';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { Timeline } from '../common/Timeline';
 import { StatusBadge } from '../common/StatusBadge';
-import { PayrollLines, payrollMoney } from './PayrollLines';
+import { PayrollLines } from './PayrollLines';
+import { payrollMoney } from '../../utils/money';
 import { PayrollAdjustment } from './PayrollAdjustment';
 export function PayrollReview({ run, onPreviewChange, onSaved }: { run: PayrollRun; onPreviewChange?: (run: PayrollRun) => void; onSaved?: (run: PayrollRun) => void }) {
   const [payslip, setPayslip] = useState('');

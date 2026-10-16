@@ -6,7 +6,7 @@ import { DataTable } from '../../components/common/DataTable';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { Modal } from '../../components/common/Modal';
 import { NewPayrollRun } from '../../components/staff/NewPayrollRun';
-import { payrollMoney } from '../../components/staff/PayrollLines';
+import { payrollMoney } from '../../utils/money';
 import { PayrollReview } from '../../components/staff/PayrollReview';
 export function Component() {
   const runs = usePayrollStore(s => s.runs), [creating, setCreating] = useState(false), [selected, setSelected] = useState(''), [status, setStatus] = useState('');

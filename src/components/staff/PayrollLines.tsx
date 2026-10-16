@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react';
 import type { PayrollLine } from '../../types/staff';
 import { useStaffStore } from '../../store/useStaffStore';
-import { formatPHP } from '../../utils/money';
+import { payrollMoney } from '../../utils/money';
 import { DataTable } from '../common/DataTable';
-export const payrollMoney = (cents: number) => formatPHP(cents / 100);
 export function PayrollLines({ lines, actions }: { lines: PayrollLine[]; actions?: (line: PayrollLine) => ReactNode }) {
   const staff = useStaffStore(s => s.staff);
   return <DataTable caption="Payroll lines" rows={lines} rowKey={l => l.staffId} searchText={l => staff.find(s => s.id === l.staffId)?.name ?? l.staffId} columns={[

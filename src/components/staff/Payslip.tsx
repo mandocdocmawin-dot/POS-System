@@ -3,7 +3,7 @@ import { payrollConfig } from '../../config/payroll';
 import { useStaffStore } from '../../store/useStaffStore';
 import { usePermission } from '../../hooks/usePermission';
 import { Modal } from '../common/Modal';
-import { payrollMoney } from './PayrollLines';
+import { payrollMoney } from '../../utils/money';
 export function Payslip({ run, line, onClose }: { run: PayrollRun; line: PayrollLine; onClose: () => void }) {
   const person = useStaffStore(s => s.staff.find(p => p.id === line.staffId)), { can } = usePermission();
   if (!can('payroll:view')) return null;

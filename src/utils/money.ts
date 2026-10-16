@@ -4,3 +4,5 @@ export const formatPHP = (amount: number) =>
     currency: "PHP",
     minimumFractionDigits: 2,
   }).format(amount);
+
+export const payrollMoney = (centavos: number) => formatPHP(centavos / 100);

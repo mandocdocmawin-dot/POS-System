@@ -4,7 +4,7 @@ const { storage, images } = vi.hoisted(() => {
   const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value); }, removeItem: (key: string) => { values.delete(key); }, clear: () => values.clear() };
   Object.defineProperty(globalThis, 'localStorage', { value: storage, configurable: true });
   Object.defineProperty(globalThis, 'window', { value: { localStorage: storage }, configurable: true });
-  return { storage, images: { export: vi.fn(async () => ({} as Record<string, string>)), import: vi.fn(async (_rows: [string, Blob][]) => {}), remove: vi.fn(async (_id: string) => {}) } };
+  return { storage, images: { export: vi.fn(async () => ({} as Record<string, string>)), import: vi.fn(async (rows: [string, Blob][]) => { void rows; }), remove: vi.fn(async (id: string) => { void id; }) } };
 });
 vi.mock('./imageService', () => ({ imageService: images }));
 import { dataService } from './dataService';

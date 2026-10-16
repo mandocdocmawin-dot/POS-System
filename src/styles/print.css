@@ -22,3 +22,6 @@
  #pos-receipt tr, #pos-receipt footer { break-inside: avoid; }
  #pos-receipt thead { display: table-header-group; }
 }
+
+@media print { body:has(#purchase-order) * { visibility: hidden !important; } body:has(#purchase-order) #purchase-order, body:has(#purchase-order) #purchase-order * { visibility: visible !important; } #purchase-order { position: absolute; top: 0; left: 0; width: 100%; border: 0; color: black; background: white; } }
+@media print { body:has(#purchase-order) > #root { display: block !important; } }

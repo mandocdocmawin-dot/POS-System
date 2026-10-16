@@ -1,3 +1,5 @@
+import {supplierPaymentService} from './supplierPaymentService';
+import {paymentSchema,type PaymentMethod} from '../types/pos';
 import {useProductStore} from '../store/useProductStore';
 import {purchaseReturnSchema} from '../types/phase4';
 import {purchaseBalance} from '../utils/supplierBalance';
@@ -20,6 +22,10 @@ export const purchaseService={
  list:()=>structuredClone(usePurchaseStore.getState().purchases.toSorted((a,b)=>b.date.localeCompare(a.date))),
  get:(id:string)=>structuredClone(usePurchaseStore.getState().purchases.find(p=>p.id===id)),
  returns:(id?:string)=>structuredClone(usePurchaseStore.getState().returns.filter(r=>!id||r.purchaseId===id)),
+ createComplete:(input:PurchaseInput,options:{receiveNow:boolean;initialPayment:number;method:PaymentMethod})=>{
+  const totals=purchaseTotals(input);paymentSchema.parse({id:'preview',method:options.method,amount:options.initialPayment,createdAt:new Date().toISOString()});if(options.method==='wallet'||c(options.initialPayment)>c(totals.grandTotal))throw new Error('Initial payment exceeds total or uses an invalid method.');
+  return localTransaction(()=>{const purchase=purchaseService.create(input);if(options.receiveNow)purchaseService.receive(purchase.id,purchase.items.map(l=>({id:l.id,quantity:l.orderedQty})));if(options.initialPayment>0)supplierPaymentService.record({supplierId:purchase.supplierId,purchaseId:purchase.id,amount:options.initialPayment,method:options.method,createdAt:new Date().toISOString()});return purchaseService.get(purchase.id)!;});
+ },
  create:(input:PurchaseInput)=>{
   if(supplierService.get(input.supplierId)?.status!=='active')throw new Error('Choose an active supplier.');
   for(const l of input.items){const product=productService.get(l.productId);if(!product||product.status!=='active'||product.hasVariants!==!!l.variantId||l.variantId&&!productService.variants(product.id).some(v=>v.id===l.variantId))throw new Error('Choose an available product and variant.');if(l.receivedQty!==0)throw new Error('Use Receive stock after creating the purchase.');}

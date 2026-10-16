@@ -1,3 +1,5 @@
+import {authService} from '../../services/authService';
+import {DemoAccountsCard} from '../../components/auth/DemoAccountsCard';
 import { AccountFlow } from "./AccountFlow";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, LockKeyhole } from "lucide-react";
@@ -33,14 +35,14 @@ export function Component() {
         </p>
       </div>
       <form
-        className="space-y-5"
+        noValidate={signIn} className="space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
           if (forgot)
             setNotice(
               "Demo only: password reset instructions are previewed. No email has been sent.",
             );
-          else navigate(signUp ? "/auth/two-step-verification" : "/");
+          else if(signIn){try{authService.login(String(new FormData(e.currentTarget).get("email")??""));navigate(authService.firstPath());}catch(error){setNotice(error instanceof Error?error.message:"Unable to save session");}}else navigate("/auth/two-step-verification");
         }}
       >
         {signUp && (
@@ -49,6 +51,7 @@ export function Component() {
         <AuthField
           label="Email address"
           name="email"
+          defaultValue={signIn?"admin@tindapos.demo":undefined}
           type="email"
           autoComplete="email"
         />
@@ -106,6 +109,7 @@ export function Component() {
           </p>
         )}
       </form>
+      {signIn&&<><p className="mt-4 text-xs text-slate-500">Demo mode: no real authentication. Any credentials work.</p><DemoAccountsCard/></>}
       <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs text-slate-400 dark:border-slate-800">
         {signIn ? (
           <>

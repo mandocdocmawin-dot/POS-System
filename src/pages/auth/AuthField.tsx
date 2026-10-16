@@ -6,12 +6,14 @@ export function AuthField({
   type = "text",
   autoComplete,
   minLength,
+  defaultValue,
 }: {
   label: string;
   name: string;
   type?: "text" | "email" | "password";
   autoComplete?: string;
   minLength?: number;
+  defaultValue?: string;
 }) {
   const [show, setShow] = useState(false);
   return (
@@ -22,7 +24,7 @@ export function AuthField({
           name={name}
           type={type === "password" && show ? "text" : type}
           autoComplete={autoComplete}
-          required
+          defaultValue={defaultValue}
           minLength={minLength}
           className="w-full py-2.5 pr-10"
           placeholder={

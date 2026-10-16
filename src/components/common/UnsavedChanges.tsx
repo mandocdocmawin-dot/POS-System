@@ -1,0 +1,4 @@
+import {useEffect,type MutableRefObject} from 'react';
+import {useBlocker} from 'react-router-dom';
+import {ConfirmDialog} from './ConfirmDialog';
+export function UnsavedChanges({dirty,saved}:{dirty:boolean;saved:MutableRefObject<boolean>}){const blocker=useBlocker(()=>dirty&&!saved.current);useEffect(()=>{const handler=(e:BeforeUnloadEvent)=>{if(dirty&&!saved.current){e.preventDefault();e.returnValue='';}};window.addEventListener('beforeunload',handler);return ()=>window.removeEventListener('beforeunload',handler);},[dirty,saved]);return <ConfirmDialog open={blocker.state==='blocked'} title="Discard unsaved changes?" message="Your unsaved changes will be lost." onClose={()=>{if(blocker.state==='blocked')blocker.reset();}} onConfirm={()=>{if(blocker.state==='blocked')blocker.proceed();}}/>;}

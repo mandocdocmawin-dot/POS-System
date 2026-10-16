@@ -1,3 +1,6 @@
+import {customerFormSchema,type CustomerFormValues} from '../components/customers/customerFormSchema';
+import {walletService} from './walletService';
+import {localTransaction} from './localTransaction';
 import {useOrderStore} from '../store/useOrderStore';
 import {activityService} from './activityService';
 import {z} from 'zod';
@@ -11,8 +14,9 @@ export const customerService={
  list:(query='')=>structuredClone(useCustomerStore.getState().customers.filter(c=>`${c.name} ${c.phone??''}`.toLowerCase().includes(query.toLowerCase()))),
  get:(id=WALK_IN_ID)=>structuredClone(useCustomerStore.getState().customers.find(c=>c.id===id)),
  add:(input:z.infer<typeof quickCustomerSchema>)=>{const fields=quickCustomerSchema.parse(input);const c=customerSchema.parse({...fields,id:crypto.randomUUID(),points:0,tier:'Regular',creditBalance:0,createdAt:new Date().toISOString()});useCustomerStore.setState(s=>({customers:[...s.customers,c]}));activityService.log("customer",c.id,"create",`Created ${c.name}`);return c;},
- update:(id:string,fields:Partial<Pick<Customer,'name'|'phone'|'email'>>)=>{const c=customerService.get(id);if(!c)throw new Error('Customer not found.');if(c.isWalkIn)throw new Error('Walk-in Customer cannot be edited.');const updated=customerSchema.parse({...c,...fields});useCustomerStore.setState(s=>({customers:s.customers.map(c=>c.id===id?updated:c)}));activityService.log("customer",id,"update",`Updated ${updated.name}`);return updated;},
- remove:(id:string)=>{const c=customerService.get(id);if(c?.isWalkIn || id===WALK_IN_ID)throw new Error('Walk-in Customer cannot be deleted.');throw new Error('Customer management is available in a later phase.');},
+ update:(id:string,fields:Partial<Pick<Customer,'name'|'phone'|'email'|'address'|'notes'|'status'>>)=>{const c=customerService.get(id);if(!c)throw new Error('Customer not found.');if(c.isWalkIn)throw new Error('Walk-in Customer cannot be edited.');const updated=customerSchema.parse({...c,...fields});useCustomerStore.setState(s=>({customers:s.customers.map(c=>c.id===id?updated:c)}));activityService.log("customer",id,"update",`Updated ${updated.name}`);return updated;},
+ saveProfile:(input:CustomerFormValues,id?:string)=>{const fields=customerFormSchema.parse(input);return localTransaction(()=>{const c=id?customerService.update(id,{...fields,email:fields.email||undefined}):customerService.add(fields);if(!id){customerService.update(c.id,{...fields,email:fields.email||undefined});if(fields.openingWallet>0)walletService.change({customerId:c.id,type:'topup',amount:fields.openingWallet,method:'cash',note:'Opening wallet balance'});}return customerService.get(c.id)!;});},
+ remove:(id:string)=>{const c=customerService.get(id);if(!c||c.isWalkIn||id===WALK_IN_ID)throw new Error('Walk-in Customer cannot be deleted.');if(useOrderStore.getState().orders.some(o=>o.customerId===id)||c.walletBalance||c.creditBalance)throw new Error('Customer has orders or balances. Deactivate instead.');return localTransaction(()=>{useCustomerStore.setState(s=>({customers:s.customers.filter(x=>x.id!==id)}));activityService.log('customer',id,'delete','Customer deleted');});},
  recordSale:(id:string,paid:number,balance:number)=>{
  const c=customerService.get(id);if(!c)throw new Error('Customer no longer exists.');
  if(c.isWalkIn){if(toCentavos(balance)>0)throw new Error('Pay Later requires a named customer.');return 0;}

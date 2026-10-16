@@ -80,3 +80,17 @@ describe('demo role destinations',()=>{
   authService.login(person.email);expect(authService.firstPath()).toBe('/inventory/stock');
  });
 });
+
+import {createPosSeed} from '../data/seed/pos';
+describe('staff history after profile edits',()=>{
+ it('retains order and activity links across a rename while preserving stored actor names',()=>{
+  const person=staffService.save({...staffService.get('staff-cashier')!,email:'history@example.com',name:'Original Cashier'});
+  const order={...createPosSeed().orders[0],cashier:person.name};
+  useOrderStore.setState({orders:[order],counter:12});
+  useActivityStore.setState(s=>({logs:[...s.logs,{id:'old-log',entityType:'order',entityId:order.id,action:'create',description:'Old order',actor:person.name,createdAt:new Date().toISOString()}]}));
+  staffService.save({...person,name:'Renamed Cashier'},person.id);
+  expect(useOrderStore.getState().orders[0]).toMatchObject({cashier:'Original Cashier',cashierId:person.id});
+  expect(useActivityStore.getState().logs.find(l=>l.id==='old-log')).toMatchObject({actor:'Original Cashier',actorId:person.id});
+  expect(()=>staffService.remove(person.id)).toThrow('Deactivate instead');
+ });
+});

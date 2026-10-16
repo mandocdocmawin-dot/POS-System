@@ -38,7 +38,7 @@ export function ProductBrowser() {
   );
   return (
     <><Modal open={brandModal} title="View All Brands" onClose={()=>{setBrandModal(false);focusSearch();}}><div className="flex flex-wrap gap-2">{[{id:'',name:'All brands'},...brandService.list().filter(b=>b.status==='active')].map(b=><button className="btn" aria-pressed={brand===b.id} key={b.id} onClick={()=>{setBrand(b.id);setBrandModal(false);focusSearch();}}>{b.name}</button>)}</div></Modal>
-    <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/>In-stock products only</label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}>Apply filters</button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex min-w-0 shrink-0 flex-col sm:flex-row md:min-h-0 md:flex-1">
+    <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/>In-stock products only</label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}>Apply filters</button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex w-full min-w-0 flex-col sm:flex-row md:min-h-0 md:flex-1">
       <nav
         aria-label="Product categories"
         className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-28 sm:flex-col sm:border-b-0 sm:border-r md:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
@@ -107,3 +107,4 @@ export function ProductBrowser() {
     </div></>
   );
 }
+

@@ -7,6 +7,9 @@ export function validatePeriod(start: string, end: string, runs: PayrollRun[], e
   if (end < start) throw new Error('Period end must follow start.');
   if (runs.some(run => run.id !== excludeId && start <= run.periodEnd && end >= run.periodStart)) throw new Error('Payroll periods cannot overlap.');
 }
+function earningsForTime(rate: number, milliseconds: number, multiplier = 1) {
+  return ratioCentavos(rate, milliseconds * Math.round(multiplier * 10000), 3600000 * 10000);
+}
 export function computePayrollLine(staff: Staff, records: AttendanceRecord[], holidays: Holiday[], start: string, end: string, shifts: Shift[] = []): PayrollLine {
   validatePeriod(start, end, []);
   let regularHours = 0, overtimeHours = 0, holidayHours = 0, late = 0, absences = 0;
@@ -19,14 +22,14 @@ export function computePayrollLine(staff: Staff, records: AttendanceRecord[], ho
     const workedMs = Math.round(hours * 3600000), regularMs = Math.min(config.dailyHours * 3600000, workedMs), overtimeMs = Math.max(0, workedMs - regularMs);
     if (holiday && workedMs > 0) {
       holidayHours += hours;
-      const numerator = holiday.type === 'regular' ? 20 : holiday.type === 'special' ? 13 : 10;
-      holidayPay.push(ratioCentavos(rate, regularMs * (monthly ? numerator - 10 : numerator), 3600000 * 10));
-      holidayPay.push(ratioCentavos(rate, overtimeMs * numerator * 5, 3600000 * 10 * 4));
+      const multiplier = holiday.type === 'regular' ? config.regularHolidayMultiplier : holiday.type === 'special' ? config.specialHolidayMultiplier : 1;
+      holidayPay.push(earningsForTime(rate, regularMs, monthly ? multiplier - 1 : multiplier));
+      holidayPay.push(earningsForTime(rate, overtimeMs, multiplier * config.overtimeMultiplier));
     } else {
       regularHours += regularMs / 3600000;
       overtimeHours += overtimeMs / 3600000;
-      if (!monthly) regularPay.push(ratioCentavos(rate, regularMs, 3600000));
-      overtimePay.push(ratioCentavos(rate, overtimeMs * 5, 3600000 * 4));
+      if (!monthly) regularPay.push(earningsForTime(rate, regularMs));
+      overtimePay.push(earningsForTime(rate, overtimeMs, config.overtimeMultiplier));
     }
     if (!monthly && holiday?.paid && !hours) unworkedHolidayPay.push(ratioCentavos(rate, config.dailyHours, 1));
     if (monthly && record && ['absent', 'leave'].includes(record.status) && !holiday?.paid) absences++;

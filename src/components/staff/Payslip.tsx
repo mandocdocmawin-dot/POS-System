@@ -7,7 +7,7 @@ import { payrollMoney } from '../../utils/money';
 export function Payslip({ run, line, onClose }: { run: PayrollRun; line: PayrollLine; onClose: () => void }) {
   const person = useStaffStore(s => s.staff.find(p => p.id === line.staffId)), { can } = usePermission();
   if (!can('payroll:view')) return null;
-  const earnings = [{ label: 'Computed regular, overtime and holiday pay', amount: line.grossPay }, ...line.additions];
+  const earnings = [...(line.earnings ?? [{ label: 'Computed regular, overtime and holiday pay', amount: line.grossPay }]), ...line.additions];
   return <Modal open title={`Payslip · ${person?.name ?? line.staffId}`} onClose={onClose}>
     <article id="staff-payslip" className="space-y-5 bg-white p-4 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
       <header className="border-b border-slate-200 pb-4"><p className="text-xl font-bold">TindaPOS</p><h2 className="mt-1 text-lg font-semibold">{run.status === 'draft' ? 'DRAFT PAYSLIP' : 'PAYSLIP'}</h2><p className="mt-2 text-sm">{run.runNo} · {run.status}</p><p className="text-sm">Pay period: {run.periodStart} – {run.periodEnd}</p></header>

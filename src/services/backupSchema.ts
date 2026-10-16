@@ -5,7 +5,7 @@ import {purchaseBalance} from '../utils/supplierBalance';
 import {purchaseTotals} from './purchaseService';
 import {refundLine} from '../utils/refund';
 import {multiplyCentavos} from '../utils/pos';
-import {customerSchema,orderSchema,heldOrderSchema,cartItemSchema,discountSchema} from '../types/pos';
+import {customerSchema,orderSchema,heldOrderSchema,cartItemSchema,discountSchema,discountApprovalSchema} from '../types/pos';
 import {WALK_IN_ID} from '../config/pos';
 import {createPosSeed} from '../data/seed/pos';
 import {calculatePayments,calculateTotals,toCentavos} from '../utils/pos';
@@ -31,7 +31,7 @@ export const backupSchema = z
     orders:z.array(orderSchema).default([]),
     heldOrders:z.array(heldOrderSchema).default([]),
     counter:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER-1).default(0),
-    pos:z.object({cart:z.array(cartItemSchema),customerId:z.string(),orderDiscount:discountSchema,note:z.string().max(2000),activeOrderNo:z.string()}).default({cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:'TP-000001'}),
+    pos:z.object({cart:z.array(cartItemSchema),customerId:z.string(),orderDiscount:discountSchema,note:z.string().max(2000),activeOrderNo:z.string(),discountApproval:discountApprovalSchema.optional()}).default({cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:'TP-000001'}),
     categories: z.array(categorySchema),
     subcategories: z.array(subcategorySchema),
     brands: z.array(brandSchema),

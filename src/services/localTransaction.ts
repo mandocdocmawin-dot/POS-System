@@ -46,6 +46,7 @@ export function localTransaction<T>(write: () => T): T {
         /* Zustand restores memory before attempting the storage write. */
       }
     }
+    if (cause instanceof Error && ['PermissionError', 'ManagerApprovalRequired'].includes(cause.name)) throw cause;
     throw new Error(
       `Unable to save data in this browser. ${cause instanceof Error ? cause.message : "Check available browser storage and try again."}`,
       { cause },

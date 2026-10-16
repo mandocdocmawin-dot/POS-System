@@ -1,3 +1,10 @@
+import {ManagerApprovalRequired} from './discountApprovalService';
+import {useRoleStore} from '../store/useRoleStore';
+import {useActivityStore} from '../store/useActivityStore';
+import {defaultRoles} from '../config/permissions';
+import {PermissionError} from '../utils/permissions';
+import {refundService} from './refundService';
+import {usePosStore} from '../store/usePosStore';
 import {authService} from './authService';
 import {initializeStaffData} from '../data/seed/phase5';
 import {useAuthStore} from '../store/useAuthStore';
@@ -27,7 +34,7 @@ import {holdService} from './holdService';
 import type {Payment} from '../types/pos';
 const cash=(amount:number):Payment=>({id:crypto.randomUUID(),method:'cash',amount,createdAt:new Date().toISOString()});
 beforeEach(()=>{
- vi.restoreAllMocks();storage.clear();initializeStaffData();useAuthStore.setState({currentUserId:"staff-admin"});
+ vi.restoreAllMocks();storage.clear();initializeStaffData();useRoleStore.setState({roles:structuredClone(defaultRoles)});useActivityStore.setState({logs:[]});useAuthStore.setState({currentUserId:"staff-admin"});
  useCatalogStore.setState({categories,subcategories,brands,units});
  useProductStore.setState({products:structuredClone(products),variants:structuredClone(variants)});
  useStockStore.setState({movements:structuredClone(movements)});
@@ -100,5 +107,44 @@ describe('Phase 3 data and Dashboard',()=>{
  });
  it('rejects unsafe discounts without corrupting the persisted cart',()=>{
   const id=posService.add('prod-1');expect(()=>posService.discount({type:'fixed',value:1e20})).toThrow();expect(()=>posService.lineDiscount(id,{type:'fixed',value:1e20})).toThrow();expect(posService.totals().grandTotal).toBe(68);
+ });
+});
+
+describe('Cashier permissions and manager discount approval',()=>{
+ it('allows 10%, requires explicit approval at 20%, and snapshots the actual cashier',()=>{
+  authService.switchRole('cashier');posService.add('prod-1');posService.discount({type:'percent',value:10});
+  expect(()=>posService.discount({type:'percent',value:20})).toThrow(ManagerApprovalRequired);
+  expect(posService.state().orderDiscount.value).toBe(10);
+  posService.discount({type:'percent',value:20},'staff-manager');
+  expect(authService.getCurrentUser()?.role).toBe('cashier');
+  const log=useActivityStore.getState().logs.find(l=>l.action==='discount-approved');
+  expect(log).toMatchObject({actor:'Demo Cashier'});expect(log?.description).toContain('Demo Manager');
+  const order=posService.complete([cash(100)]);expect(order.cashier).toBe('Demo Cashier');
+  expect(()=>refundService.create({orderId:order.id,lines:[{id:order.items[0].id,quantity:1}],reason:'Other',refundMethod:'cash',restock:true})).toThrow(PermissionError);
+ });
+ it('does not dilute a high item discount across other items or stack small discounts past the limit',()=>{
+  authService.switchRole('cashier');const first=posService.add('prod-1');const second=posService.add('prod-2');posService.quantity(second,10);
+  expect(()=>posService.lineDiscount(first,{type:'percent',value:20})).toThrow(ManagerApprovalRequired);
+  posService.clear();const line=posService.add('prod-1');posService.lineDiscount(line,{type:'percent',value:10});
+  expect(()=>posService.discount({type:'percent',value:10})).toThrow(ManagerApprovalRequired);
+ });
+ it('persists a cart-specific approval and immediately rechecks the approver permissions',async()=>{
+  authService.switchRole('cashier');posService.add('prod-1');posService.discount({type:'percent',value:20},'staff-manager');
+  await usePosStore.persist.rehydrate();expect(posService.state().discountApproval?.approverId).toBe('staff-manager');
+  useRoleStore.setState(s=>({roles:s.roles.map(r=>r.id==='manager'?{...r,permissions:r.permissions.filter(p=>p!=='pos:discount')}:r)}));
+  expect(()=>posService.complete([cash(100)])).toThrow(ManagerApprovalRequired);
+  expect(useOrderStore.getState().orders).toHaveLength(0);
+ });
+ it('rolls back approval and its log if the cart cannot persist',()=>{
+  authService.switchRole('cashier');posService.add('prod-1');const before=posService.state(),logs=structuredClone(useActivityStore.getState().logs),write=storage.setItem;let fail=true;
+  vi.spyOn(storage,'setItem').mockImplementation((key,value)=>{if(key==='tindapos:pos'&&fail){fail=false;throw new Error('Disk full');}write(key,value);});
+  expect(()=>posService.discount({type:'percent',value:20},'staff-manager')).toThrow();
+  expect(posService.state()).toEqual(before);expect(useActivityStore.getState().logs).toEqual(logs);
+  expect(()=>posService.discount({type:'percent',value:20})).toThrow(ManagerApprovalRequired);
+ });
+ it('lets Cashier create customers but blocks existing-customer edits and product deletion',()=>{
+  authService.switchRole('cashier');const customer=customerService.saveProfile({name:'Created by Cashier',phone:'',email:'',address:'',notes:'',status:'active',openingWallet:0});
+  expect(customer.name).toBe('Created by Cashier');expect(()=>customerService.update(customer.id,{name:'Changed'})).toThrow(PermissionError);
+  expect(()=>productService.removeMany(['prod-1'])).toThrow(PermissionError);
  });
 });

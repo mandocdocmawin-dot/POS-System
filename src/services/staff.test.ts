@@ -65,3 +65,18 @@ describe('staff status sidebar badge', () => {
   useBranchStore.getState().setBranch('Main Branch');
  });
 });
+
+describe('demo role destinations',()=>{
+ it('uses an actual Admin after a demo staff member is reassigned',()=>{
+  const second=staffService.save({...staffService.get('staff-admin')!,email:'another.admin@example.com',name:'Another Admin'});
+  useStaffStore.setState(s=>({staff:s.staff.map(p=>p.id==='staff-admin'?{...p,role:'cashier'}:p)}));
+  expect(authService.login('random@example.com').id).toBe(second.id);
+  expect(authService.loginDemo('admin').role).toBe('admin');
+  expect(useActivityStore.getState().logs.at(-1)?.action).toBe('login');
+ });
+ it('finds a valid landing route for a custom role without dashboard or POS access',()=>{
+  roleService.save({id:'stock-reader',name:'Stock Reader',description:'Read stock',permissions:['inventory:view'],isSystem:false});
+  const person=staffService.save({...staffService.get('staff-cashier')!,email:'stock@example.com',role:'stock-reader'});
+  authService.login(person.email);expect(authService.firstPath()).toBe('/inventory/stock');
+ });
+});

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 const money = z.number().finite().nonnegative();
 const id = z.string().min(1);
+export const discountApprovalSchema=z.object({actorId:id,approverId:id,approverName:id,fingerprint:id});
+export type DiscountApproval=z.infer<typeof discountApprovalSchema>;
 export const discountSchema = z.object({type:z.enum(['percent','fixed']),value:money});
 export const customerSchema = z.object({id,name:z.string().trim().min(1).max(120),phone:z.string().trim().max(40).optional(),email:z.email().optional(),points:z.number().int().nonnegative(),tier:z.enum(['Regular','Silver','Gold','Platinum']),creditBalance:money,walletBalance:money.default(0),status:z.enum(["active","inactive"]).default("active"),address:z.string().optional(),notes:z.string().optional(),createdAt:z.iso.datetime(),isWalkIn:z.boolean().optional()});
 export const cartItemSchema = z.object({id,productId:id,variantId:id.optional(),name:z.string().min(1),sku:id,unitPrice:money,costPrice:money,quantity:z.number().finite().positive(),taxRate:z.union([z.literal(0),z.literal(12)]),unitShortName:z.string(),variantName:z.string().optional(),imageId:z.string().optional(),discountType:z.enum(['percent','fixed']).optional(),discountValue:money.optional()});

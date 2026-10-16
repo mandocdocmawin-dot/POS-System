@@ -1,7 +1,9 @@
+import {UserMenu} from './UserMenu';
+import {toast,errorMessage} from '../../services/toastService';
 import {authService} from '../../services/authService';
 import {useCurrentUser} from '../../hooks/useCurrentUser';
 import {useAccessibleMenu} from '../../hooks/usePermission';
-import { Moon, Sun, UserRound, LogOut } from "lucide-react";
+import { Moon, Sun, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { findRoute } from "../../config/menu";
@@ -58,17 +60,11 @@ export function IconRail() {
         >
           {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
         </button>
-        <Link
-          aria-label="Profile"
-          to="/profile/overview"
-          className="icon-btn border-transparent"
-        >
-          <UserRound size={18} />
-        </Link>
+        <UserMenu/>
         <Link
           aria-label="Log out (demo)"
           to="/sign-in"
-          onClick={()=>authService.logout()}
+          onClick={event=>{try{authService.logout();}catch(error){event.preventDefault();toast.error(errorMessage(error));}}}
           className="icon-btn border-transparent"
         >
           <LogOut size={18} />

@@ -1,3 +1,5 @@
+import {usePermission} from '../../hooks/usePermission';
+import {Can} from '../auth/Can';
 import { LanguageFlag } from "./LanguageFlag";
 import { AddNewMenu } from "./AddNewMenu";
 import { BranchSwitcher } from "./BranchSwitcher";
@@ -19,12 +21,13 @@ import { NotificationMenu } from "./NotificationMenu";
 import { UserMenu } from "./UserMenu";
 import { FullscreenButton } from "./FullscreenButton";
 export function Topbar() {
+ const {canPath}=usePermission();
   const ui = useUiStore();
   const [search, setSearch] = useState("");
   const [language, setLanguage] = useState("English");
   const navigate = useNavigate();
   const results = search.trim()
-    ? routes
+    ? routes.filter(r=>r.layout!=="auth"&&canPath(r.path))
         .filter((r) =>
           (r.breadcrumb.join(" ") + r.title)
             .toLowerCase()
@@ -67,10 +70,10 @@ export function Topbar() {
             </div>
           </Popover>
         </div>
-        <Link to="/pos" className="btn-primary">
+        <Can permission="pos:use"><Link to="/pos" className="btn-primary">
           <ShoppingCart size={16} />
           POS
-        </Link>
+        </Link></Can>
         <AddNewMenu />
         <BranchSwitcher />
       </div>
@@ -134,14 +137,14 @@ export function Topbar() {
         <div className="hidden md:block">
           <FullscreenButton />
         </div>
-        <Link
+        <Can permission="pos:use"><Link
           aria-label="Open store POS"
           to="/pos"
           className="icon-btn relative hidden sm:flex"
         >
           <Store size={17} />
           <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-red-500" />
-        </Link>
+        </Link></Can>
         <NotificationMenu />
         <Popover
           label="Select language"

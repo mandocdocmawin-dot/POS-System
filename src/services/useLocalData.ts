@@ -1,3 +1,10 @@
+import {useAuthStore} from '../store/useAuthStore';
+import {useStaffStore} from '../store/useStaffStore';
+import {useRoleStore} from '../store/useRoleStore';
+import {useAttendanceStore} from '../store/useAttendanceStore';
+import {useHolidayStore} from '../store/useHolidayStore';
+import {useShiftStore} from '../store/useShiftStore';
+import {usePayrollStore} from '../store/usePayrollStore';
 import {useRefundStore} from '../store/useRefundStore';
 import {useSupplierStore} from '../store/useSupplierStore';
 import {usePurchaseStore} from '../store/usePurchaseStore';
@@ -19,6 +26,14 @@ const changed = () => {
   listeners.forEach((fn) => fn());
 };
 useCatalogStore.subscribe(changed);
+useAuthStore.subscribe(changed);
+useStaffStore.subscribe(changed);
+useRoleStore.subscribe(changed);
+useAttendanceStore.subscribe(changed);
+useHolidayStore.subscribe(changed);
+useShiftStore.subscribe(changed);
+usePayrollStore.subscribe(changed);
+
 useProductStore.subscribe(changed);
 useStockStore.subscribe(changed);
 usePosStore.subscribe(changed);

@@ -1,6 +1,6 @@
 # TindaPOS
 
-A frontend-only POS web app for Filipino stores. **Phase 4 is complete: Orders/refunds, Customers/wallets, Suppliers and Purchases, connected to the existing POS and Dashboard. Phase 5 has not started.** Built with Vite, React, strict TypeScript, React Router v6, Tailwind, lucide-react and Zustand. No backend, API calls or database server.
+A frontend-only POS web app for Filipino stores. **Phases 1–5 are complete: POS, inventory, orders, customers, suppliers, purchases, demo login/roles and the Staff workspace, including attendance, schedules, holidays and demo payroll. Phase 6 has not started.** Built with Vite, React, strict TypeScript, React Router v6, Tailwind, lucide-react and Zustand. No backend, API calls or database server.
 
 ## Run locally
 
@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Phase 4 adds no dependencies. No new install command is required for an existing checkout.
+Phase 5 adds no dependencies. No new install command is required for an existing checkout.
 
 `@hookform/resolvers` connects React Hook Form to Zod. The lockfile records the installed versions.
 
@@ -62,7 +62,7 @@ src/
 
 New pages and components call services, including the `useLocalData` subscription hook; they do not access business stores or browser storage directly. Services wrap the stores so their implementation can later be replaced by a backend.
 
-Structured business data uses Zustand persist and localStorage keys `tindapos:catalog`, `tindapos:products`, `tindapos:stock`, `tindapos:pos`, `tindapos:orders`, `tindapos:customers`, `tindapos:held-orders`, `tindapos:refund`, `tindapos:supplier`, `tindapos:purchase`, `tindapos:wallet` and `tindapos:activity`. Product records contain only an `imageId`. JPEG/PNG/WebP uploads are compressed in-browser to JPEG at quality 0.8 with a maximum dimension of 800px, then stored with idb-keyval in IndexedDB `tindapos:images`. Missing/inaccessible images show a neutral placeholder. No remote image requests are made.
+Structured business data uses Zustand persist and localStorage keys `tindapos:catalog`, `tindapos:products`, `tindapos:stock`, `tindapos:pos`, `tindapos:orders`, `tindapos:customers`, `tindapos:held-orders`, `tindapos:refund`, `tindapos:supplier`, `tindapos:purchase`, `tindapos:wallet` and `tindapos:activity`, plus Phase 5 keys `tindapos:auth`, `tindapos:staff`, `tindapos:roles`, `tindapos:attendance`, `tindapos:holidays`, `tindapos:shifts` and `tindapos:payroll`. Product records contain only an `imageId`. JPEG/PNG/WebP uploads are compressed in-browser to JPEG at quality 0.8 with a maximum dimension of 800px, then stored with idb-keyval in IndexedDB `tindapos:images`. Missing/inaccessible images show a neutral placeholder. No remote image requests are made.
 
 The first empty browser is seeded with eight categories and sixteen subcategories, eight brands, six units, 25 products and six variants. Some items have low or zero stock. Empty catalogs saved intentionally are not reseeded on refresh. Reset restores the demo catalog, six customers, 12 dated orders and matching Sale movements, and clears held orders and the open cart; export first to preserve your work. The catalog and stock remain shared, while saved orders and Dashboard figures are filtered by the selected branch.
 
@@ -107,7 +107,7 @@ All calculations enter integer centavos through `src/utils/pos.ts`. Decimal inpu
 
 One `posService.complete` call validates every line before writing, then records exactly one out movement per line with reason Sale and reference equal to its sequential `TP-000123` order number. Stock, customer credit/points, order counter/order and cart reset share rollback handling for browser write failures. Old price and cost snapshots are unaffected by subsequent catalogue edits. Loyalty awards one point per ₱100 actually paid; Regular/Silver/Gold/Platinum thresholds are 0/100/500/1000 points. These constants live in the POS config.
 
-GCash/Maya/Card/Bank are cashier labels only. There are no API calls, payment SDKs, real payment processing, refunds, cancellation, PDF export, barcode label printing or authentication.
+GCash/Maya/Card/Bank are cashier labels only. There are no API calls, payment SDKs, real payment processing, server authentication, PDF export or barcode label printing. Refund/cancellation records and demo authentication are implemented locally in Phases 4–5.
 
 ### Receipt printing
 
@@ -132,7 +132,7 @@ Browser verification confirmed receipt rendering and the Print action; the embed
 
 ## Route status
 
-`done` means implemented for its current phase. POS checkout and the specified Dashboard sales metrics use real browser-persisted orders; unrelated Dashboard cards and charts retain their demo/placeholder status. All routes not marked done remain placeholders. Existing menu URLs and the shorter Phase 2 URLs are both supported.
+`done` means implemented for its current phase. POS checkout and the specified Dashboard sales metrics use real browser-persisted orders; Staff Performance also reads real cashier orders; unrelated Dashboard cards and charts retain their demo/placeholder status. All routes not marked done remain placeholders. Existing menu URLs and the shorter Phase 2 URLs are both supported.
 
 | Route | Screen | Layout | Status |
 | --- | --- | --- | --- |
@@ -195,13 +195,13 @@ Browser verification confirmed receipt rendering and the Print action; the embed
 | `/reports/purchases` | Apps > Reports > Purchases | main | placeholder |
 | `/reports/finance` | Apps > Reports > Finance | main | placeholder |
 | `/reports/supplier` | Apps > Reports > Supplier | main | placeholder |
-| `/staff/staff-list` | Apps > Staff > Staff List | main | placeholder |
-| `/staff/add-staff` | Apps > Staff > Add Staff | main | placeholder |
-| `/staff/role-permission` | Apps > Staff > Role Permission | main | placeholder |
-| `/staff/attendance` | Apps > Staff > Attendance | main | placeholder |
-| `/staff/payroll` | Apps > Staff > Payroll | main | placeholder |
-| `/staff/holidays` | Apps > Staff > Holidays | main | placeholder |
-| `/staff/schedule` | Apps > Staff > Schedule | main | placeholder |
+| `/staff/staff-list` | Apps > Staff > Staff List | main | done |
+| `/staff/add-staff` | Apps > Staff > Add Staff | main | done |
+| `/staff/role-permission` | Apps > Staff > Role Permission | main | done |
+| `/staff/attendance` | Apps > Staff > Attendance | main | done |
+| `/staff/payroll` | Apps > Staff > Payroll | main | done |
+| `/staff/holidays` | Apps > Staff > Holidays | main | done |
+| `/staff/schedule` | Apps > Staff > Schedule | main | done |
 | `/multi-store/store-list` | Apps > Multi-Store > Store List | main | placeholder |
 | `/multi-store/add-store` | Apps > Multi-Store > Add Store | main | placeholder |
 | `/settings/tax` | Apps > Settings > Tax | main | placeholder |
@@ -270,6 +270,19 @@ Browser verification confirmed receipt rendering and the Print action; the embed
 | `/purchases/add` | Add Purchase alias | main | done |
 | `/purchases/:id` | Purchase Details | main | done |
 
+| `/staff` | Staff List alias | main | done |
+| `/staff/add` | Add Staff alias | main | done |
+| `/staff/:id/edit` | Edit Staff | main | done |
+| `/staff/roles` | Role Permission alias | main | done |
+| `/sign-in` | Sign In alias | auth | done |
+| `/sign-up` | Sign Up alias | auth | done |
+| `/forgot-password` | Forgot Password alias | auth | done |
+| `/two-step-verification` | Two Step Verification alias | auth | done |
+| `/reset-password` | Reset Password alias | auth | done |
+| `/successful-password` | Successful Password alias | auth | done |
+| `/account-deactivation` | Account Deactivation alias | auth | done |
+| `/403` | No access | standalone | done |
+
 ## Verification and local history
 
 - Phase 3: `npm run test` passes 28 Vitest tests covering centavos, VAT modes, mixed taxes, discount caps/distribution, rounding, splits/change, atomic checkout/rollback, stock and unit validation, immutable snapshots, credit, hold/resume, backup round trips, legacy imports, draft invariants and branch-filtered Dashboard calculations.
@@ -330,13 +343,121 @@ Use one origin throughout; browser storage is separate for each host/port. Expor
 - `npm run lint`: zero errors or warnings.
 - `npm run test:phase2`: all 20 previous service regression checks pass.
 - `npm run dev -- --host 127.0.0.1`: Vite served successfully. Browser smoke checks on the isolated test origin covered a restocked wallet refund and slip, customer wallet/profile, opening wallet customer creation, pending purchase creation with initial payment, partial receipt, supplier payment, supplier return, derived report, refresh and demo reset. These complement the automated financial tests; the checklist above covers the wider manual pass, including print preview.
-- All 42 requested steps have individual local commits on `main`, plus separate focused fixes found by tests and browser QA. Nothing is pushed and existing commits are preserved. Phase 5 work has not begun.
+- All 42 requested steps have individual local commits on `main`, plus separate focused fixes found by tests and browser QA. Nothing is pushed and existing commits are preserved. The Phase 5 additions are documented below.
 
 ```sh
 git log --oneline b31dd44..HEAD
 git status --short
 ```
 
-## Phase 5 notes
+## Phase 5 completed
 
-Stop at Phase 4 and wait for a new instruction. Accounts (income/expenses/banking), Reports, Staff, Multi-Store, Settings, communication tools, charting, real authentication/roles, online payment processing and server integration remain future work. The existing product/inventory placeholder pages listed in the route table remain placeholders. No Phase 5 features have been implemented.
+No new dependencies or installation commands are needed for an existing checkout. Use `npm run dev`, `npm run build` and `npm run test` as before.
+
+### Demo accounts and authentication
+
+Open `/sign-in` or `/auth/sign-in`. The form starts with the Admin demo email. **Any password, including an empty password, works; empty or unknown email signs in as an Admin.** A matching staff email signs in as that staff member. Sign In never checks credentials or expires a session.
+
+| Quick login | Email | Default access |
+| --- | --- | --- |
+| Admin | `admin@tindapos.demo` | All permissions, including staff management and payroll. Admin permissions are locked. |
+| Manager | `manager@tindapos.demo` | Every configured permission except `staff:manage`, `payroll:view` and `settings:manage`. This includes attendance, schedules, holidays and editable non-Admin roles. |
+| Cashier | `cashier@tindapos.demo` | POS/hold, order history, product viewing, customer creation, own attendance and own read-only schedule. Refund, cancellation, inventory adjustment and existing-customer edits are unavailable by default. |
+
+The user dropdown shows the actual name and role, a DEMO chip, a minimal profile drawer, Switch role and Logout. The POS Workspace menu links to permitted orders, customers, products and own attendance/schedule screens. Switching roles keeps the demo convenient without logging out; the first accessible route is selected after a switch or login. Access changes apply immediately to menus, route guards and service mutations. A forbidden direct URL renders 403.
+
+- `useAuthStore` persists only `currentUserId` under `tindapos:auth`. Refresh keeps the session; logout clears it and goes to `/sign-in`.
+- Sign Up creates an active Cashier staff record and signs in. Unique staff email and profile shape remain business validations; passwords are never checked or stored.
+- Forgot Password → six verification boxes (any code accepted) → Reset Password → Successful Password → Sign In is a UI flow. No messages are sent and no credentials are changed.
+- Account Deactivation marks the signed-in staff inactive, logs out and displays confirmation. Inactive demo staff can still sign in; protected pages show an inactive-account banner. The last active Admin cannot be deactivated, deleted or demoted.
+- No JWT, cookies, password hashes, authentication APIs, captcha, rate limiting or lockouts are implemented.
+
+### Staff and operations
+
+- Staff List has search, role/status/branch filters, total/active/on-duty/late summary cards, role/status/attendance chips and view/edit/deactivate actions. The profile drawer has Overview, the last 30 days of Attendance, permission-protected Payroll history, Schedule, Activity and real order/refund performance.
+- Add/Edit Staff uses Zod and React Hook Form, unique email, branch multi-select, hire date, hourly/monthly rates entered in PHP and stored as centavos, status and compressed avatar upload. It includes unsaved-change protection and Save and add another.
+- A staff member cannot change their own role or delete themselves. Staff referenced by attendance, payroll, shifts or orders must be deactivated instead of deleted. Renaming preserves stored historical cashier/actor names and retains identity links to their records.
+- Role Permission supports custom roles, search, module selection, an added/removed diff and confirmation before saving. Admin is locked; assigned custom roles cannot be deleted. System roles can reset to defaults.
+- Attendance has the current user's live clock and clock-in/out panel, Today and Records views, date/staff/status filters, worked-hour/late/absence summaries, CSV and a per-staff month calendar. Cashiers see only their own records. Manual corrections require a note and use source `manual`; duplicate staff/date records, double clock-in/out and invalid clock order are blocked.
+- Schedule has a staff-by-seven-days grid, week navigation, Morning 08:00–16:00, Mid 12:00–20:00 and Evening 14:00–22:00 templates, custom same-day times, branch/note, copy previous week, confirmed clear week and print styling. Overlaps block the entire operation. Holidays and leave show warnings without blocking shifts. Cashiers have read-only own schedules.
+- Holidays has searchable list and year calendar views, colored types, paid flags and CRUD. Date/name duplicates are blocked. The 2026 seed contains 12 regular and 8 special non-working nationwide holidays; EDSA's special working day is intentionally excluded. Sources: [Proclamation 1006 via NIA](https://omcrs.nia.gov.ph/?q=system/files/mc/2025_089.pdf), [Eid’l Fitr proclamation via Customs](https://customs.gov.ph/wp-content/uploads/2026/03/2026-31-OCOM-MEMO.pdf), and [Eid’l Adha declaration via PCO](https://pco.gov.ph/news_releases/palace-declares-may-27-as-a-regular-holiday-for-eidl-adha-observance/).
+
+### Demo payroll
+
+Payroll is labeled **demo computation, not statutory-compliant**. The defaults live in `src/config/payroll.ts`: regular hours up to 8/day, overtime at 1.25x, regular-holiday work at 2.0x, special-holiday work at 1.3x, and proportional late deductions. A configured paid holiday not worked receives a regular daily allowance. Monthly base is monthlyRate/2 per run, with a simple 26-day divisor for explicit unpaid absence/leave; custom periods do not introduce statutory proration.
+
+New payroll → semi-monthly 1–15 / 16–end or custom period → compute preview → optional additions/deductions → review totals → Save as Draft → Finalize → Mark as paid. Preview is not persisted until Save as Draft. Overlapping periods are rejected. Saving rejects a stale preview if attendance or rates changed. Finalized/paid runs are locked; later staff-rate changes do not rewrite snapshots. Late deductions are computed and locked; manual adjustments remain separately labeled. All money uses integer centavos and the existing rational rounding helpers.
+
+Payslips show employee, period/status, snapshot rates, attendance totals, earnings breakdown, additions/deductions and net pay. Draft slips are marked DRAFT. Print uses `window.print()` and a dedicated stylesheet; choose the printer and verify its native print preview. Mark as paid records a status/activity event only, with no transfer, accounting or expenses integration. SSS, PhilHealth, Pag-IBIG and taxes remain unimplemented.
+
+### Connections, persistence and migration
+
+- New activity records, orders/receipts, refunds and stock movements use the signed-in user. Activity timelines display actor names. Historical names stay stored on existing records.
+- Cashier discounts above the configurable 10% threshold require selecting a Manager/Admin demo approver, with no password. Checks cover per-item discounts and combined item/order discounts. The approver name is logged; approval stays tied to the cashier and exact cart, persists with that cart and is rechecked against current role permissions. Failed writes roll back both approval and its activity entry.
+- Dashboard Staff Performance uses actual branch-filtered orders, a Today/This week selector, refund-adjusted ranking, order count, net sales and active cashier count. Other placeholder analytics/charts stay unchanged.
+- The config-driven Staff sidebar badge counts active current-branch staff who are late or absent; missing attendance is not flagged before the shift grace period.
+- First-run/migration creates Admin/Manager/Cashier roles, 3 matching demo staff plus 5 other staff, 30 days of attendance, this week's shifts, 2026 holidays, one finalized run and one draft. An old state without Staff/auth data is logged out without replacing its Phase 2–4 business records.
+- JSON backups now include a `phase5` object: staff, roles, attendance records, holidays, shifts, payroll runs and demo session. Staff avatars are included and their IDs are remapped on import. The existing POS snapshot also includes any current discount approval.
+- Zod plus relational checks reject missing staff/roles/branches, duplicate emails/attendance, invalid shifts, overlapping runs, inconsistent payroll totals, a missing last active Admin or modified Admin permissions before writing. Legacy Phase 2–4 backups receive fresh Phase 5 seed data and a logged-out session.
+- Reset restores every phase's demo records, restores default roles, clears the cart and logs out. Import and reset require `settings:manage`; the existing General Settings Data card remains the entry point. The rest of Settings is still a placeholder.
+
+### Phase 5 route summary
+
+The full route table above remains the inventory for Phases 1–5.
+
+| Route(s) | Status | Default access |
+| --- | --- | --- |
+| `/sign-in`, `/auth/sign-in` | done | Public demo login |
+| `/sign-up`, `/forgot-password`, `/two-step-verification`, `/reset-password`, `/successful-password`, `/account-deactivation` and matching `/auth/*` routes | done | Public UI flow; deactivation requires a signed-in staff record |
+| `/staff`, `/staff/staff-list` | done | Admin, Manager |
+| `/staff/add`, `/staff/add-staff`, `/staff/:id/edit` | done | Admin |
+| `/staff/roles`, `/staff/role-permission` | done | Admin, Manager; Admin role locked |
+| `/staff/attendance` | done | Admin, Manager; Cashier own only |
+| `/staff/schedule` | done | Admin, Manager; Cashier own read only |
+| `/staff/holidays` | done | Admin, Manager |
+| `/staff/payroll` | done | Admin |
+| `/403` and forbidden protected URLs | done | No-access recovery |
+| `/` | done | Admin, Manager; includes real staff performance |
+| `/pos`, implemented Products/Inventory/Orders/Customers/Suppliers/Purchases routes | done | Existing modules with role guards and action checks |
+| Accounts, Reports, Multi-Store, Calendar, Chat, Email, Pages/Profile/Account/Pricing | placeholder | Permission-filtered planned pages |
+| Settings routes, including `/settings/general` | placeholder | Existing Data backup/reset card only |
+| Previously unbuilt product/inventory pages | placeholder | As listed in the full route table |
+
+### Phase 5 manual checklist
+
+Use one origin throughout. Older phase checklists can be run as Admin. The following are repeatable manual steps, not a claim that native printing has been automated.
+
+1. [ ] Open Sign In. Submit blank credentials, then any random email/password: both sign in as Admin. Refresh, confirm the session remains, then Logout and confirm `/sign-in`.
+2. [ ] Click Login as Cashier. Check the visible name and Workspace destinations. Open `/staff` and `/staff/payroll` directly: both show 403. Refund/Cancel and product creation/deletion are unavailable.
+3. [ ] Add a product, apply a 20% discount: Manager approval required appears. Choose Demo Manager and approve without a password. Complete the sale; receipt says Demo Cashier and includes the approved discount. Refreshing an approved unchanged cart retains its approval.
+4. [ ] Switch to Manager using the DEMO role switcher. Open the Cashier's order and refund a permitted quantity. Check the refund actor, slip, stock, wallet/loyalty effects and activity. Existing refund/stock/discount limits still apply.
+5. [ ] Switch to Admin, open Role Permission, grant Cashier `orders:refund`, review the diff and confirm. Switch to Cashier and confirm access immediately. Restore defaults; confirm the action disappears without refresh. Admin permissions remain locked.
+6. [ ] Add/edit staff with branches, rates and avatar; try duplicate email, invalid fields, unsaved navigation and Save and add another. Your own role is locked. Create a custom role, assign it and confirm deletion is blocked until reassigned.
+7. [ ] Try deactivating the last active Admin: blocked. Deactivate another staff member, sign in using that email and confirm the inactive banner. Historical orders/attendance/payroll remain.
+8. [ ] As Cashier, open My attendance from Workspace. Clock In, try Clock In again, then Clock Out. Only own records are visible. As Manager/Admin, add/edit a manual record with a required note, filter ranges, inspect the calendar and export CSV.
+9. [ ] Open Schedule. Add template/custom shifts, test overlap and end-before-start rejection, copy a previous week, clear with confirmation and navigate weeks. Add a shift on a holiday or leave date: a warning appears but save is allowed. Cashier sees only their own read-only row. Check print preview.
+10. [ ] Open Holidays in list and calendar modes. Create/edit/delete a store holiday, reject a duplicate date/name, toggle paid and inspect attendance holiday status and subsequent payroll computation.
+11. [ ] Create a payroll for an unused period. Preview, add a labeled bonus/deduction, review totals and Save as Draft. Finalize, confirm adjustments are gone/locked, then Mark as paid. A duplicate/overlapping period must be rejected. Inspect/print a staff payslip with snapshot earnings and rates.
+12. [ ] Check Staff profile tabs, activity actor names and real sales/refund counts. In Dashboard, select Today and This week and compare top cashier/net sales with the current branch's real orders.
+13. [ ] Export JSON as Admin. Reset: session clears. Log in as Admin and import the backup; compare staff, roles, attendance, shifts, holidays, payroll, cart, avatars and the saved session. Corrupt a staff reference or payroll total and confirm import rejects it without changing data.
+14. [ ] Walk Forgot Password → any verification code → any reset-password values → Successful Password → Sign In. No credentials are changed and no mail is sent. Sign Up creates and signs in an active Cashier.
+15. [ ] As a non-last-Admin user, use Profile → Deactivate account, confirm the success page and logout, then sign in again and check the inactive banner. Finish by resetting demo data as Admin.
+16. [ ] Check keyboard access, empty states, dark mode, narrow layouts, scrolling tables/dialogs and native payslip/schedule/receipt print previews.
+
+### Phase 5 verification and local history
+
+- `npm run build`: strict TypeScript and production build pass.
+- `npm run test`: 219 tests pass across 11 files. Coverage includes default/custom roles and route mapping, last-admin/self-role/custom-role protections, clock/late/worked hours, shift overlaps, exact-centavo regular/overtime/holiday/monthly payroll and period locking, staff history after rename, discount approval/revocation/rollback, real staff performance and Phase 5 backup migration/round trips/corruption rejection.
+- `npm run lint`: zero errors and warnings.
+- `npm run test:phase2`: all 20 legacy isolated service checks pass.
+- `npm run dev -- --host 127.0.0.1 --port 5175 --strictPort`: served successfully for an isolated browser smoke pass. Verified payroll preview, PHP bonus, saved draft, finalization/locked controls, paid status/activity, payslip earnings, saving the current Admin's profile, blocked last-admin deactivation, Cashier quick login, 20% approval picker, approved checkout/receipt name and Cashier 403 on Staff. The earlier Step 27 browser pass verified the weekly grid, overlap error and Cashier own read-only schedule. Native printer output remains a manual checklist step.
+- All 35 requested steps have individual Conventional Commits on `main`. Additional focused `fix` commits preserve the original history. No commits are rewritten and nothing is pushed.
+
+```sh
+git log --oneline ca567bc..HEAD
+git status --short
+```
+
+## Phase 6 notes
+
+Stop after Phase 5 and wait for a new instruction. Accounts/expenses integration, Reports, full Settings, Multi-Store separation, Calendar, Chat, Email, Pages/Profile/Account/Pricing, statutory payroll deductions, new charts, real authentication, online payments and backend/server integration remain unimplemented. Phase 6 has not started.

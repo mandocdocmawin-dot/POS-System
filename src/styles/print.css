@@ -1,0 +1,24 @@
+.receipt { width: var(--receipt-width, 80mm); }
+.receipt-bars {
+ background: repeating-linear-gradient(90deg,#000 0 1px,transparent 1px 3px,#000 3px 6px,transparent 6px 7px,#000 7px 9px,transparent 9px 13px);
+ print-color-adjust: exact;
+ -webkit-print-color-adjust: exact;
+}
+@media print {
+ html, body { margin: 0 !important; padding: 0 !important; height: auto !important; background: white !important; color: black !important; }
+ body > * { display: none !important; }
+ body > dialog:has(#pos-receipt) {
+  display: block !important; position: static !important; inset: auto !important;
+  width: max-content !important; max-width: none !important; height: auto !important;
+  max-height: none !important; margin: 0 !important; padding: 0 !important;
+  overflow: visible !important; border: 0 !important; border-radius: 0 !important;
+  box-shadow: none !important; background: white !important; color: black !important;
+ }
+ dialog::backdrop { display: none !important; }
+ dialog:has(#pos-receipt) > div:not(:has(#pos-receipt)), .receipt-actions { display: none !important; }
+ dialog:has(#pos-receipt) > div:has(#pos-receipt) { margin: 0 !important; padding: 0 !important; }
+ #pos-receipt { width: var(--receipt-width, 80mm); max-width: none !important; padding: 4mm; font-size: 10px; line-height: 1.4; }
+ #pos-receipt h2 { color: black !important; }
+ #pos-receipt tr, #pos-receipt footer { break-inside: avoid; }
+ #pos-receipt thead { display: table-header-group; }
+}

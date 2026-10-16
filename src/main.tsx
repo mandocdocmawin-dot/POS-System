@@ -1,3 +1,4 @@
+import './styles/print.css';
 import {initializePosData} from './services/initializePosData';
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

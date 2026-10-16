@@ -1,0 +1,14 @@
+import {useState} from 'react';
+import {Link,useParams,useNavigate} from 'react-router-dom';
+import {Component as SuppliersPage} from './SuppliersPage';
+import {Drawer} from '../../components/common/Drawer';
+import {Tabs} from '../../components/common/Tabs';
+import {Timeline} from '../../components/common/Timeline';
+import {EntityLink} from '../../components/common/EntityLink';
+import {ConfirmDialog} from '../../components/common/ConfirmDialog';
+import {supplierService} from '../../services/supplierService';
+import {purchaseService} from '../../services/purchaseService';
+import {supplierPaymentService} from '../../services/supplierPaymentService';
+import {useLocalData} from '../../services/useLocalData';
+import {formatPHP} from '../../utils/money';
+export function Component(){useLocalData();const {id=''}=useParams(),navigate=useNavigate(),[tab,setTab]=useState('Overview'),[confirm,setConfirm]=useState(false),s=supplierService.get(id);if(!s)return <p role="alert">Supplier not found. <Link to="/suppliers">Suppliers</Link></p>;const report=supplierService.report(id);return <><SuppliersPage/><Drawer open title={s.name} onClose={()=>navigate('/suppliers')}><div className="mb-5 flex flex-wrap gap-2"><Link className="btn" to={`/suppliers/${id}/edit`}>Edit</Link><Link className="btn-primary" to={`/suppliers/payments?supplier=${id}`}>Record payment</Link><button className="btn" disabled={s.status==='inactive'} onClick={()=>setConfirm(true)}>Deactivate</button></div><Tabs items={['Overview','Purchases','Payments','Returns']} value={tab} onChange={setTab}/>{tab==='Overview'?<div className="space-y-3"><p>Contact: {s.contactPerson??'—'}</p><p>{s.phone} · {s.email}</p><p>{s.address}</p><p>Status: {s.status}</p><p>Total purchased: {formatPHP(report.total)}</p><p>Payments: {formatPHP(report.paid)}</p><p>Returns / credits: {formatPHP(report.returns)}</p><p className="font-semibold">Balance owed: {formatPHP(report.balance)}</p><p>{s.notes}</p></div>:tab==='Purchases'?<div className="space-y-3">{purchaseService.list().filter(p=>p.supplierId===id).map(p=><p key={p.id}><EntityLink type="purchases" id={p.id}>{p.purchaseNo}</EntityLink> · {p.date} · {formatPHP(p.grandTotal)} · {p.receiveStatus}</p>)}{!purchaseService.list().some(p=>p.supplierId===id)&&<p>No purchases yet.</p>}</div>:tab==='Payments'?<Timeline items={supplierPaymentService.list(id).map(p=>({...p,description:`${p.method}: ${formatPHP(p.amount)} · ${p.reference??''}`}))}/>:<Timeline items={purchaseService.returns().filter(r=>r.supplierId===id).map(r=>({...r,description:`${r.returnNo}: ${formatPHP(r.creditAmount)} · ${r.reason}`}))}/>}</Drawer><ConfirmDialog open={confirm} title="Deactivate supplier?" message="Existing purchases and payment history remain available." onClose={()=>setConfirm(false)} onConfirm={()=>{supplierService.save({...s,status:'inactive'},id);}}/></>;}

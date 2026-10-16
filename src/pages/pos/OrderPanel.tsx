@@ -1,3 +1,4 @@
+import {PaymentModal} from '../../components/pos/PaymentModal';
 import {holdService} from '../../services/holdService';
 import {HeldOrdersDrawer} from '../../components/pos/HeldOrdersDrawer';
 import {OrderTextModal} from '../../components/pos/OrderTextModal';
@@ -17,6 +18,7 @@ import {CartLine} from '../../components/pos/CartLine';
 import {ConfirmDialog} from '../../components/common/ConfirmDialog';
 export function OrderPanel(){
  useLocalData();const s=posService.state(),totals=posService.totals();
+ const [paymentOpen,setPaymentOpen]=useState(false);
  const [holding,setHolding]=useState(false),[heldOpen,setHeldOpen]=useState(false),[noteOpen,setNoteOpen]=useState(false);
  const [customerOpen,setCustomerOpen]=useState(false);
  const [discountOpen,setDiscountOpen]=useState(false);
@@ -28,6 +30,8 @@ export function OrderPanel(){
  {s.cart.length?totals.items.map(l=><CartLine key={`${l.id}-${l.quantity}`} line={l} selected={selected===l.id} onSelect={()=>setSelected(l.id)}/>):<div className="flex flex-1 flex-col items-center justify-center gap-3 py-20 text-slate-400"><ShoppingBag size={65} strokeWidth={1}/><p>Your cart is empty</p><p className="text-xs">Select products to start a sale.</p></div>}
  <CartSummary totals={totals} onDiscount={()=>setDiscountOpen(v=>!v)}/>{discountOpen&&<DiscountEditor value={s.orderDiscount} onSave={v=>{posService.discount(v);}} onClose={()=>setDiscountOpen(false)}/>}
  {s.note&&<p className="mt-3 break-words text-xs text-slate-500">Note: {s.note}</p>}
+ <button className="btn-primary mt-5 w-full disabled:opacity-40" disabled={!s.cart.length} onClick={()=>setPaymentOpen(true)}>Process to Payment →</button>
+ {paymentOpen&&<PaymentModal onClose={()=>setPaymentOpen(false)}/>}
  <div className="mt-4 flex gap-2"><button disabled={!s.cart.length} className="btn flex-1 disabled:opacity-40" onClick={()=>setHolding(true)}><Pause size={14}/>Hold</button><button className="btn" onClick={()=>setHeldOpen(true)} aria-label="Open held orders">Held ({holdService.list().length})</button></div>
  {holding&&<OrderTextModal title="Hold order" label="Label (optional)" onSave={label=>{holdService.hold(label);}} onClose={()=>setHolding(false)}/>}
  {noteOpen&&<OrderTextModal title="Order note" label="Note" initial={s.note} onSave={note=>{posService.note(note);}} onClose={()=>setNoteOpen(false)}/>}

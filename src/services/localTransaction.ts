@@ -40,7 +40,7 @@ export function localTransaction<T>(write: () => T): T {
       }
     }
     throw new Error(
-      cause instanceof Error ? cause.message : "Unable to save data in this browser. Check available browser storage and try again.",
+      `Unable to save data in this browser. ${cause instanceof Error ? cause.message : "Check available browser storage and try again."}`,
       { cause },
     );
   }

@@ -2,7 +2,7 @@ import {useRef,useState} from 'react';
 import {useParams,useNavigate} from 'react-router-dom';
 import {useForm,useWatch} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {customerFormSchema,type CustomerFormValues} from '../../components/customers/customerFormSchema';
+import {customerFormSchema,type CustomerFormValues} from '../../types/customer';
 import {UnsavedChanges} from '../../components/common/UnsavedChanges';
 import {PageActions} from '../../components/common/PageActions';
 import {customerService} from '../../services/customerService';

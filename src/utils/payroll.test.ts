@@ -183,3 +183,18 @@ describe('payroll period validation', () => {
       periodStart: '2026-10-16', periodEnd: '2026-10-31' })], 'run-1')).toThrow('overlap');
   });
 });
+
+describe('exact payroll rounding and earning snapshots', () => {
+ it('rounds an exact half cent up without floating point drift', () => {
+  const line=computePayrollLine({...staff,hourlyRate:10050},[attendance({clockOut:date+'T02:01:00.000Z'})],[],date,date);
+  expect(line.grossPay).toBe(10218);
+  expect(line.earnings?.reduce((n,e)=>n+e.amount,0)).toBe(line.grossPay);
+ });
+ it('pays a configured paid holiday when it was not worked, including an absent entry', () => {
+  const line=computePayrollLine(staff,[attendance({clockIn:undefined,clockOut:undefined,status:'absent'})],[holiday()],date,date);
+  expect(line.grossPay).toBe(80000);expect(line.earnings?.find(e=>e.label==='Paid holidays not worked')?.amount).toBe(80000);
+ });
+ it('rejects amounts beyond the supported centavo range',()=>{
+  expect(()=>computePayrollLine({...staff,hourlyRate:Number.MAX_SAFE_INTEGER},[attendance()],[],date,date)).toThrow('supported');
+ });
+});

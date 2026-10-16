@@ -4,6 +4,7 @@ import { permissionKeys } from '../config/permissions';
 import { branches } from '../store/useBranchStore';
 import { localDate } from '../utils/attendance';
 import { validateShift } from '../utils/schedule';
+import { sumCentavos } from '../utils/pos';
 import { payrollNet, validatePeriod } from '../utils/payroll';
 export const staffBackupSchema = z.object({
   staff: z.array(staffSchema).min(1), roles: z.array(roleSchema).min(3), records: z.array(attendanceSchema),
@@ -55,6 +56,7 @@ export function validateStaffBackup(data: StaffBackup) {
     for (const line of run.lines) {
       if (!data.staff.some(s => s.id === line.staffId)) fail('payroll staff is missing.');
       if (line.payType === 'monthly' && !line.monthlyRate) fail('monthly payroll snapshot rate is missing.');
+      if (line.earnings && sumCentavos(line.earnings.map(e => e.amount)) !== line.grossPay) fail('payroll gross earnings do not match the snapshot.');
       if (line.netPay !== payrollNet(line)) fail('payroll net pay does not match earnings and deductions.');
     }
   }

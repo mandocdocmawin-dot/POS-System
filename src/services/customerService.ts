@@ -1,3 +1,4 @@
+import {useOrderStore} from '../store/useOrderStore';
 import {activityService} from './activityService';
 import {z} from 'zod';
 import {useCustomerStore} from '../store/useCustomerStore';
@@ -6,6 +7,7 @@ import {customerSchema,type Customer} from '../types/pos';
 import {toCentavos,fromCentavos,sumCentavos} from '../utils/pos';
 export const quickCustomerSchema=z.object({name:z.string().trim().min(1,'Name is required.').max(120),phone:z.string().trim().max(40).optional()});
 export const customerService={
+ stats:(id:string)=>{const orders=useOrderStore.getState().orders.filter(o=>o.customerId===id&&o.orderStatus!=='cancelled');return {count:orders.length,spent:fromCentavos(orders.reduce((n,o)=>n+toCentavos(o.grandTotal)-toCentavos(o.refundedTotal),0))};},
  list:(query='')=>structuredClone(useCustomerStore.getState().customers.filter(c=>`${c.name} ${c.phone??''}`.toLowerCase().includes(query.toLowerCase()))),
  get:(id=WALK_IN_ID)=>structuredClone(useCustomerStore.getState().customers.find(c=>c.id===id)),
  add:(input:z.infer<typeof quickCustomerSchema>)=>{const fields=quickCustomerSchema.parse(input);const c=customerSchema.parse({...fields,id:crypto.randomUUID(),points:0,tier:'Regular',creditBalance:0,createdAt:new Date().toISOString()});useCustomerStore.setState(s=>({customers:[...s.customers,c]}));activityService.log("customer",c.id,"create",`Created ${c.name}`);return c;},

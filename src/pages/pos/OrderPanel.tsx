@@ -1,3 +1,4 @@
+import {PayLaterModal} from '../../components/pos/PayLaterModal';
 import type {Order,Payment} from '../../types/pos';
 import {Modal} from '../../components/common/Modal';
 import {toast} from '../../services/toastService';
@@ -22,6 +23,7 @@ import {CartLine} from '../../components/pos/CartLine';
 import {ConfirmDialog} from '../../components/common/ConfirmDialog';
 export function OrderPanel(){
  useLocalData();const s=posService.state(),totals=posService.totals();
+ const [payLaterOpen,setPayLaterOpen]=useState(false);
  const [receipt,setReceipt]=useState<Order|null>(null);
  const complete=(payments:Payment[])=>{const order=posService.complete(payments);setPaymentOpen(false);setReceipt(order);toast.success('Sale saved: '+order.orderNo);};
  const [paymentOpen,setPaymentOpen]=useState(false);
@@ -38,6 +40,8 @@ export function OrderPanel(){
  {s.note&&<p className="mt-3 break-words text-xs text-slate-500">Note: {s.note}</p>}
  <button className="btn-primary mt-5 w-full disabled:opacity-40" disabled={!s.cart.length} onClick={()=>setPaymentOpen(true)}>Process to Payment →</button>
  {paymentOpen&&<PaymentModal onComplete={complete} onClose={()=>setPaymentOpen(false)}/>}
+ {payLaterOpen&&<PayLaterModal onClose={()=>setPayLaterOpen(false)} onSelectCustomer={()=>{setPayLaterOpen(false);setCustomerOpen(true);toast.info('Select a customer, then choose Pay Later again.');}} onComplete={order=>{setPayLaterOpen(false);setReceipt(order);toast.success('Credit sale saved: '+order.orderNo);}}/>}
+ <button className="btn mt-3 disabled:opacity-40" disabled={!s.cart.length} onClick={()=>setPayLaterOpen(true)}>Pay Later</button>
  <div className="mt-4 flex gap-2"><button disabled={!s.cart.length} className="btn flex-1 disabled:opacity-40" onClick={()=>setHolding(true)}><Pause size={14}/>Hold</button><button className="btn" onClick={()=>setHeldOpen(true)} aria-label="Open held orders">Held ({holdService.list().length})</button></div>
  {holding&&<OrderTextModal title="Hold order" label="Label (optional)" onSave={label=>{holdService.hold(label);}} onClose={()=>setHolding(false)}/>}
  {noteOpen&&<OrderTextModal title="Order note" label="Note" initial={s.note} onSave={note=>{posService.note(note);}} onClose={()=>setNoteOpen(false)}/>}

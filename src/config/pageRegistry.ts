@@ -1,5 +1,6 @@
 // Add a page loader and its path here when a future feature is implemented.
 export const pageLoaders = {
+ schedule:()=>import("../pages/staff/SchedulePage"),
  holidays:()=>import("../pages/staff/HolidaysPage"),
  attendance:()=>import("../pages/staff/AttendancePage"),
  roles:()=>import("../pages/staff/RolesPage"),
@@ -44,6 +45,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+  "/staff/schedule":"schedule",
   "/staff/add":"staffForm",
   "/staff/add-staff":"staffForm",
   "/staff/:id/edit":"staffForm",

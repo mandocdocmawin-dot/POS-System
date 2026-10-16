@@ -25,3 +25,25 @@
 
 @media print { body:has(#purchase-order) * { visibility: hidden !important; } body:has(#purchase-order) #purchase-order, body:has(#purchase-order) #purchase-order * { visibility: visible !important; } #purchase-order { position: absolute; top: 0; left: 0; width: 100%; border: 0; color: black; background: white; } }
 @media print { body:has(#purchase-order) > #root { display: block !important; } }
+
+@page staff-schedule { size: landscape; margin: 10mm; }
+@media print {
+ body:has(#staff-schedule) > #root { display: block !important; }
+ body:has(#staff-schedule) #root * { visibility: hidden !important; }
+ body:has(#staff-schedule) #staff-schedule,
+ body:has(#staff-schedule) #staff-schedule * { visibility: visible !important; }
+ #staff-schedule * { color: #111 !important; background-color: white !important; }
+ #staff-schedule {
+  page: staff-schedule; position: absolute; top: 0; left: 0; width: 100%;
+  margin: 0; padding: 0; border: 0; box-shadow: none;
+  background: white !important; color: black !important; font-size: 9pt;
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+ }
+ #staff-schedule .schedule-scroll { overflow: visible !important; }
+ #staff-schedule table { min-width: 0 !important; }
+ #staff-schedule th, #staff-schedule td { padding: 2mm; border-color: #cbd5e1 !important; }
+ #staff-schedule thead { display: table-header-group; }
+ #staff-schedule tr { break-inside: avoid; }
+ #staff-schedule .schedule-add { display: none !important; }
+ #staff-schedule button { border: 0; box-shadow: none; }
+}

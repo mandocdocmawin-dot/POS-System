@@ -1,3 +1,4 @@
+import {discountApprovalService} from './discountApprovalService';
 import {requirePermission} from './authService';
 import {walletService} from './walletService';
 import {toCentavos,fromCentavos,sumCentavos} from '../utils/pos';
@@ -38,8 +39,8 @@ export const posService={
  },
  quantity:(id:string,quantity:number)=>{const cart=posService.state().cart.map(l=>l.id===id?{...l,quantity}:l);validateCart(cart);usePosStore.setState({cart});},
  remove:(id:string)=>usePosStore.setState(s=>({cart:s.cart.filter(l=>l.id!==id)})),
- lineDiscount:(id:string,input:Discount)=>{const discount=discountSchema.parse(input),state=posService.state();const cart=state.cart.map(l=>l.id===id?{...l,discountType:discount.type,discountValue:discount.value}:l);calculateTotals(cart,state.orderDiscount);usePosStore.setState({cart});},
- discount:(input:Discount)=>{const discount=discountSchema.parse(input);calculateTotals(posService.state().cart,discount);usePosStore.setState({orderDiscount:discount});},
+ lineDiscount:(id:string,input:Discount,approverId?:string)=>{const discount=discountSchema.parse(input),state=posService.state();const cart=state.cart.map(l=>l.id===id?{...l,discountType:discount.type,discountValue:discount.value}:l);calculateTotals(cart,state.orderDiscount);localTransaction(()=>{discountApprovalService.ensure(cart,state.orderDiscount,approverId);usePosStore.setState({cart});});},
+ discount:(input:Discount,approverId?:string)=>{const discount=discountSchema.parse(input);calculateTotals(posService.state().cart,discount);localTransaction(()=>{discountApprovalService.ensure(posService.state().cart,discount,approverId);usePosStore.setState({orderDiscount:discount});});},
  customer:(id:string)=>{if(!customerService.get(id))throw new Error('Customer not found.');usePosStore.setState({customerId:id});},
  note:(note:string)=>{if(note.length>2000)throw new Error('Note must be at most 2000 characters.');usePosStore.setState({note});},
  clear:()=>usePosStore.setState({cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:orderService.nextOrderNo()}),
@@ -47,7 +48,7 @@ export const posService={
  complete:(payments:Payment[],options:{payLater?:boolean;dueDate?:string}={}):Order=>{requirePermission('pos:use');
  const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
  const c=customerService.get(s.customerId);if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
- const totals=calculateTotals(s.cart,s.orderDiscount);const paid=calculatePayments(totals.grandTotal,payments);
+ discountApprovalService.ensure(s.cart,s.orderDiscount);const totals=calculateTotals(s.cart,s.orderDiscount);const paid=calculatePayments(totals.grandTotal,payments);
  if(!options.payLater&&paid.balanceDue>0)throw new Error('Payment does not cover the total.');
  const wallet=sumCentavos(payments.filter(p=>p.method==='wallet').map(p=>toCentavos(p.amount)));
  if(wallet&&(c.isWalkIn||c.status!=='active'||wallet>toCentavos(c.walletBalance)))throw new Error('Insufficient customer wallet balance.');

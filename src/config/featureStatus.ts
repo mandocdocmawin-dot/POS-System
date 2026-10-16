@@ -565,3 +565,16 @@ featureStatus['/'].description = 'Live branch-filtered sales, order history, tra
 
 export const phase4Paths=Object.keys(implementedPages).filter(path=>['/orders','/customers','/suppliers','/purchases'].some(prefix=>path===prefix||path.startsWith(prefix+'/')));
 for(const path of phase4Paths)featureStatus[path]={status:'done',description:'Working Phase 4 module with browser-persisted records, validated financial and stock actions, and activity history.',plannedFeatures:[]};
+
+// Phase 5 ships demo auth and Staff; later business modules remain placeholders.
+export const phase5Paths = [
+  ...Object.keys(implementedPages).filter(path => path === '/staff' || path.startsWith('/staff/') || path.startsWith('/auth/')),
+  '/sign-in', '/sign-up', '/forgot-password', '/two-step-verification',
+  '/reset-password', '/successful-password', '/account-deactivation', '/403',
+];
+for (const path of phase5Paths) featureStatus[path] = {
+  status: 'done',
+  description: path.includes('staff') ? 'Working browser-persisted staff, permissions, attendance, shifts, holidays and demo payroll.' : 'Working demo authentication flow with persisted sessions and role-based access.',
+  plannedFeatures: [],
+};
+featureStatus['/'].description = 'Live branch-filtered sales, order history, payments and staff performance by cashier. Other analytics remain demo placeholders.';

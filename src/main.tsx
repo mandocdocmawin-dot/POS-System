@@ -1,3 +1,4 @@
+import {initializeStaffData} from './data/seed/phase5';
 import './styles/print.css';
 import {initializePosData} from './services/initializePosData';
 import { StrictMode } from "react";
@@ -8,6 +9,7 @@ import App from "./App.tsx";
 import { dataService } from "./services/dataService";
 dataService.initialize();
 initializePosData();
+initializeStaffData();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

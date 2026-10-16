@@ -47,3 +47,21 @@
  #staff-schedule .schedule-add { display: none !important; }
  #staff-schedule button { border: 0; box-shadow: none; }
 }
+
+@page staff-payslip { size: A4; margin: 15mm; }
+@media print {
+ body > dialog:has(#staff-payslip) {
+  display: block !important; position: static !important; inset: auto !important;
+  width: 100% !important; max-width: none !important; height: auto !important;
+  max-height: none !important; margin: 0 !important; padding: 0 !important;
+  overflow: visible !important; border: 0 !important; box-shadow: none !important;
+  background: white !important; color: black !important;
+ }
+ body > dialog:has(#staff-payslip) > div:not(:has(#staff-payslip)),
+ .payslip-actions { display: none !important; }
+ dialog:has(#staff-payslip) > div:has(#staff-payslip) { padding: 0 !important; }
+ #staff-payslip { page: staff-payslip; width: 100%; padding: 0; font-size: 11pt; }
+ #staff-payslip, #staff-payslip * { color: black !important; background: white !important; }
+ #staff-payslip tr, #staff-payslip footer { break-inside: avoid; }
+ #staff-payslip thead { display: table-header-group; }
+}

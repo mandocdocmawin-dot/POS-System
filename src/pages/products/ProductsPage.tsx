@@ -1,3 +1,4 @@
+import {Can} from '../../components/auth/Can';
 import { stockStatus } from "../../utils/stock";
 import { ProductDetails } from "./ProductDetails";
 import { useState } from "react";
@@ -61,9 +62,9 @@ export function Component() {
         >
           Export CSV
         </button>
-        <Link className="btn-primary" to="/products/add">
+        <Can permission="products:create"><Link className="btn-primary" to="/products/add">
           Add Product
-        </Link>
+        </Link></Can>
       </PageActions>
       <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Select
@@ -111,12 +112,12 @@ export function Component() {
         </Select>
       </div>
       {selected.length > 0 && (
-        <button
+        <Can permission="products:delete"><button
           className="btn mb-3 text-red-500"
           onClick={() => setDeleting(selected)}
         >
           Delete selected ({selected.length})
-        </button>
+        </button></Can>
       )}
       <section className="card p-0">
         <DataTable
@@ -202,20 +203,20 @@ export function Component() {
               >
                 View
               </button>
-              <Link
+              <Can permission="products:edit"><Link
                 className="text-indigo-500"
                 to={`/products/${p.id}/edit`}
                 aria-label={`Edit ${p.name}`}
               >
                 Edit
-              </Link>
-              <button
+              </Link></Can>
+              <Can permission="products:delete"><button
                 className="text-red-500"
                 onClick={() => setDeleting([p.id])}
                 aria-label={`Delete ${p.name}`}
               >
                 Delete
-              </button>
+              </button></Can>
             </div>
           )}
         />

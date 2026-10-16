@@ -1,8 +1,10 @@
+import {usePermission} from '../../hooks/usePermission';
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { quickActions } from "../../config/quickActions";
 import { Popover } from "../common/Popover";
 export function AddNewMenu() {
+ const {canPath}=usePermission();
   return (
     <Popover
       label="Add new"
@@ -15,7 +17,7 @@ export function AddNewMenu() {
       }
     >
       <div className="grid w-[560px] max-w-[calc(100vw-2rem)] grid-cols-2 gap-1 p-2 sm:grid-cols-3">
-        {quickActions.map(({ label, path, icon: Icon }) => (
+        {quickActions.filter(a=>canPath(a.path)).map(({ label, path, icon: Icon }) => (
           <Link
             key={label}
             to={path}

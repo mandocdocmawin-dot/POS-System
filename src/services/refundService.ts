@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import {useRefundStore} from '../store/useRefundStore';
 import {useOrderStore} from '../store/useOrderStore';
 import {useCustomerStore} from '../store/useCustomerStore';
@@ -24,7 +25,7 @@ export const refundService={
   if(input.restock)for(const l of items)if(!stockService.items().some(x=>x.product.id===l.productId&&x.variant?.id===l.variantId))throw new Error('Restore the original product before restocking.');
   return refundSchema.parse({id:crypto.randomUUID(),refundNo:`RF-${String(useRefundStore.getState().counter+1).padStart(6,'0')}`,orderId:o.id,items,reason:input.reason,refundAmount:p(total),refundMethod:input.refundMethod,restock:input.restock,note:input.note,createdAt:new Date().toISOString(),createdBy:'Demo Admin'});
  },
- create:(input:RefundInput)=>{
+ create:(input:RefundInput)=>{requirePermission('orders:refund');
   const r=refundService.preview(input),o=orderService.get(r.orderId)!;
   return localTransaction(()=>{
    if(r.restock)for(const l of r.items)stockService.record({productId:l.productId,variantId:l.variantId,type:'in',quantity:l.quantity,reason:'Customer return',reference:r.refundNo,createdAt:r.createdAt});

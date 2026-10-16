@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import {useOrderStore} from '../store/useOrderStore';
 import { localTransaction } from "./localTransaction";
 import {
@@ -61,6 +62,7 @@ export const productService = {
       variantOpening?: Record<string, number>;
     } = {},
   ) => {
+    requirePermission(input.id?'products:edit':'products:create');
     const state = useProductStore.getState();
     const current = state.products.find((p) => p.id === input.id);
     if (input.id && !current) throw new Error("Product no longer exists.");
@@ -152,7 +154,7 @@ export const productService = {
     });
     return p;
   },
-  removeMany: (ids: string[]) => {
+  removeMany: (ids: string[]) => {requirePermission('products:delete');
     if(useOrderStore.getState().orders.some(o=>o.items.some(l=>ids.includes(l.productId))))
       throw new Error('Sold products cannot be deleted. Set their status to inactive instead.');
     return localTransaction(() => {
@@ -165,7 +167,7 @@ export const productService = {
       }));
     });
   },
-  saveVariant: (productId: string, input: VariantInput) => {
+  saveVariant: (productId: string, input: VariantInput) => {requirePermission('products:edit');
     const product = productService.get(productId);
     if (!product) throw new Error("Product not found.");
     const current = productService.variants(productId);
@@ -186,7 +188,7 @@ export const productService = {
     );
     return variant;
   },
-  removeVariant: (id: string) => {
+  removeVariant: (id: string) => {requirePermission('products:delete');
     const v = useProductStore.getState().variants.find((x) => x.id === id);
     if (!v) throw new Error("Variant not found.");
     const p = productService.get(v.productId)!;

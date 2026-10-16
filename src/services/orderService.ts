@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import {POS_CONFIG} from '../config/pos';
 import type {Customer} from '../types/pos';
 import {useCustomerStore} from '../store/useCustomerStore';
@@ -18,7 +19,7 @@ export const orderService={
  list:(options:{today?:boolean;search?:string;branchId?:string}={})=>structuredClone(useOrderStore.getState().orders.filter(o=>(options.branchId==='all'||o.branchId===(options.branchId??useBranchStore.getState().branch))&&(!options.today||new Date(o.createdAt).toDateString()===new Date().toDateString())&&(!options.search||o.orderNo.toLowerCase().includes(options.search.toLowerCase()))).toSorted((a,b)=>b.createdAt.localeCompare(a.createdAt))),
  get:(id:string)=>structuredClone(useOrderStore.getState().orders.find(o=>o.id===id)),
  payments:(customerId?:string)=>structuredClone(useWalletStore.getState().customerPayments.filter(x=>!customerId||x.customerId===customerId)),
- cancel:(id:string,reason:string)=>{
+ cancel:(id:string,reason:string)=>{requirePermission('orders:cancel');
   const o=orderService.get(id);if(!o||o.orderStatus!=='pending'||o.refundedTotal>0||useRefundStore.getState().refunds.some(r=>r.orderId===id))throw new Error('Only pending orders without refunds can be cancelled.');
   if(!reason.trim())throw new Error('A cancellation reason is required.');
   for(const line of o.items){if(!stockService.items().some(x=>x.product.id===line.productId&&x.variant?.id===line.variantId))throw new Error('Restore the original product before cancelling.');}
@@ -31,7 +32,7 @@ export const orderService={
    activityService.log('order',id,'cancel',`${o.orderNo} cancelled: ${reason}. Paid amount recorded as cash refund.`);
   });
  },
- collect:(id:string,input:Pick<CustomerPayment,'amount'|'method'|'reference'|'note'>)=>{
+ collect:(id:string,input:Pick<CustomerPayment,'amount'|'method'|'reference'|'note'>)=>{requirePermission('customers:manage');
   const o=orderService.get(id);if(!o||o.orderStatus==='cancelled'||!o.balanceDue)throw new Error('Order has no collectible balance.');
   const payment=customerPaymentSchema.parse({...input,id:crypto.randomUUID(),customerId:o.customerId,orderId:id,createdAt:new Date().toISOString()});
   if(c(payment.amount)<=0||c(payment.amount)>c(o.balanceDue))throw new Error('Payment must be positive and no greater than the balance.');
@@ -51,7 +52,7 @@ export const orderService={
   return localTransaction(()=>{for(const o of orders){const amount=Math.min(remaining,c(o.balanceDue));if(amount)orderService.collect(o.id,{...input,amount:p(amount)});remaining-=amount;}});
  },
  nextOrderNo:()=>formatOrderNo(useOrderStore.getState().counter+1),
- save:(input:Order)=>{const order=orderSchema.parse(input);const state=useOrderStore.getState();if(order.orderNo!==orderService.nextOrderNo())throw new Error('Order number changed. Please retry.');if(state.orders.some(o=>o.id===order.id))throw new Error('Sale already saved.');useOrderStore.setState({orders:[...state.orders,order],counter:state.counter+1});usePosStore.setState({activeOrderNo:orderService.nextOrderNo()});activityService.log("order",order.id,"create",`Created ${order.orderNo}`);return order;},
+ save:(input:Order)=>{requirePermission('pos:use');const order=orderSchema.parse(input);const state=useOrderStore.getState();if(order.orderNo!==orderService.nextOrderNo())throw new Error('Order number changed. Please retry.');if(state.orders.some(o=>o.id===order.id))throw new Error('Sale already saved.');useOrderStore.setState({orders:[...state.orders,order],counter:state.counter+1});usePosStore.setState({activeOrderNo:orderService.nextOrderNo()});activityService.log("order",order.id,"create",`Created ${order.orderNo}`);return order;},
 };
 
 export function tierFor(points:number):Customer['tier']{return ([...Object.entries(POS_CONFIG.tiers)] as [Customer['tier'],number][]).reverse().find(([,n])=>points>=n)![0];}

@@ -1,3 +1,4 @@
+import {Can} from '../auth/Can';
 import {useNavigate} from 'react-router-dom';
 import type {Order} from '../../types/pos';
 import {DataTable} from '../common/DataTable';
@@ -10,4 +11,4 @@ export function OrderTable({rows,selection,onSelectionChange}:{rows:Order[];sele
  {id:'customer',header:'Customer',cell:o=><EntityLink type="customers" id={o.customerId}><span className="mr-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs dark:bg-indigo-950">{o.customerName.split(' ').slice(0,2).map(n=>n[0]).join('')}</span>{o.customerName}</EntityLink>},
  {id:'items',header:'Items',cell:o=>o.items.length},...(['grandTotal','amountPaid','balanceDue'] as const).map((id,i)=>({id,header:['Total','Paid','Balance'][i],cell:(o:Order)=>formatPHP(o[id]),sortValue:(o:Order)=>o[id]})),
  {id:'payment',header:'Payment',cell:o=><StatusBadge>{o.paymentStatus}</StatusBadge>},{id:'status',header:'Status',cell:o=><StatusBadge>{o.orderStatus}</StatusBadge>}
- ]} actions={o=><div className="flex gap-2"><EntityLink type="orders" id={o.id}>View</EntityLink>{o.orderStatus!=='cancelled'&&o.amountPaid>o.refundedTotal&&<a className="text-indigo-600" href={`/orders/${o.id}?action=refund`}>Refund</a>}{o.orderStatus==='pending'&&!o.refundedTotal&&<a className="text-red-500" href={`/orders/${o.id}?action=cancel`}>Cancel</a>}</div>}/>;}
+ ]} actions={o=><div className="flex gap-2"><EntityLink type="orders" id={o.id}>View</EntityLink>{o.orderStatus!=='cancelled'&&o.amountPaid>o.refundedTotal&&<Can permission="orders:refund"><a className="text-indigo-600" href={`/orders/${o.id}?action=refund`}>Refund</a></Can>}{o.orderStatus==='pending'&&!o.refundedTotal&&<Can permission="orders:cancel"><a className="text-red-500" href={`/orders/${o.id}?action=cancel`}>Cancel</a></Can>}</div>}/>;}

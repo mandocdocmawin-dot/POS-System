@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import {supplierPaymentService} from './supplierPaymentService';
 import {paymentSchema,type PaymentMethod} from '../types/pos';
 import {useProductStore} from '../store/useProductStore';
@@ -26,7 +27,7 @@ export const purchaseService={
   const totals=purchaseTotals(input);paymentSchema.parse({id:'preview',method:options.method,amount:options.initialPayment,createdAt:new Date().toISOString()});if(options.method==='wallet'||c(options.initialPayment)>c(totals.grandTotal))throw new Error('Initial payment exceeds total or uses an invalid method.');
   return localTransaction(()=>{const purchase=purchaseService.create(input);if(options.receiveNow)purchaseService.receive(purchase.id,purchase.items.map(l=>({id:l.id,quantity:l.orderedQty})));if(options.initialPayment>0)supplierPaymentService.record({supplierId:purchase.supplierId,purchaseId:purchase.id,amount:options.initialPayment,method:options.method,createdAt:new Date().toISOString()});return purchaseService.get(purchase.id)!;});
  },
- create:(input:PurchaseInput)=>{
+ create:(input:PurchaseInput)=>{requirePermission('purchases:create');
   if(supplierService.get(input.supplierId)?.status!=='active')throw new Error('Choose an active supplier.');
   for(const l of input.items){const product=productService.get(l.productId);if(!product||product.status!=='active'||product.hasVariants!==!!l.variantId||l.variantId&&!productService.variants(product.id).some(v=>v.id===l.variantId))throw new Error('Choose an available product and variant.');if(l.receivedQty!==0)throw new Error('Use Receive stock after creating the purchase.');}
   if(new Set(input.items.map(l=>l.variantId??l.productId)).size!==input.items.length)throw new Error('Combine duplicate product lines.');
@@ -34,7 +35,7 @@ export const purchaseService={
   const purchase=purchaseSchema.parse({...input,...totals,id:crypto.randomUUID(),purchaseNo:`PO-${String(n).padStart(6,'0')}`,amountPaid:0,balanceDue:totals.grandTotal,paymentStatus:totals.grandTotal?'unpaid':'paid',receiveStatus:'pending',createdAt:new Date().toISOString()});
   return localTransaction(()=>{usePurchaseStore.setState(s=>({purchases:[...s.purchases,purchase],counter:n}));activityService.log('purchase',purchase.id,'create',`Created ${purchase.purchaseNo}`);return purchase;});
  },
- receive:(id:string,quantities:{id:string;quantity:number}[],updateCost=true)=>{
+ receive:(id:string,quantities:{id:string;quantity:number}[],updateCost=true)=>{requirePermission('purchases:create');
   const purchase=purchaseService.get(id);if(!purchase||purchase.receiveStatus==='cancelled')throw new Error('Purchase cannot be received.');
   const selected=quantities.filter(x=>x.quantity!==0);if(!selected.length||new Set(selected.map(x=>x.id)).size!==selected.length)throw new Error('Choose distinct lines to receive.');
   for(const q of selected){const l=purchase.items.find(x=>x.id===q.id);if(!l||!Number.isFinite(q.quantity)||q.quantity<=0||q.quantity>l.orderedQty-l.receivedQty+1e-8)throw new Error('Receipt quantity exceeds remaining ordered quantity.');if(!stockService.items().some(x=>x.product.id===l.productId&&x.variant?.id===l.variantId))throw new Error('Original product or variant no longer exists.');}
@@ -48,10 +49,10 @@ export const purchaseService={
   const credit=items.reduce((n,l)=>n+multiplyCentavos(c(l.unitCost),l.quantity),0),n=usePurchaseStore.getState().returnCounter+1;
   return purchaseReturnSchema.parse({id:crypto.randomUUID(),returnNo:`PR-${String(n).padStart(6,'0')}`,purchaseId:id,supplierId:purchase.supplierId,items,reason,creditAmount:p(credit),createdAt:new Date().toISOString()});
  },
- returnItems:(id:string,quantities:{id:string;quantity:number}[],reason:string)=>{
+ returnItems:(id:string,quantities:{id:string;quantity:number}[],reason:string)=>{requirePermission('purchases:create');
   const record=purchaseService.returnPreview(id,quantities,reason),purchase=purchaseService.get(id)!;
   return localTransaction(()=>{for(const q of record.items){const l=purchase.items.find(x=>x.id===q.purchaseLineId)!;stockService.record({productId:l.productId,variantId:l.variantId,type:'out',quantity:q.quantity,reason:'Supplier return',reference:record.returnNo,createdAt:record.createdAt});}usePurchaseStore.setState(s=>{const returns=[...s.returns,record];return {returns,returnCounter:s.returnCounter+1,purchases:s.purchases.map(x=>x.id===id?{...x,...purchaseFinancials(x,returns,s.payments)}:x)};});activityService.log('purchase',id,'return',`${record.returnNo}: ${record.creditAmount.toFixed(2)} credit`);activityService.log('supplier',purchase.supplierId,'return',`${record.returnNo}: ${record.creditAmount.toFixed(2)} credit`);return record;});
  },
- cancel:(id:string)=>{const purchase=purchaseService.get(id);if(!purchase||purchase.receiveStatus==='cancelled'||purchase.items.some(l=>l.receivedQty>0)||purchase.amountPaid>0)throw new Error('Only unreceived, unpaid purchases can be cancelled.');return localTransaction(()=>{usePurchaseStore.setState(s=>({purchases:s.purchases.map(x=>x.id===id?{...x,receiveStatus:'cancelled',balanceDue:0}:x)}));activityService.log('purchase',id,'cancel',`${purchase.purchaseNo} cancelled`);});},
+ cancel:(id:string)=>{requirePermission('purchases:create');const purchase=purchaseService.get(id);if(!purchase||purchase.receiveStatus==='cancelled'||purchase.items.some(l=>l.receivedQty>0)||purchase.amountPaid>0)throw new Error('Only unreceived, unpaid purchases can be cancelled.');return localTransaction(()=>{usePurchaseStore.setState(s=>({purchases:s.purchases.map(x=>x.id===id?{...x,receiveStatus:'cancelled',balanceDue:0}:x)}));activityService.log('purchase',id,'cancel',`${purchase.purchaseNo} cancelled`);});},
 };
 

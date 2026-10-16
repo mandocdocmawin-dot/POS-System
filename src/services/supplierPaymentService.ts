@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import {usePurchaseStore} from '../store/usePurchaseStore';
 import {supplierPaymentSchema,type SupplierPayment} from '../types/phase4';
 import {toCentavos as c,fromCentavos as p} from '../utils/pos';
@@ -6,7 +7,7 @@ import {localTransaction} from './localTransaction';
 import {activityService} from './activityService';
 export const supplierPaymentService={
  list:(supplierId?:string)=>structuredClone(usePurchaseStore.getState().payments.filter(x=>!supplierId||x.supplierId===supplierId).toSorted((a,b)=>b.createdAt.localeCompare(a.createdAt))),
- record:(input:Omit<SupplierPayment,'id'>)=>{
+ record:(input:Omit<SupplierPayment,'id'>)=>{requirePermission('purchases:create');
   const parsed=supplierPaymentSchema.parse({...input,id:crypto.randomUUID()});if(parsed.method==='wallet')throw new Error('Customer wallet cannot pay suppliers.');
   const orders=usePurchaseStore.getState().purchases.filter(x=>x.supplierId===input.supplierId&&x.receiveStatus!=='cancelled'&&(!input.purchaseId||x.id===input.purchaseId)&&x.balanceDue>0).toSorted((a,b)=>a.date.localeCompare(b.date));
   let remaining=c(parsed.amount);if(!remaining||remaining>orders.reduce((n,x)=>n+c(x.balanceDue),0))throw new Error('Payment must be positive and cannot exceed the remaining purchase balance.');

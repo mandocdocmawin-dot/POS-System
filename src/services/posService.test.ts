@@ -1,3 +1,5 @@
+import {initializeStaffData} from '../data/seed/phase5';
+import {useAuthStore} from '../store/useAuthStore';
 import {beforeEach,describe,it,expect,vi} from 'vitest';
 const {storage}=vi.hoisted(()=>{
  const values=new Map<string,string>();
@@ -24,7 +26,7 @@ import {holdService} from './holdService';
 import type {Payment} from '../types/pos';
 const cash=(amount:number):Payment=>({id:crypto.randomUUID(),method:'cash',amount,createdAt:new Date().toISOString()});
 beforeEach(()=>{
- vi.restoreAllMocks();storage.clear();
+ vi.restoreAllMocks();storage.clear();initializeStaffData();useAuthStore.setState({currentUserId:"staff-admin"});
  useCatalogStore.setState({categories,subcategories,brands,units});
  useProductStore.setState({products:structuredClone(products),variants:structuredClone(variants)});
  useStockStore.setState({movements:structuredClone(movements)});

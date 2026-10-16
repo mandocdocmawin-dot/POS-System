@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import {useWalletStore} from '../store/useWalletStore';
 import {useCustomerStore} from '../store/useCustomerStore';
 import {walletTransactionSchema,type WalletTransaction} from '../types/phase4';
@@ -6,7 +7,7 @@ import {localTransaction} from './localTransaction';
 import {activityService} from './activityService';
 export const walletService={
  list:(customerId?:string)=>structuredClone(useWalletStore.getState().transactions.filter(t=>!customerId||t.customerId===customerId).toSorted((a,b)=>b.createdAt.localeCompare(a.createdAt))),
- change:(input:Omit<WalletTransaction,'id'|'createdAt'|'balanceAfter'>)=>{
+ change:(input:Omit<WalletTransaction,'id'|'createdAt'|'balanceAfter'>)=>{requirePermission(input.type==='spend'?'pos:use':input.type==='refund'?'orders:refund':'customers:manage');
   const customer=useCustomerStore.getState().customers.find(x=>x.id===input.customerId);
   if(!customer||customer.isWalkIn)throw new Error('Choose a named customer for wallet transactions.');
   if(!Number.isFinite(input.amount)||!input.amount)throw new Error('Enter a non-zero amount.');

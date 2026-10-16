@@ -1,3 +1,4 @@
+import {Can} from '../../components/auth/Can';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -122,9 +123,9 @@ export function Component() {
   return (
     <>
       <PageActions title="Variants">
-        <button className="btn-primary" onClick={() => setEdit("new")}>
+        <Can permission="products:create"><button className="btn-primary" onClick={() => setEdit("new")}>
           Add Variant
-        </button>
+        </button></Can>
       </PageActions>
       <section className="card p-0">
         <DataTable
@@ -176,12 +177,12 @@ export function Component() {
           ]}
           actions={(v) => (
             <div className="flex gap-3">
-              <button className="text-indigo-500" onClick={() => setEdit(v)}>
+              <Can permission="products:edit"><button className="text-indigo-500" onClick={() => setEdit(v)}>
                 Edit
-              </button>
-              <button className="text-red-500" onClick={() => setRemove(v)}>
+              </button></Can>
+              <Can permission="products:delete"><button className="text-red-500" onClick={() => setRemove(v)}>
                 Delete
-              </button>
+              </button></Can>
             </div>
           )}
         />

@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import {walletService} from './walletService';
 import {toCentavos,fromCentavos,sumCentavos} from '../utils/pos';
 import {usePosStore,type PosState} from '../store/usePosStore';
@@ -28,7 +29,7 @@ export const posService={
  state:()=>structuredClone(usePosStore.getState()),
  totals:()=>{const s=usePosStore.getState();return calculateTotals(s.cart,s.orderDiscount);},
  branch:()=>useBranchStore.getState().branch,
- add:(productId:string,variantId?:string)=>{
+ add:(productId:string,variantId?:string)=>{requirePermission('pos:use');
  const p=productService.get(productId);if(!p)throw new Error('Product not found.');
  const v=variantId?productService.variants(p.id).find(v=>v.id===variantId):undefined;
  const s=posService.state();const existing=s.cart.find(l=>l.productId===productId&&l.variantId===variantId);
@@ -43,7 +44,7 @@ export const posService={
  note:(note:string)=>{if(note.length>2000)throw new Error('Note must be at most 2000 characters.');usePosStore.setState({note});},
  clear:()=>usePosStore.setState({cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:orderService.nextOrderNo()}),
  restore:(data:Pick<PosState,'cart'|'customerId'|'note'|'orderDiscount'>)=>{validateCart(data.cart);if(!customerService.get(data.customerId))throw new Error('Customer no longer exists.');usePosStore.setState({...data,activeOrderNo:orderService.nextOrderNo()});},
- complete:(payments:Payment[],options:{payLater?:boolean;dueDate?:string}={}):Order=>{
+ complete:(payments:Payment[],options:{payLater?:boolean;dueDate?:string}={}):Order=>{requirePermission('pos:use');
  const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
  const c=customerService.get(s.customerId);if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
  const totals=calculateTotals(s.cart,s.orderDiscount);const paid=calculatePayments(totals.grandTotal,payments);

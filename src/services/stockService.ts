@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import { localTransaction } from "./localTransaction";
 import { movementSchema, type StockMovement } from "../types/models";
 import { useStockStore } from "../store/useStockStore";
@@ -28,7 +29,7 @@ export const stockService = {
         )
         .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)),
     ),
-  record: (input: Omit<StockMovement, "id" | "createdBy">) => {
+  record: (input: Omit<StockMovement, "id" | "createdBy">) => {requirePermission(input.reason==='Sale'?'pos:use':input.reason==='Order cancelled'?'orders:cancel':input.reason==='Customer return'?'orders:refund':['Purchase','Supplier return'].includes(input.reason)?'purchases:create':'inventory:adjust');
     const m = movementSchema.parse({
       ...input,
       id: crypto.randomUUID(),

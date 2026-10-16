@@ -1,3 +1,4 @@
+import {Can} from '../../components/auth/Can';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -139,9 +140,9 @@ export function CatalogPage({ config }: { config: CatalogConfig }) {
   return (
     <>
       <PageActions title={config.title}>
-        <button className="btn-primary" onClick={() => setEdit("new")}>
+        <Can permission="products:create"><button className="btn-primary" onClick={() => setEdit("new")}>
           Add {config.singular}
-        </button>
+        </button></Can>
       </PageActions>
       {config.parents && (
         <div className="mb-4 max-w-xs">
@@ -192,20 +193,20 @@ export function CatalogPage({ config }: { config: CatalogConfig }) {
           ]}
           actions={(r) => (
             <div className="flex gap-3">
-              <button
+              <Can permission="products:edit"><button
                 className="text-indigo-500"
                 onClick={() => setEdit(r)}
                 aria-label={`Edit ${r.name}`}
               >
                 Edit
-              </button>
-              <button
+              </button></Can>
+              <Can permission="products:delete"><button
                 className="text-red-500"
                 onClick={() => setRemove(r)}
                 aria-label={`Delete ${r.name}`}
               >
                 Delete
-              </button>
+              </button></Can>
             </div>
           )}
         />

@@ -1,3 +1,4 @@
+import {requirePermission} from './authService';
 import { localTransaction } from "./localTransaction";
 import { z } from "zod";
 import { useCatalogStore } from "../store/useCatalogStore";
@@ -23,7 +24,7 @@ function catalog<
 ) {
   return {
     list: () => structuredClone(list()),
-    save: (input: Partial<T> & { name: string }) => {
+    save: (input: Partial<T> & { name: string }) => {requirePermission(input.id?'products:edit':'products:create');
       const current = list().find((x) => x.id === input.id);
       const item = schema.parse({
         status: "active",
@@ -56,7 +57,7 @@ function catalog<
       );
       return item;
     },
-    remove: (id: string) => {
+    remove: (id: string) => {requirePermission('products:delete');
       if (inUse(id))
         throw new Error("This record is in use. Deactivate it instead.");
       localTransaction(() => replace(list().filter((x) => x.id !== id)));

@@ -1,3 +1,8 @@
+import {holdService} from '../../services/holdService';
+import {HeldOrdersDrawer} from '../../components/pos/HeldOrdersDrawer';
+import {OrderTextModal} from '../../components/pos/OrderTextModal';
+import {Popover} from '../../components/common/Popover';
+import {MoreHorizontal,Pencil,Pause} from 'lucide-react';
 import {CustomerCard} from '../../components/pos/CustomerCard';
 import {CustomerSelectModal} from '../../components/pos/CustomerSelectModal';
 import {customerService} from '../../services/customerService';
@@ -12,15 +17,21 @@ import {CartLine} from '../../components/pos/CartLine';
 import {ConfirmDialog} from '../../components/common/ConfirmDialog';
 export function OrderPanel(){
  useLocalData();const s=posService.state(),totals=posService.totals();
+ const [holding,setHolding]=useState(false),[heldOpen,setHeldOpen]=useState(false),[noteOpen,setNoteOpen]=useState(false);
  const [customerOpen,setCustomerOpen]=useState(false);
  const [discountOpen,setDiscountOpen]=useState(false);
  const [selected,setSelected]=useState(''),[clear,setClear]=useState(false);
  return <aside aria-label="Current order" className="flex w-full shrink-0 flex-col border-l border-slate-200 bg-white p-5 xl:w-[380px] xl:overflow-y-auto 2xl:w-[420px] dark:border-slate-800 dark:bg-slate-900">
- <div className="flex items-center justify-between border-b pb-4"><h2 className="text-sm font-semibold">Order ID: #{orderService.nextOrderNo()}</h2><button className="btn text-red-500" aria-label="Clear cart" onClick={()=>setClear(true)}><Trash2 size={15}/></button></div>
+ <div className="flex items-center justify-between border-b pb-4"><h2 className="text-sm font-semibold">Order ID: #{orderService.nextOrderNo()}</h2><div className="flex gap-1"><Popover label="Order options" trigger={<MoreHorizontal size={15}/>} className="btn px-2"><button className="btn" onClick={()=>setHeldOpen(true)}>Held orders ({holdService.list().length})</button></Popover><button className="btn px-2" aria-label="Edit order note" onClick={()=>setNoteOpen(true)}><Pencil size={14}/></button><button className="btn text-red-500" aria-label="Clear cart" onClick={()=>setClear(true)}><Trash2 size={15}/></button></div></div>
  <CustomerCard customer={customerService.get(s.customerId)} onSelect={()=>setCustomerOpen(true)}/><CustomerSelectModal open={customerOpen} onClose={()=>setCustomerOpen(false)}/>
  <div className="my-5 flex items-center justify-between"><h3 className="text-sm font-semibold">Order Detail (Items: {s.cart.length})</h3><button className="text-xs text-red-500" onClick={()=>setClear(true)}>Clear All</button></div>
  {s.cart.length?totals.items.map(l=><CartLine key={`${l.id}-${l.quantity}`} line={l} selected={selected===l.id} onSelect={()=>setSelected(l.id)}/>):<div className="flex flex-1 flex-col items-center justify-center gap-3 py-20 text-slate-400"><ShoppingBag size={65} strokeWidth={1}/><p>Your cart is empty</p><p className="text-xs">Select products to start a sale.</p></div>}
  <CartSummary totals={totals} onDiscount={()=>setDiscountOpen(v=>!v)}/>{discountOpen&&<DiscountEditor value={s.orderDiscount} onSave={v=>{posService.discount(v);}} onClose={()=>setDiscountOpen(false)}/>}
+ {s.note&&<p className="mt-3 break-words text-xs text-slate-500">Note: {s.note}</p>}
+ <div className="mt-4 flex gap-2"><button disabled={!s.cart.length} className="btn flex-1 disabled:opacity-40" onClick={()=>setHolding(true)}><Pause size={14}/>Hold</button><button className="btn" onClick={()=>setHeldOpen(true)} aria-label="Open held orders">Held ({holdService.list().length})</button></div>
+ {holding&&<OrderTextModal title="Hold order" label="Label (optional)" onSave={label=>{holdService.hold(label);}} onClose={()=>setHolding(false)}/>}
+ {noteOpen&&<OrderTextModal title="Order note" label="Note" initial={s.note} onSave={note=>{posService.note(note);}} onClose={()=>setNoteOpen(false)}/>}
+ <HeldOrdersDrawer open={heldOpen} onClose={()=>setHeldOpen(false)}/>
  <ConfirmDialog open={clear} title="Clear current cart?" message="All current items, discounts, customer and notes will be cleared." onClose={()=>setClear(false)} onConfirm={()=>{posService.clear();}}/>
  </aside>;
 }

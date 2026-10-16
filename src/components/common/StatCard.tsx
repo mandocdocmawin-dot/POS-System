@@ -3,11 +3,12 @@ export interface Stat {
   title: string;
   value: string;
   trend: string;
+  caption?: string;
   up: boolean;
   icon: LucideIcon;
   color: string;
 }
-export function StatCard({ title, value, trend, up, icon: Icon, color }: Stat) {
+export function StatCard({ title, value, trend, up, icon: Icon, color, caption }: Stat) {
   return (
     <section className="card">
       <div className="mb-5 flex items-start justify-between gap-2">
@@ -22,12 +23,12 @@ export function StatCard({ title, value, trend, up, icon: Icon, color }: Stat) {
         </span>
       </div>
       <p className="text-xs text-slate-400">
-        <span
+        {trend&&<span
           className={`mr-1 font-semibold ${up ? "text-emerald-500" : "text-red-500"}`}
         >
           {up ? "▲" : "▼"} {trend}
-        </span>{" "}
-        From Last Week
+        </span>}{' '}
+        {caption??'From Last Week'}
       </p>
     </section>
   );

@@ -1,3 +1,4 @@
+import {useLocalData} from '../../services/useLocalData';
 import { findRoute } from "../../config/menu";
 import { dashboardService } from "../../services/dashboardService";
 import { RecentOrders } from "./RecentOrders";
@@ -10,6 +11,7 @@ import { PageHeader } from "../../components/layout/PageHeader";
 import { useBranchStore } from "../../store/useBranchStore";
 import { SummaryRow } from "./SummaryRow";
 export function Component() {
+  useLocalData();
   const branch = useBranchStore((s) => s.branch);
   const route = findRoute("/");
   const overview = dashboardService.getOverview();

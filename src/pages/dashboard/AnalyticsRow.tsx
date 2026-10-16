@@ -2,7 +2,7 @@ import { ArrowDownLeft, Shirt, Footprints } from "lucide-react";
 import { CardHeading, PeriodSelect } from "../../components/common/CardHeading";
 import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
 import { dashboardService } from "../../services/dashboardService";
-import { formatCurrency } from "../../types/format";
+import {formatPHP} from "../../utils/money";
 export function AnalyticsRow() {
   const categories = dashboardService.getCategories();
   return (
@@ -33,7 +33,7 @@ export function AnalyticsRow() {
                 </p>
               </div>
               <span className="text-xs font-semibold">
-                {formatCurrency(t.amount)}
+                {formatPHP(t.amount)}
               </span>
             </li>
           ))}

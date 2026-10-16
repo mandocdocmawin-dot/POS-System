@@ -1,11 +1,14 @@
+import {salesMetrics,paymentShares,recordedPayments} from './salesMetrics';
+import {formatPHP} from '../utils/money';
+import {PAYMENT_METHODS} from '../config/pos';
 import { productService } from "./productService";
 import { stockService } from "./stockService";
 import { orderService } from "./orderService";
 import { dashboardData } from "../data/dashboard";
-// Synchronous, local-only service boundary; persistence can be introduced here later.
+// Real sales and payments are branch-filtered. Other analytics retain demo data.
 export const dashboardService = {
   getOverview: () => ({ ...dashboardData.overview }),
-  getStats: () => dashboardData.stats,
+  getStats: () => {const m=salesMetrics();const values=[formatPHP(m.todaySales),String(m.totalOrders),formatPHP(m.netProfit),formatPHP(m.salesReturn)];return dashboardData.stats.map((s,i)=>({...s,value:values[i],trend:'',caption:i===1?'All orders · current branch':'Today · current branch'}));},
   getSummary: () => dashboardData.summary,
   getStaff: () => dashboardData.staff,
   getGrossProfit: () => dashboardData.gross,
@@ -39,8 +42,8 @@ export const dashboardService = {
     });
   },
   getCustomers: () => dashboardData.customers,
-  getPayments: () => dashboardData.payments,
-  getTransactions: () => dashboardData.transactions,
+  getPayments: () => paymentShares(),
+  getTransactions: () => recordedPayments().slice(0,5).map(p=>({...p,id:p.orderNo+' · '+p.id.slice(0,6),method:PAYMENT_METHODS.find(m=>m.id===p.method)?.label??p.method,amount:p.cents/100})),
   getCategories: () => dashboardData.categories,
-  getRecentOrders: () => orderService.getOrders(),
+  getRecentOrders: () => orderService.list(),
 };

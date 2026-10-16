@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {useFieldArray,useForm} from 'react-hook-form';
+import {useFieldArray,useForm,useWatch} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import {Modal} from '../common/Modal';
@@ -16,10 +16,11 @@ type FormValues=z.infer<typeof schema>;
 export function PaymentModal({onClose,onComplete,payLater=false}:{onClose:()=>void;onComplete?:(payments:Payment[],dueDate?:string)=>void;payLater?:boolean}) {
  const total=posService.totals().grandTotal;
  const [error,setError]=useState('');
- const {register,watch,setValue,control,handleSubmit,formState:{isSubmitting,errors}}=useForm<FormValues>({resolver:zodResolver(schema),defaultValues:{rows:[{method:'cash',amount:payLater?0:total,reference:''}],dueDate:''}});
+ const {register,setValue,control,handleSubmit,formState:{isSubmitting,errors}}=useForm<FormValues>({resolver:zodResolver(schema),defaultValues:{rows:[{method:'cash',amount:payLater?0:total,reference:''}],dueDate:''}});
  const {fields,append,remove}=useFieldArray({control,name:'rows'});
- const rows=watch('rows');
- const parsed=schema.safeParse({rows,dueDate:watch('dueDate')});
+ const rows=useWatch({control,name:'rows'});
+ const dueDate=useWatch({control,name:'dueDate'});
+ const parsed=schema.safeParse({rows,dueDate});
  const payments:Payment[]=parsed.success?parsed.data.rows.map((p,i)=>({...p,id:`preview-${i}`,createdAt:new Date().toISOString()})):[];
  let result:ReturnType<typeof calculatePayments>|null=null,validation='';
  try{if(parsed.success)result=calculatePayments(total,payments);else validation='Enter a valid non-negative amount for every payment.';}catch(e){validation=errorMessage(e);}

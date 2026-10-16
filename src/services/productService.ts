@@ -1,3 +1,4 @@
+import {useOrderStore} from '../store/useOrderStore';
 import { localTransaction } from "./localTransaction";
 import {
   productSchema,
@@ -151,8 +152,10 @@ export const productService = {
     });
     return p;
   },
-  removeMany: (ids: string[]) =>
-    localTransaction(() => {
+  removeMany: (ids: string[]) => {
+    if(useOrderStore.getState().orders.some(o=>o.items.some(l=>ids.includes(l.productId))))
+      throw new Error('Sold products cannot be deleted. Set their status to inactive instead.');
+    return localTransaction(() => {
       useProductStore.setState((s) => ({
         products: s.products.filter((p) => !ids.includes(p.id)),
         variants: s.variants.filter((v) => !ids.includes(v.productId)),
@@ -160,7 +163,8 @@ export const productService = {
       useStockStore.setState((s) => ({
         movements: s.movements.filter((m) => !ids.includes(m.productId)),
       }));
-    }),
+    });
+  },
   saveVariant: (productId: string, input: VariantInput) => {
     const product = productService.get(productId);
     if (!product) throw new Error("Product not found.");

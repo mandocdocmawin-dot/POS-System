@@ -20,6 +20,7 @@ export function Modal({
     if (!open || !dialog) return;
     const previous = document.activeElement;
     dialog.showModal();
+    dialog.querySelector<HTMLElement>('input:not([type=checkbox]),textarea,select')?.focus();
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {

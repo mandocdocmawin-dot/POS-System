@@ -1,4 +1,5 @@
 import {salesMetrics,paymentShares,recordedPayments} from './salesMetrics';
+import {fromCentavos} from '../utils/pos';
 import {formatPHP} from '../utils/money';
 import {PAYMENT_METHODS} from '../config/pos';
 import { productService } from "./productService";
@@ -43,7 +44,7 @@ export const dashboardService = {
   },
   getCustomers: () => dashboardData.customers,
   getPayments: () => paymentShares(),
-  getTransactions: () => recordedPayments().slice(0,5).map(p=>({...p,id:p.orderNo+' · '+p.id.slice(0,6),method:PAYMENT_METHODS.find(m=>m.id===p.method)?.label??p.method,amount:p.cents/100})),
+  getTransactions: () => recordedPayments().slice(0,5).map(p=>({...p,id:p.orderNo+' · '+p.id.slice(0,6),method:PAYMENT_METHODS.find(m=>m.id===p.method)?.label??p.method,amount:fromCentavos(p.cents)})),
   getCategories: () => dashboardData.categories,
   getRecentOrders: () => orderService.list(),
 };

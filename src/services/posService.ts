@@ -7,7 +7,7 @@ import {orderService} from './orderService';
 import {customerService} from './customerService';
 import {localTransaction} from './localTransaction';
 import {WALK_IN_ID} from '../config/pos';
-import {cartItemSchema,discountSchema,type CartItem,type Discount,type Payment,type Order} from '../types/pos';
+import {cartItemSchema,discountSchema,orderSchema,type CartItem,type Discount,type Payment,type Order} from '../types/pos';
 import {calculateTotals,calculatePayments} from '../utils/pos';
 export const decimalUnit=(shortName:string)=>['kg','liter','litre','l'].includes(shortName.toLowerCase());
 function validateCart(cart:CartItem[]) {
@@ -20,6 +20,7 @@ function validateCart(cart:CartItem[]) {
  const key=line.variantId??line.productId;const qty=(quantities.get(key)??0)+line.quantity;quantities.set(key,qty);
  const available=stockService.getStock(line.productId,line.variantId);if(qty>available+1e-8)throw new Error(`${line.name}: only ${available} in stock.`);
  }
+ calculateTotals(cart);
 }
 export const posService={
  state:()=>structuredClone(usePosStore.getState()),
@@ -34,8 +35,8 @@ export const posService={
  },
  quantity:(id:string,quantity:number)=>{const cart=posService.state().cart.map(l=>l.id===id?{...l,quantity}:l);validateCart(cart);usePosStore.setState({cart});},
  remove:(id:string)=>usePosStore.setState(s=>({cart:s.cart.filter(l=>l.id!==id)})),
- lineDiscount:(id:string,input:Discount)=>{const discount=discountSchema.parse(input);usePosStore.setState(s=>({cart:s.cart.map(l=>l.id===id?{...l,discountType:discount.type,discountValue:discount.value}:l)}));},
- discount:(input:Discount)=>usePosStore.setState({orderDiscount:discountSchema.parse(input)}),
+ lineDiscount:(id:string,input:Discount)=>{const discount=discountSchema.parse(input),state=posService.state();const cart=state.cart.map(l=>l.id===id?{...l,discountType:discount.type,discountValue:discount.value}:l);calculateTotals(cart,state.orderDiscount);usePosStore.setState({cart});},
+ discount:(input:Discount)=>{const discount=discountSchema.parse(input);calculateTotals(posService.state().cart,discount);usePosStore.setState({orderDiscount:discount});},
  customer:(id:string)=>{if(!customerService.get(id))throw new Error('Customer not found.');usePosStore.setState({customerId:id});},
  note:(note:string)=>{if(note.length>2000)throw new Error('Note must be at most 2000 characters.');usePosStore.setState({note});},
  clear:()=>usePosStore.setState({cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:orderService.nextOrderNo()}),
@@ -45,7 +46,7 @@ export const posService={
  const c=customerService.get(s.customerId);if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
  const totals=calculateTotals(s.cart,s.orderDiscount);const paid=calculatePayments(totals.grandTotal,payments);
  if(!options.payLater&&paid.balanceDue>0)throw new Error('Payment does not cover the total.');
- if(options.dueDate && !/^\d{4}-\d{2}-\d{2}$/.test(options.dueDate))throw new Error('Choose a valid due date.');
+ orderSchema.shape.dueDate.parse(options.dueDate);
  return localTransaction(()=>{
  const orderNo=orderService.nextOrderNo();const createdAt=new Date().toISOString();
  for(const line of s.cart)stockService.record({productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});

@@ -6,11 +6,11 @@ const tones = {
   slate: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300",
 };
 export function StatusBadge({ children }: { children: string }) {
-  const tone = ["Paid", "Active", "Completed"].includes(children)
+  const tone = ["paid", "active", "completed", "received"].includes(children.toLowerCase())
     ? "green"
-    : ["Pending", "Not started"].includes(children)
+    : ["pending", "not started", "partial", "partially_refunded", "unpaid"].includes(children.toLowerCase())
       ? "amber"
-      : ["Failed", "Deleted", "Cancelled"].includes(children)
+      : ["failed", "deleted", "cancelled", "refunded", "inactive"].includes(children.toLowerCase())
         ? "red"
         : "slate";
   return (

@@ -1,0 +1,1 @@
+export function SummaryCards({items}:{items:{label:string;value:string|number}[]}){return <div className="mb-5 grid grid-cols-2 gap-4 xl:grid-cols-4">{items.map(x=><div className="panel p-5" key={x.label}><p className="mb-2 text-xs text-slate-500">{x.label}</p><p className="text-xl font-semibold">{x.value}</p></div>)}</div>;}

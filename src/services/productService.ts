@@ -1,3 +1,4 @@
+import {authService} from './authService';
 import {requirePermission} from './authService';
 import {useOrderStore} from '../store/useOrderStore';
 import { localTransaction } from "./localTransaction";
@@ -141,7 +142,7 @@ export const productService = {
             type: "initial",
             reason: "Opening stock",
             createdAt: now,
-            createdBy: "Demo Admin",
+            createdBy: authService.getCurrentUser()?.name??'System',
           });
       }
     localTransaction(() => {

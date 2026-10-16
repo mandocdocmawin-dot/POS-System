@@ -1,3 +1,4 @@
+import {authService} from './authService';
 import {requirePermission} from './authService';
 import {useRefundStore} from '../store/useRefundStore';
 import {useOrderStore} from '../store/useOrderStore';
@@ -23,7 +24,7 @@ export const refundService={
   const total=items.reduce((n,l)=>n+c(l.lineRefund),0);
   if(!total||total+c(o.refundedTotal)>c(o.amountPaid))throw new Error('Refund cannot exceed the amount paid. Collect the balance or select fewer items.');
   if(input.restock)for(const l of items)if(!stockService.items().some(x=>x.product.id===l.productId&&x.variant?.id===l.variantId))throw new Error('Restore the original product before restocking.');
-  return refundSchema.parse({id:crypto.randomUUID(),refundNo:`RF-${String(useRefundStore.getState().counter+1).padStart(6,'0')}`,orderId:o.id,items,reason:input.reason,refundAmount:p(total),refundMethod:input.refundMethod,restock:input.restock,note:input.note,createdAt:new Date().toISOString(),createdBy:'Demo Admin'});
+  return refundSchema.parse({id:crypto.randomUUID(),refundNo:`RF-${String(useRefundStore.getState().counter+1).padStart(6,'0')}`,orderId:o.id,items,reason:input.reason,refundAmount:p(total),refundMethod:input.refundMethod,restock:input.restock,note:input.note,createdAt:new Date().toISOString(),createdBy:authService.getCurrentUser()?.name??'System'});
  },
  create:(input:RefundInput)=>{requirePermission('orders:refund');
   const r=refundService.preview(input),o=orderService.get(r.orderId)!;

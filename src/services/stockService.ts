@@ -1,3 +1,4 @@
+import {authService} from './authService';
 import {requirePermission} from './authService';
 import { localTransaction } from "./localTransaction";
 import { movementSchema, type StockMovement } from "../types/models";
@@ -33,7 +34,7 @@ export const stockService = {
     const m = movementSchema.parse({
       ...input,
       id: crypto.randomUUID(),
-      createdBy: "Demo Admin",
+      createdBy: authService.getCurrentUser()?.name??'System',
     });
     const p = productService.get(m.productId);
     if (!p) throw new Error("Choose an existing product.");

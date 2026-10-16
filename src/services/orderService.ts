@@ -1,3 +1,4 @@
+import {authService} from './authService';
 import {requirePermission} from './authService';
 import {POS_CONFIG} from '../config/pos';
 import type {Customer} from '../types/pos';
@@ -26,7 +27,7 @@ export const orderService={
   return localTransaction(()=>{
    const createdAt=new Date().toISOString();
    for(const line of o.items)stockService.record({productId:line.productId,variantId:line.variantId,type:'in',quantity:line.quantity,reason:'Order cancelled',reference:o.orderNo,createdAt});
-   if(o.amountPaid>0){const n=useRefundStore.getState().counter+1;useRefundStore.setState(s=>({counter:n,refunds:[...s.refunds,{id:crypto.randomUUID(),refundNo:`RF-${String(n).padStart(6,'0')}`,orderId:id,items:[],reason:'Order cancelled',refundAmount:o.amountPaid,refundMethod:'cash',restock:false,note:reason,createdAt,createdBy:'Demo Admin'}]}));}
+   if(o.amountPaid>0){const n=useRefundStore.getState().counter+1;useRefundStore.setState(s=>({counter:n,refunds:[...s.refunds,{id:crypto.randomUUID(),refundNo:`RF-${String(n).padStart(6,'0')}`,orderId:id,items:[],reason:'Order cancelled',refundAmount:o.amountPaid,refundMethod:'cash',restock:false,note:reason,createdAt,createdBy:authService.getCurrentUser()?.name??'System'}]}));}
    useOrderStore.setState(s=>({orders:s.orders.map(x=>x.id===id?{...x,orderStatus:'cancelled',cancelReason:reason,cancelledAt:createdAt,balanceDue:0,refundedTotal:o.amountPaid}:x)}));
    useCustomerStore.setState(s=>({customers:s.customers.map(x=>x.id===o.customerId?{...x,creditBalance:p(Math.max(0,c(x.creditBalance)-c(o.balanceDue))),points:Math.max(0,x.points-o.pointsEarned),tier:tierFor(Math.max(0,x.points-o.pointsEarned))}:x)}));
    activityService.log('order',id,'cancel',`${o.orderNo} cancelled: ${reason}. Paid amount recorded as cash refund.`);

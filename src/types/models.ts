@@ -72,7 +72,7 @@ export const movementSchema = z
     reference: z.string().optional(),
     note: z.string().optional(),
     createdAt: timestamp,
-    createdBy: z.literal("Demo Admin"),
+    createdBy: z.string().min(1),
   })
   .refine(
     (m) => m.type === "adjustment" || m.quantity > 0,

@@ -1,36 +1,9 @@
-import { Link } from "react-router-dom";
-import { UserRound, Settings, LogOut } from "lucide-react";
-import { Popover } from "../common/Popover";
-export function UserMenu() {
-  return (
-    <Popover
-      label="User menu"
-      trigger={
-        <span className="flex h-full w-full items-center justify-center rounded-lg bg-teal-100 text-xs font-bold text-teal-800">
-          MR
-        </span>
-      }
-    >
-      <div className="w-48">
-        <div className="border-b border-slate-100 p-3 dark:border-slate-800">
-          <p className="font-semibold">Miguel Reyes</p>
-          <p className="muted mt-1">Store administrator</p>
-        </div>
-        {[
-          { label: "Profile", path: "/profile/overview", icon: UserRound },
-          { label: "Settings", path: "/settings/general", icon: Settings },
-          { label: "Logout", path: "/auth/sign-in", icon: LogOut },
-        ].map(({ label, path, icon: Icon }) => (
-          <Link
-            className="flex items-center gap-3 rounded-lg p-3 text-xs hover:bg-slate-50 dark:hover:bg-slate-800"
-            key={path}
-            to={path}
-          >
-            <Icon size={16} />
-            {label}
-          </Link>
-        ))}
-      </div>
-    </Popover>
-  );
-}
+import {Link,useNavigate} from 'react-router-dom';
+import {useState} from 'react';
+import {Popover} from '../common/Popover';
+import {Drawer} from '../common/Drawer';
+import {RoleSwitcher} from '../auth/RoleSwitcher';
+import {useCurrentUser} from '../../hooks/useCurrentUser';
+import {useRoleStore} from '../../store/useRoleStore';
+import {authService} from '../../services/authService';
+export function UserMenu(){const user=useCurrentUser(),roles=useRoleStore(s=>s.roles),[profile,setProfile]=useState(false),[error,setError]=useState(''),navigate=useNavigate();const initials=user?.name.split(' ').slice(0,2).map(n=>n[0]).join('')??'?';return <><Popover label="User menu" trigger={<span className="flex h-full w-full items-center justify-center rounded-lg bg-teal-100 text-xs font-bold text-teal-800">{initials}</span>}><div className="w-64"><div className="p-3"><p className="font-semibold">{user?.name}</p><p className="mt-1 text-xs">{roles.find(r=>r.id===user?.role)?.name} <span className="rounded bg-amber-100 px-1 text-amber-800">DEMO</span></p></div><RoleSwitcher/><button className="w-full p-3 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800" onClick={()=>setProfile(true)}>Profile</button><button className="w-full p-3 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800" onClick={()=>{try{authService.logout();navigate('/sign-in');}catch(error){setError(error instanceof Error?error.message:'Unable to sign out.');}}}>Logout</button>{error&&<p role="alert" className="p-3 text-red-500">{error}</p>}</div></Popover><Drawer open={profile} title="My profile" onClose={()=>setProfile(false)}><dl className="space-y-4"><div><dt>Name</dt><dd>{user?.name}</dd></div><div><dt>Email</dt><dd>{user?.email}</dd></div><div><dt>Role</dt><dd>{roles.find(r=>r.id===user?.role)?.name}</dd></div><div><dt>Branches</dt><dd>{user?.branchIds.join(', ')}</dd></div><div><dt>Status</dt><dd>{user?.status}</dd></div></dl><Link className="btn mt-6" to="/auth/account-deactivation">Deactivate account</Link></Drawer></>;}

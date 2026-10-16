@@ -1,3 +1,5 @@
+import {useCurrentUser} from '../../hooks/useCurrentUser';
+import {Can} from '../../components/auth/Can';
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -13,6 +15,7 @@ import { UserMenu } from "../../components/layout/UserMenu";
 import { FullscreenButton } from "../../components/layout/FullscreenButton";
 import { Brand } from "../../components/layout/Brand";
 export function PosTopbar() {
+ const user=useCurrentUser();
   const [time, setTime] = useState(new Date());
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -41,22 +44,22 @@ export function PosTopbar() {
         </span>
         <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-600 dark:bg-emerald-500/10">
           <Power size={12} />
-          Open Order
+          {user?.name}
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <Link
+        <Can permission="dashboard:view"><Link
           to="/"
           className="btn border-slate-900 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800"
         >
           <LayoutDashboard size={15} />
           Dashboard
-        </Link>
-        <Link className="icon-btn" aria-label="POS settings" to="/settings/pos">
+        </Link></Can>
+        <Can permission="settings:manage"><Link className="icon-btn" aria-label="POS settings" to="/settings/pos">
           <Settings size={17} />
-        </Link>
+        </Link></Can>
         <FullscreenButton />
-        <Link
+        <Can permission="pages:view"><Link
           className="icon-btn relative"
           aria-label="Switch store"
           to="/multi-store/store-list"
@@ -64,7 +67,7 @@ export function PosTopbar() {
           <Store size={17} />
           <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-red-500" />
         </Link>
-        <NotificationMenu />
+        </Can><Can permission="pages:view"><NotificationMenu /></Can>
         <UserMenu />
       </div>
     </header>

@@ -1,0 +1,5 @@
+import {useNavigate} from 'react-router-dom';
+import {authService} from '../../services/authService';
+import {useCurrentUser} from '../../hooks/useCurrentUser';
+import {useState} from 'react';
+export function RoleSwitcher(){const user=useCurrentUser(),navigate=useNavigate(),[error,setError]=useState('');return <div className="border-t border-slate-100 p-3 dark:border-slate-800"><label className="block text-xs">Switch role <span className="ml-1 rounded bg-amber-100 px-1 text-amber-800">DEMO</span><select className="mt-2 w-full" value={['admin','manager','cashier'].includes(user?.role??'')?user?.role:''} onChange={e=>{try{authService.switchRole(e.target.value);navigate(authService.firstPath());}catch(error){setError(error instanceof Error?error.message:'Could not switch role.');}}}><option value="" disabled>Custom role</option>{['admin','manager','cashier'].map(role=><option key={role} value={role}>{role[0].toUpperCase()+role.slice(1)}</option>)}</select></label>{error&&<p role="alert" className="text-red-500">{error}</p>}</div>;}

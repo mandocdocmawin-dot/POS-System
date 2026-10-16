@@ -1,3 +1,5 @@
+import {authService} from '../../services/authService';
+import {useCurrentUser} from '../../hooks/useCurrentUser';
 import {useAccessibleMenu} from '../../hooks/usePermission';
 import { Moon, Sun, UserRound, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -8,6 +10,7 @@ import { useThemeStore } from "../../store/useThemeStore";
 import { Brand } from "./Brand";
 export function IconRail() {
  const menu=useAccessibleMenu();
+ const user=useCurrentUser();
   const { section, setSection } = useUiStore();
   const { pathname } = useLocation();
   const { theme, toggle } = useThemeStore();
@@ -64,13 +67,14 @@ export function IconRail() {
         </Link>
         <Link
           aria-label="Log out (demo)"
-          to="/auth/sign-in"
+          to="/sign-in"
+          onClick={()=>authService.logout()}
           className="icon-btn border-transparent"
         >
           <LogOut size={18} />
         </Link>
         <span className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
-          MR
+          {user?.name.split(" ").slice(0,2).map(n=>n[0]).join("")}
         </span>
       </div>
     </nav>

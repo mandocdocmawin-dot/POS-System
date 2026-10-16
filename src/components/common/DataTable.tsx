@@ -16,6 +16,7 @@ export function DataTable<T>({
   selection,
   onSelectionChange,
   actions,
+  onRowClick,
 }: {
   columns: Column<T>[];
   rows: T[];
@@ -27,6 +28,7 @@ export function DataTable<T>({
   selection?: string[];
   onSelectionChange?: (ids: string[]) => void;
   actions?: (row: T) => ReactNode;
+  onRowClick?: (row:T)=>void;
 }) {
   const id = useId();
   const [query, setQuery] = useState("");
@@ -162,6 +164,7 @@ export function DataTable<T>({
               : visible.map((r) => (
                   <tr
                     key={rowKey(r)}
+                    onClick={e=>{if(!(e.target as HTMLElement).closest('a,button,input,select'))onRowClick?.(r);}}
                     className="hover:bg-slate-50 dark:hover:bg-slate-800/40"
                   >
                     {onSelectionChange && (

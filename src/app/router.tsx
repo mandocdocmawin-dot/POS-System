@@ -16,8 +16,7 @@ export const router = createBrowserRouter([
           ? Object.keys(implementedPages)
               .filter(
                 (path) =>
-                  (path.startsWith("/products") ||
-                    path.startsWith("/inventory")) &&
+                  ["/products","/inventory","/orders","/customers","/suppliers","/purchases"].some(prefix=>path.startsWith(prefix)) &&
                   !routes.some((r) => r.path === path),
               )
               .map((path) => ({ path, lazy: getPageLoader(path) }))

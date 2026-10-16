@@ -1,3 +1,6 @@
+import type {StockMovement} from '../../types/models';
+import {tierFor} from '../../services/orderService';
+import {reversedPoints} from '../../utils/refund';
 import type {Customer,Order} from '../../types/pos';
 import type {Supplier,Purchase,PurchaseReturn,Refund,WalletTransaction,ActivityLog,SupplierPayment} from '../../types/phase4';
 import {products} from './products';
@@ -10,7 +13,10 @@ export function createPhase4Seed(customers:Customer[],orders:Order[]){
  const returns:PurchaseReturn[]=purchases.slice(0,2).map((p,i)=>({id:`return-${i}`,returnNo:`PR-00000${i+1}`,purchaseId:p.id,supplierId:p.supplierId,items:[{purchaseLineId:p.items[0].id,quantity:1,unitCost:p.items[0].unitCost}],reason:'Damaged packaging',creditAmount:p.items[0].unitCost,createdAt:now}));
  returns.forEach(r=>{const p=purchases.find(p=>p.id===r.purchaseId)!;p.balanceDue=pesos(Math.max(0,cents(p.balanceDue)-cents(r.creditAmount)));});
  const refunds:Refund[]=orders.filter(o=>o.amountPaid>0).slice(0,3).map((o,i)=>{const l=o.items[0];const amount=pesos(Math.round(cents(l.lineTotal)/l.quantity));o.refundedTotal=amount;o.orderStatus=l.quantity===1?'refunded':'partially_refunded';return {id:`refund-${i}`,refundNo:`RF-00000${i+1}`,orderId:o.id,items:[{orderLineId:l.id,productId:l.productId,variantId:l.variantId,quantity:1,unitPriceSnapshot:l.unitPrice,lineRefund:amount}],reason:'Customer changed mind',refundAmount:amount,refundMethod:'cash',restock:false,createdAt:now,createdBy:'Demo Admin'};});
+ for(const r of refunds){const o=orders.find(o=>o.id===r.orderId)!,customer=customers.find(c=>c.id===o.customerId)!;customer.points=Math.max(0,customer.points-reversedPoints(o.pointsEarned,r.refundAmount,o.amountPaid));customer.tier=tierFor(customer.points);}
+ const movements:StockMovement[]=purchases.flatMap(po=>po.items.filter(l=>l.receivedQty>0).map(l=>({id:`seed-receive-${l.id}`,productId:l.productId,variantId:l.variantId,type:'in',quantity:l.receivedQty,reason:'Purchase',reference:po.purchaseNo,createdAt:po.createdAt,createdBy:'Demo Admin'})));
+ for(const r of returns)for(const item of r.items){const line=purchases.find(p=>p.id===r.purchaseId)!.items.find(l=>l.id===item.purchaseLineId)!;movements.push({id:`seed-return-${r.id}`,productId:line.productId,variantId:line.variantId,type:'out',quantity:item.quantity,reason:'Supplier return',reference:r.returnNo,createdAt:r.createdAt,createdBy:'Demo Admin'});}
  const transactions:WalletTransaction[]=customers.filter(c=>!c.isWalkIn).slice(0,3).map((c,i)=>{c.walletBalance=pesos((i+1)*10000);return {id:`wallet-${i}`,customerId:c.id,type:'topup',amount:c.walletBalance,balanceAfter:c.walletBalance,method:'cash',createdAt:now};});
  const logs:ActivityLog[]=[...orders.map(o=>({entityType:'order' as const,entityId:o.id,action:'create',description:`Created ${o.orderNo}`})),...purchases.map(p=>({entityType:'purchase' as const,entityId:p.id,action:'create',description:`Created ${p.purchaseNo}`})),...transactions.map(t=>({entityType:'customer' as const,entityId:t.customerId,action:'topup',description:'Opening wallet top up'}))].map((x,i)=>({...x,id:`activity-${i}`,actor:'Demo Admin',createdAt:now}));
- return {suppliers,purchases,returns,payments,refunds,transactions,customerPayments:[],logs,purchaseCounter:8,returnCounter:2,refundCounter:refunds.length};
+ return {movements,suppliers,purchases,returns,payments,refunds,transactions,customerPayments:[],logs,purchaseCounter:8,returnCounter:2,refundCounter:refunds.length};
 }

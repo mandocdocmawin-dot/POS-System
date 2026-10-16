@@ -1,3 +1,9 @@
+import {createPhase4Seed} from '../data/seed/phase4';
+import {useRefundStore} from '../store/useRefundStore';
+import {useSupplierStore} from '../store/useSupplierStore';
+import {usePurchaseStore} from '../store/usePurchaseStore';
+import {useWalletStore} from '../store/useWalletStore';
+import {useActivityStore} from '../store/useActivityStore';
 import {useCustomerStore} from '../store/useCustomerStore';
 import {useOrderStore} from '../store/useOrderStore';
 import {useHeldOrderStore} from '../store/useHeldOrderStore';
@@ -19,6 +25,10 @@ import { useStockStore } from "../store/useStockStore";
 function snapshot(): Backup {
   return {
     version: 1,
+    refunds:structuredClone(useRefundStore.getState().refunds),refundCounter:useRefundStore.getState().counter,
+    suppliers:structuredClone(useSupplierStore.getState().suppliers),
+    purchases:structuredClone(usePurchaseStore.getState().purchases),purchaseReturns:structuredClone(usePurchaseStore.getState().returns),supplierPayments:structuredClone(usePurchaseStore.getState().payments),purchaseCounter:usePurchaseStore.getState().counter,returnCounter:usePurchaseStore.getState().returnCounter,
+    walletTransactions:structuredClone(useWalletStore.getState().transactions),customerPayments:structuredClone(useWalletStore.getState().customerPayments),activityLogs:structuredClone(useActivityStore.getState().logs),
     ...structuredClone(useCustomerStore.getState()),
     ...structuredClone(useOrderStore.getState()),
     ...structuredClone(useHeldOrderStore.getState()),
@@ -48,6 +58,11 @@ function replace(data: Backup) {
     useOrderStore.setState({orders:data.orders,counter:data.counter},true);
     useHeldOrderStore.setState({heldOrders:data.heldOrders},true);
     usePosStore.setState(data.pos,true);
+    useRefundStore.setState({refunds:data.refunds,counter:data.refundCounter},true);
+    useSupplierStore.setState({suppliers:data.suppliers},true);
+    usePurchaseStore.setState({purchases:data.purchases,returns:data.purchaseReturns,payments:data.supplierPayments,counter:data.purchaseCounter,returnCounter:data.returnCounter},true);
+    useWalletStore.setState({transactions:data.walletTransactions,customerPayments:data.customerPayments},true);
+    useActivityStore.setState({logs:data.activityLogs},true);
   });
 }
 export const dataService = {
@@ -105,7 +120,8 @@ export const dataService = {
   },
   reset: () => {
     const seed=createPosSeed();
-    replace(structuredClone({version:1,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
+    const phase4=createPhase4Seed(seed.customers,seed.orders);
+    replace(structuredClone({version:1,refunds:phase4.refunds,refundCounter:phase4.refundCounter,suppliers:phase4.suppliers,purchases:phase4.purchases,purchaseReturns:phase4.returns,supplierPayments:phase4.payments,purchaseCounter:phase4.purchaseCounter,returnCounter:phase4.returnCounter,walletTransactions:phase4.transactions,customerPayments:phase4.customerPayments,activityLogs:phase4.logs,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements,...phase4.movements],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
   },
   initialize: () => {
     if (

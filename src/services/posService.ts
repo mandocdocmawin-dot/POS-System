@@ -51,7 +51,7 @@ export const posService={
  const orderNo=orderService.nextOrderNo();const createdAt=new Date().toISOString();
  for(const line of s.cart)stockService.record({productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});
  const pointsEarned=customerService.recordSale(c.id,paid.amountPaid,paid.balanceDue);
- const order=orderService.save({id:crypto.randomUUID(),orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:'Demo Admin',createdAt,pointsEarned});
+ const order=orderService.save({id:crypto.randomUUID(),orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:'Demo Admin',createdAt,refundedTotal:0,pointsEarned});
  posService.clear();return order;
  });
  }

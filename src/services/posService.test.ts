@@ -1,3 +1,4 @@
+import {authService} from './authService';
 import {initializeStaffData} from '../data/seed/phase5';
 import {useAuthStore} from '../store/useAuthStore';
 import {beforeEach,describe,it,expect,vi} from 'vitest';
@@ -67,15 +68,15 @@ import {receiptService} from './receiptService';
 
 describe('Phase 3 data and Dashboard',()=>{
  it('round trips customers, sales, held orders, counter, stock and open cart',async()=>{
-  dataService.reset();expect(orderService.list({branchId:'Main Branch'}).length+orderService.list({branchId:'Branch 2'}).length).toBe(12);
+  dataService.reset();authService.login();expect(orderService.list({branchId:'Main Branch'}).length+orderService.list({branchId:'Branch 2'}).length).toBe(12);
   posService.add('prod-1');const held=holdService.hold('Backup test');
   posService.add('prod-2');posService.customer('customer-1');const credit=posService.complete([],{payLater:true});
   posService.add('prod-3');const expected=JSON.parse(await dataService.export());dataService.validate(JSON.stringify(expected));
-  dataService.reset();await dataService.import(JSON.stringify(expected));
+  dataService.reset();authService.login();await dataService.import(JSON.stringify(expected));
   expect(JSON.parse(await dataService.export())).toEqual(expected);expect(holdService.list()[0].id).toBe(held.id);expect(orderService.get(credit.id)?.balanceDue).toBe(16);expect(customerService.get('customer-1')?.creditBalance).toBe(16);expect(posService.state().cart[0].productId).toBe('prod-3');expect(orderService.nextOrderNo()).toBe('TP-000014');
  });
  it('rejects damaged order counters, totals and protected customer records before import',async()=>{
-  dataService.reset();const backup=JSON.parse(await dataService.export());
+  dataService.reset();authService.login();const backup=JSON.parse(await dataService.export());
   const badCounter=structuredClone(backup);badCounter.counter=0;expect(()=>dataService.validate(JSON.stringify(badCounter))).toThrow('counter');
   const badTotal=structuredClone(backup);badTotal.orders[0].grandTotal=999;expect(()=>dataService.validate(JSON.stringify(badTotal))).toThrow('totals');
   const badCustomer=structuredClone(backup);badCustomer.customers[0].name='Edited';expect(()=>dataService.validate(JSON.stringify(badCustomer))).toThrow('Walk-in');

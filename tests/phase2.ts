@@ -34,6 +34,7 @@ Object.defineProperty(globalThis, "window", {
   configurable: true,
 });
 const { dataService } = await import("../src/services/dataService");
+const { authService } = await import("../src/services/authService");
 const { productService } = await import("../src/services/productService");
 const { categoryService, subcategoryService, brandService, unitService } =
   await import("../src/services/catalogService");
@@ -56,7 +57,7 @@ function test(name: string, run: () => void) {
   passed++;
   console.log(`PASS ${name}`);
 }
-dataService.initialize();
+dataService.initialize();authService.login();
 test("first run seeds 25 products and variant-level stock", () => {
   assert.equal(productService.list().length, 25);
   assert.equal(categoryService.list().length, 8);
@@ -262,7 +263,7 @@ test("backup validation rejects malformed shape, duplicate SKU and orphan refs",
   assert.throws(() => validateBackup(negative), /negative/);
 });
 test("reinitialization does not overwrite saved data", () => {
-  dataService.initialize();
+  dataService.initialize();authService.login();
   assert.ok(productService.get(product.id));
   assert.ok(localStorage.getItem("tindapos:products"));
 });
@@ -271,7 +272,7 @@ test("removing products removes dependent variants and movements", () => {
   assert.equal(productService.get(product.id), undefined);
   assert.equal(stockService.history(product.id).length, 0);
 });
-await dataService.import(JSON.stringify(snapshot()));
+await dataService.import(JSON.stringify(snapshot()));authService.login();
 test("valid JSON backup round trips without losing stock", () => {
   assert.equal(stockService.getStock("prod-11", "prod-11-v0"), 5);
 });
@@ -289,7 +290,7 @@ test("failed storage writes roll back product and opening movements", () => {
     before.products,
   );
 });
-dataService.reset();
+dataService.reset();authService.login();
 test("reset restores demo state", () => {
   assert.equal(productService.list().length, 25);
   assert.equal(stockService.getStock("prod-11", "prod-11-v0"), 3);

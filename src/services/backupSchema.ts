@@ -1,3 +1,5 @@
+import {staffBackupSchema,validateStaffBackup} from './staffBackup';
+import {createPhase5Seed} from '../data/seed/phase5';
 import {refundSchema,supplierSchema,purchaseSchema,purchaseReturnSchema,supplierPaymentSchema,walletTransactionSchema,customerPaymentSchema,activitySchema} from '../types/phase4';
 import {purchaseBalance} from '../utils/supplierBalance';
 import {purchaseTotals} from './purchaseService';
@@ -21,6 +23,7 @@ import {
 export const backupSchema = z
   .object({
     version: z.literal(1),
+    phase5:staffBackupSchema.default(()=>({...createPhase5Seed(),auth:{currentUserId:null}})),
     refunds:z.array(refundSchema).default([]),refundCounter:z.number().int().nonnegative().default(0),
     suppliers:z.array(supplierSchema).default([]),purchases:z.array(purchaseSchema).default([]),purchaseReturns:z.array(purchaseReturnSchema).default([]),supplierPayments:z.array(supplierPaymentSchema).default([]),purchaseCounter:z.number().int().nonnegative().default(0),returnCounter:z.number().int().nonnegative().default(0),
     walletTransactions:z.array(walletTransactionSchema).default([]),customerPayments:z.array(customerPaymentSchema).default([]),activityLogs:z.array(activitySchema).default([]),
@@ -47,6 +50,7 @@ export const backupSchema = z
 export type Backup = z.infer<typeof backupSchema>;
 export function validateBackup(input: unknown): Backup {
   const d = backupSchema.parse(input);
+  validateStaffBackup(d.phase5);
   const fail = (message: string): never => {
     throw new Error(`Invalid backup: ${message}`);
   };

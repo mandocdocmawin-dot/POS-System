@@ -8,12 +8,21 @@ import { initializeStaffData } from '../../data/seed/phase5';
 import { initializeAccountData } from '../../data/seed/accounts';
 import { initializeBranches } from '../../services/initializeBranches';
 import { ensureCashDrawers } from '../../services/cashDrawerService';
+import { runCentralMigrations } from '../migrations';
+import { finishInterruptedRestore, takeSnapshot } from '../snapshots';
+import { rawDatabase } from '../storage/database';
 let boot: Promise<void> | undefined;
 export function hydrateApplication() {
   boot ??= (async () => {
+    await finishInterruptedRestore();
+    const legacy = persistedStores.some(store => !localKeys.has(store.key) && localStorage.getItem(store.key) !== null);
+    if (legacy) await takeSnapshot('Before legacy IndexedDB migration');
     for (const store of persistedStores) if (!localKeys.has(store.key)) await migrateLegacyKey(store.key);
+    await runCentralMigrations();
     for (const store of persistedStores) await store.persist.rehydrate();
     if (storageEvents.get().some(p => p.kind !== 'write')) throw new Error('Data recovery required.');
+    const branchState = await rawDatabase.get('tindapos:branches');
+    if (typeof branchState === 'string' && (JSON.parse(branchState).state.migrationVersion ?? 0) < 7) await takeSnapshot('Before existing branch data migration');
     dataService.initialize();
     initializePosData();
     initializeStaffData();

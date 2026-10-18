@@ -91,7 +91,7 @@ export function ProductsRow() {
       </section>
       <section className="card xl:col-span-3">
         <CardHeading title="Top Selling Products" />
-        <p className="mt-2 text-xs text-slate-500">Demo sales numbers</p>
+        <p className="mt-2 text-xs text-slate-500">Net units sold · last 30 days</p>
         <ul className="mt-5 space-y-5">
           {dashboardService.getTopProducts().map((p) => (
             <li key={p.sku} className="flex items-center gap-2.5">
@@ -120,4 +120,5 @@ export function ProductsRow() {
     </div>
   );
 }
+
 

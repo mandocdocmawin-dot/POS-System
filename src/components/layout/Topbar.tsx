@@ -1,3 +1,4 @@
+import {OfflinePill} from '../pwa/OfflinePill';
 import {StoreSummary} from './StoreSummary';
 import {ShortcutsDialog} from './ShortcutsDialog';
 import {CommandPalette} from '../search/CommandPalette';
@@ -69,7 +70,7 @@ export function Topbar() {
         <BranchSwitcher />
       </div>
       <div className="flex items-center gap-2">
-        <CommandPalette />
+        <OfflinePill/><CommandPalette />
         <button
           className="icon-btn hidden md:flex"
           aria-label="Toggle compact layout"

@@ -44,3 +44,14 @@ Use a disposable profile for corrupt/reset fixtures. Export JSON and separately 
 - [ ] Root and non-root VITE_BASE direct refresh/assets/manifest/shortcuts/fallback; real-host headers separately after publication.
 
 See RELEASE-CHECKS.md for actual evidence and outstanding target-environment checks.
+
+## POS reference refinements (2026-10-19)
+
+- Category photos enlarged; desktop sidebar has vertical scrolling and no horizontal overflow.
+- Shared customer/user/notification portrait avatars; uploaded staff portraits take priority.
+- POS cart dropdown replaces the former store-link button, with product thumbnails and quantity controls. The dropdown stays open while adjusting quantities; stock validation still goes through the POS service.
+- Notification All/Unread filters, user-menu links and existing demo role switching retained.
+- Invoice opens a wide preview of the actual cart, with saved business/currency settings, line quantities, VAT, discounts and totals. It does not record a sale. Print / Save PDF uses the browser print dialog; Save Invoice downloads a standalone HTML document. HTML exports escape user-provided text.
+- Payment Successful is shown only after the existing Complete Sale service returns a saved order; its amount, change and bill ID come from that order. View Receipt opens the historical receipt. Pay Later continues to show its credit-sale receipt.
+- An isolated production preview origin was used to complete a sample sale and verify the success dialog and empty cart, keeping the main origin's existing cart intact.
+- Actual printer / Save as PDF output remains a manual browser check.

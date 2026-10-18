@@ -1,3 +1,4 @@
+import {CartPopover} from '../../components/pos/CartPopover';
 import {formatDate,formatTime} from '../../utils/date';
 import {Popover} from '../../components/common/Popover';
 import {useCurrentUser} from '../../hooks/useCurrentUser';
@@ -10,7 +11,6 @@ import {
   Power,
   LayoutDashboard,
   Settings,
-  Store,
 } from "lucide-react";
 import { NotificationMenu } from "../../components/layout/NotificationMenu";
 import { UserMenu } from "../../components/layout/UserMenu";
@@ -53,15 +53,7 @@ export function PosTopbar() {
           <Settings size={17} />
         </Link></Can>
         <FullscreenButton />
-        <Can permission="pages:view"><Link
-          className="icon-btn relative"
-          aria-label="Switch store"
-          to="/multi-store/store-list"
-        >
-          <Store size={17} />
-          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-red-500" />
-        </Link>
-        </Can><Can permission="pages:view"><NotificationMenu /></Can>
+        <CartPopover/><NotificationMenu/>
         <UserMenu />
       </div>
     </header>

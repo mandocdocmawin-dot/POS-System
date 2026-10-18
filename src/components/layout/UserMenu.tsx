@@ -2,10 +2,34 @@ import {InstallButton} from '../pwa/InstallButton';
 import {guideService} from '../../services/guideService';
 import {Link,useNavigate} from 'react-router-dom';
 import {useState} from 'react';
+import {UserRound,Settings,ShieldCheck,LogOut,BookOpen,Headset,Rocket,Users} from 'lucide-react';
 import {Popover} from '../common/Popover';
 import {Drawer} from '../common/Drawer';
+import {Avatar} from '../common/Avatar';
+import {Can} from '../auth/Can';
 import {RoleSwitcher} from '../auth/RoleSwitcher';
 import {useCurrentUser} from '../../hooks/useCurrentUser';
 import {useRoleStore} from '../../store/useRoleStore';
 import {authService} from '../../services/authService';
-export function UserMenu(){const user=useCurrentUser(),roles=useRoleStore(s=>s.roles),[profile,setProfile]=useState(false),[error,setError]=useState(''),navigate=useNavigate();const initials=user?.name.split(' ').slice(0,2).map(n=>n[0]).join('')??'?';return <><Popover label="User menu" trigger={<span className="flex h-full w-full items-center justify-center rounded-lg bg-teal-100 text-xs font-bold text-teal-800">{initials}</span>}><div className="w-64"><div className="p-3"><p className="font-semibold">{user?.name}</p><p className="mt-1 text-xs">{roles.find(r=>r.id===user?.role)?.name} <span className="rounded bg-amber-100 px-1 text-amber-800">DEMO</span></p></div><RoleSwitcher/><InstallButton/><button className="w-full p-3 text-left" onClick={guideService.start}>Show demo guide</button><Link className="block p-3" to="/profile/overview">Open full profile</Link><Link className="block p-3" to="/account/account">Account settings</Link><button className="w-full p-3 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800" onClick={()=>setProfile(true)}>Profile</button><button className="w-full p-3 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800" onClick={()=>{try{authService.logout();navigate('/sign-in');}catch(error){setError(error instanceof Error?error.message:'Unable to sign out.');}}}>Logout</button>{error&&<p role="alert" className="p-3 text-red-500">{error}</p>}</div></Popover><Drawer open={profile} title="My profile" onClose={()=>setProfile(false)}><dl className="space-y-4"><div><dt>Name</dt><dd>{user?.name}</dd></div><div><dt>Email</dt><dd>{user?.email}</dd></div><div><dt>Role</dt><dd>{roles.find(r=>r.id===user?.role)?.name}</dd></div><div><dt>Branches</dt><dd>{user?.branchIds.join(', ')}</dd></div><div><dt>Status</dt><dd>{user?.status}</dd></div></dl><Link className="btn mt-6" to="/auth/account-deactivation">Deactivate account</Link></Drawer></>;}
+export function UserMenu(){
+ const user=useCurrentUser(),roles=useRoleStore(s=>s.roles),[profile,setProfile]=useState(false),[error,setError]=useState(''),navigate=useNavigate();
+ const row='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800';
+ return <><Popover label="User menu" trigger={<Avatar name={user?.name??'Demo user'} imageId={user?.avatarId} size="h-9 w-9"/>}>
+  <div className="w-[min(18rem,85vw)] p-2">
+   <div className="mb-2 flex items-center gap-3 border-b border-slate-100 p-3 dark:border-slate-700"><Avatar name={user?.name??'Demo user'} imageId={user?.avatarId} size="h-11 w-11"/><div className="min-w-0"><p className="truncate font-semibold">{user?.name}</p><p className="mt-1 truncate text-xs text-slate-500">{user?.email}</p><p className="mt-1 text-xs">{roles.find(r=>r.id===user?.role)?.name} <span className="rounded bg-amber-100 px-1 text-amber-800">DEMO</span></p></div></div>
+   <Link className={row} to="/profile/overview"><UserRound size={17}/>My Profile</Link>
+   <Link className={row} to="/account/account"><Settings size={17}/>Account settings</Link>
+   <Link className={row} to="/account/security"><ShieldCheck size={17}/>Security</Link>
+   <Can permission="settings:manage"><Link className={row} to="/settings/pos"><Settings size={17}/>POS Settings</Link></Can>
+   <Can permission="staff:view"><Link className={row} to="/staff/staff-list"><Users size={17}/>Staff Management</Link></Can>
+   <div className="my-2 border-t border-slate-100 dark:border-slate-700"/>
+   <button className={row} onClick={guideService.start}><BookOpen size={17}/>Show demo guide</button>
+   <Link className={row} to="/coming-soon"><Rocket size={17}/>What's new?</Link>
+   <Link className={row} to="/help-center"><Headset size={17}/>Get help</Link>
+   <button className={row} onClick={()=>setProfile(true)}><UserRound size={17}/>Profile details</button>
+   <RoleSwitcher/><InstallButton/>
+   <button className={row} onClick={()=>{try{authService.logout();navigate('/sign-in');}catch(error){setError(error instanceof Error?error.message:'Unable to sign out.');}}}><LogOut size={17}/>Log Out</button>
+   {error&&<p role="alert" className="p-3 text-red-500">{error}</p>}
+  </div>
+ </Popover><Drawer open={profile} title="My profile" onClose={()=>setProfile(false)}><Avatar name={user?.name??'Demo user'} imageId={user?.avatarId} size="mb-5 h-20 w-20"/><dl className="space-y-4"><div><dt>Name</dt><dd>{user?.name}</dd></div><div><dt>Email</dt><dd>{user?.email}</dd></div><div><dt>Role</dt><dd>{roles.find(r=>r.id===user?.role)?.name}</dd></div><div><dt>Branches</dt><dd>{user?.branchIds.join(', ')}</dd></div><div><dt>Status</dt><dd>{user?.status}</dd></div></dl><Link className="btn mt-6" to="/auth/account-deactivation">Deactivate account</Link></Drawer></>;
+}

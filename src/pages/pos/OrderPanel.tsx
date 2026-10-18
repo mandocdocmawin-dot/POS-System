@@ -1,3 +1,4 @@
+import {PaymentSuccess} from '../../components/pos/PaymentSuccess';
 import {CouponControl} from '../../components/coupons/CouponControl';
 import {usePermission} from '../../hooks/usePermission';
 import {Can} from '../../components/auth/Can';
@@ -33,8 +34,8 @@ export function OrderPanel({isPhone=false,mobileOpen=false,onClose,panelRef}:{is
  const [discountOpen,setDiscountOpen]=useState(false),[selected,setSelected]=useState(''),[clear,setClear]=useState(false);
  const [customerOpen,setCustomerOpen]=useState(false),[holding,setHolding]=useState(false),[heldOpen,setHeldOpen]=useState(false),[noteOpen,setNoteOpen]=useState(false);
  const [paymentOpen,setPaymentOpen]=useState(false),[payLaterOpen,setPayLaterOpen]=useState(false),[historyOpen,setHistoryOpen]=useState(false);
- const [receipt,setReceipt]=useState<ReceiptDocument|null>(null);
- const complete=(payments:Payment[])=>{const order=posService.complete(payments);setPaymentOpen(false);setReceipt(order);toast.success('Sale saved: '+order.orderNo);};
+ const [receipt,setReceipt]=useState<ReceiptDocument|null>(null),[success,setSuccess]=useState<ReceiptDocument|null>(null);
+ const complete=(payments:Payment[])=>{const order=posService.complete(payments);setPaymentOpen(false);setSuccess(order);toast.success('Sale saved: '+order.orderNo);};
  usePosShortcuts({customer:()=>setCustomerOpen(true),payment:()=>{if(s.cart.length)setPaymentOpen(true);},hold:()=>{if(s.cart.length&&can('pos:hold'))setHolding(true);},clear:()=>setClear(true),quantity:delta=>{const line=s.cart.find(l=>l.id===selected)??s.cart.at(-1);if(!line)return;try{posService.quantity(line.id,Math.max(Number.isInteger(line.quantity)?1:0.001,line.quantity+delta));}catch(e){toast.error(errorMessage(e));}}});
  const actions=[{label:'Payment',tone:'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',icon:CreditCard,click:()=>setPaymentOpen(true),permission:'pos:use',disabled:!s.cart.length},{label:'Hold',tone:'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',permission:'pos:hold',icon:Pause,click:()=>setHolding(true),disabled:!s.cart.length},{label:'Invoice',tone:'bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300',permission:'pos:use',icon:Receipt,click:()=>setReceipt(receiptService.draft()),disabled:!s.cart.length},{label:'Pay Later',tone:'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300',permission:'pos:use',icon:Clock3,click:()=>setPayLaterOpen(true),disabled:!s.cart.length},{label:'History',tone:'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300',permission:'orders:view',icon:History,click:()=>setHistoryOpen(true),disabled:false}];
  return <aside ref={panelRef} tabIndex={-1} role={isPhone&&mobileOpen?'dialog':undefined} aria-modal={isPhone&&mobileOpen?true:undefined} aria-label="Current order" className={`${isPhone&&!mobileOpen?'hidden':'flex'} pos-order-panel min-h-0 w-full shrink-0 flex-col overflow-hidden border-slate-200 bg-white p-4 md:w-[340px] md:border-l xl:w-[380px] 2xl:w-[420px] dark:border-slate-800 dark:bg-slate-900 ${isPhone?'fixed inset-x-0 bottom-0 z-40 h-[88dvh] rounded-t-2xl border-t shadow-xl':''}`}>
@@ -55,7 +56,7 @@ export function OrderPanel({isPhone=false,mobileOpen=false,onClose,panelRef}:{is
   {paymentOpen&&<PaymentModal onComplete={complete} onClose={()=>setPaymentOpen(false)}/>}
   {payLaterOpen&&<PayLaterModal onClose={()=>setPayLaterOpen(false)} onSelectCustomer={()=>{setPayLaterOpen(false);setCustomerOpen(true);toast.info('Select a customer, then choose Pay Later again.');}} onComplete={order=>{setPayLaterOpen(false);setReceipt(order);toast.success('Credit sale saved: '+order.orderNo);}}/>}
   <PosHistoryDrawer open={historyOpen} onClose={()=>setHistoryOpen(false)}/><HeldOrdersDrawer open={heldOpen} onClose={()=>setHeldOpen(false)}/>
-  <ReceiptDialog receipt={receipt} onClose={()=>setReceipt(null)}/>
+  <ReceiptDialog receipt={receipt} onClose={()=>setReceipt(null)} onPayment={receipt?.draft?()=>{setReceipt(null);setPaymentOpen(true);}:undefined}/><PaymentSuccess receipt={success} onClose={()=>setSuccess(null)} onReceipt={()=>{setReceipt(success);setSuccess(null);}}/>
   <ConfirmDialog open={!!replaceCoupon} title="Replace coupon with order discount?" message="A coupon and manual order discount cannot be combined." onClose={()=>setReplaceCoupon(undefined)} onConfirm={()=>{if(replaceCoupon)posService.discount(replaceCoupon.discount,replaceCoupon.approver,true);}}/>
   <ConfirmDialog open={clear} title="Clear current cart?" message="All current items, discounts, customer and notes will be cleared." onClose={()=>setClear(false)} onConfirm={()=>{posService.clear();}}/>
  </aside>;

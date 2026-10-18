@@ -1,0 +1,11 @@
+import {describe,it,expect} from 'vitest';
+import {receiptHtml} from './receiptExport';
+import {calculateTotals} from './pos';
+import {defaultSettings} from '../config/defaultSettings';
+import type {ReceiptDocument} from '../services/receiptService';
+function receipt():ReceiptDocument{return {...calculateTotals([{id:'line',productId:'p',name:'Rice',sku:'SKU',unitPrice:100,costPrice:50,quantity:2,taxRate:0,unitShortName:'kg',discountType:'fixed',discountValue:10}],{type:'fixed',value:5}),receiptSnapshot:{general:defaultSettings.general,invoice:defaultSettings.invoice,tax:defaultSettings.tax,currency:defaultSettings.currency},draft:true,branchId:'Main',customerId:'c',customerName:'Customer',cashier:'Cashier',createdAt:'2026-10-19T01:00:00.000Z',payments:[],amountPaid:0,balanceDue:185,change:0,paymentStatus:'unpaid',orderStatus:'pending',refundedTotal:0,pointsEarned:0};}
+describe('downloadable invoice document',()=>{
+ it('preserves peso amounts and signed discounts without creating an order',()=>{const value=receipt(),html=receiptHtml(value);expect(html).toContain('₱185.00');expect(html).toContain('-₱10.00');expect(html).toContain('-₱5.00');expect(html).toContain('no sale recorded');expect(value.draft).toBe(true);expect(value.orderNo).toBeUndefined();});
+ it('escapes user-provided text instead of emitting executable HTML',()=>{const value=receipt();value.customerName='<script>alert(1)</script>';value.note='<img src=x onerror="alert(2)">';value.items[0].name='Rice & <strong>Grain</strong>';const html=receiptHtml(value);expect(html).not.toContain('<script>');expect(html).not.toContain('<img');expect(html).toContain('&lt;script&gt;');expect(html).toContain('Rice &amp; &lt;strong&gt;Grain&lt;/strong&gt;');expect(html).toContain('&quot;');});
+ it('uses the receipt snapshot currency and saved payment amounts',()=>{const value=receipt();value.draft=false;value.orderNo='TP-100';value.amountPaid=200;value.change=15;value.balanceDue=0;value.receiptSnapshot=structuredClone(value.receiptSnapshot!);value.receiptSnapshot.currency.base.symbol='TEST';expect(receiptHtml(value)).toContain('TEST185.00');expect(receiptHtml(value)).toContain('TEST15.00');expect(receiptHtml(value)).not.toContain('no sale recorded');});
+});

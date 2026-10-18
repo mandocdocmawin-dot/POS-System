@@ -1,3 +1,4 @@
+import {Avatar} from '../common/Avatar';
 import {UserMenu} from './UserMenu';
 import {toast,errorMessage} from '../../services/toastService';
 import {authService} from '../../services/authService';
@@ -69,9 +70,7 @@ export function IconRail() {
         >
           <LogOut size={18} />
         </Link>
-        <span className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
-          {user?.name.split(" ").slice(0,2).map(n=>n[0]).join("")}
-        </span>
+        <Avatar name={user?.name??'Demo user'} imageId={user?.avatarId}/>
       </div>
     </nav>
   );

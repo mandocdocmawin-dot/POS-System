@@ -46,7 +46,7 @@ export function ProductBrowser() {
     <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/>In-stock products only</label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}>Apply filters</button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex w-full min-w-0 flex-col sm:flex-row md:min-h-0 md:flex-1">
       <nav
         aria-label="Product categories"
-        className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-28 sm:flex-col sm:border-b-0 sm:border-r md:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
+        className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-36 sm:flex-col sm:overflow-x-hidden sm:px-3 sm:border-b-0 sm:border-r md:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
       >
         {[{ id: "", name: "All" }, ...categories].map((c) => {
           const image = categoryArtwork(c.name);
@@ -55,9 +55,9 @@ export function ProductBrowser() {
               key={c.id}
               aria-pressed={category === c.id}
               onClick={() => {setCategory(c.id);focusSearch();}}
-              className={`flex min-h-20 w-20 shrink-0 flex-col items-center justify-center gap-2 rounded-xl border px-1 text-center text-xs ${category === c.id ? "border-indigo-500 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300" : "border-slate-200 text-slate-500 dark:border-slate-700"}`}
+              className={`flex min-h-28 w-28 sm:w-full shrink-0 flex-col items-center justify-center gap-2 rounded-xl border px-1 text-center text-xs ${category === c.id ? "border-indigo-500 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300" : "border-slate-200 text-slate-500 dark:border-slate-700"}`}
             >
-              {image?<img src={image} alt="" className="h-10 w-10 object-contain" width={40} height={40}/>:<Shapes size={25} aria-hidden="true"/>}
+              {image?<img src={image} alt="" className="h-16 w-16 rounded-lg bg-white object-contain p-1" width={64} height={64}/>:<Shapes size={25} aria-hidden="true"/>}
               {c.name}
             </button>
           );

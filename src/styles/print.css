@@ -82,3 +82,10 @@
  #staff-payslip tr, #staff-payslip footer { break-inside: avoid; }
  #staff-payslip thead { display: table-header-group; }
 }
+@media print {
+ dialog:has(#pos-receipt) .hidden:has(#pos-receipt) { display: block !important; }
+ #pos-receipt.invoice-document { font-family: Arial, sans-serif; font-size: 12px; }
+ #pos-receipt.invoice-document * { color: black !important; background-color: white !important; }
+ #pos-receipt.invoice-document .overflow-x-auto { overflow: visible !important; }
+ #pos-receipt.invoice-document table { min-width: 0 !important; }
+}

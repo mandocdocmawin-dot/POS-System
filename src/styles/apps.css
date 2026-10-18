@@ -16,3 +16,7 @@
 @media(max-width:767px){.apps-chat-layout{height:auto;grid-template-columns:minmax(0,1fr)}.apps-conversation-list{max-height:310px;display:flex;flex-direction:column}.apps-chat-main{height:660px;max-height:85dvh}.apps-chat-details{max-height:400px}.apps-mail-layout{grid-template-columns:minmax(0,1fr)}.apps-mail-folders{border-right:0!important;border-bottom:1px solid #e2e8f0}.apps-mail-inbox{max-height:none;min-height:400px}.apps-mail-row{grid-template-columns:20px 34px minmax(0,1fr);padding:14px;gap:8px}}
 .apps-mail-row{grid-template-columns:24px 42px minmax(0,1fr) 24px}
 @media(max-width:767px){.apps-mail-row{grid-template-columns:18px 34px minmax(0,1fr) 20px}.apps-mail-row>img{width:34px;height:34px}}
+@media(max-width:1439px){.apps-chat-details{display:none}}
+.apps-template-preview:not(.dark-preview) h2,.apps-template-preview:not(.dark-preview) h3{color:#0f172a}
+@media(min-width:768px){.apps-mail-inbox{max-height:calc(100dvh - 370px);min-height:360px}}
+.apps-template-preview:not(.dark-preview) .preview-accent{color:#4f46e5}

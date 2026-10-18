@@ -55,3 +55,7 @@ See RELEASE-CHECKS.md for actual evidence and outstanding target-environment che
 - Payment Successful is shown only after the existing Complete Sale service returns a saved order; its amount, change and bill ID come from that order. View Receipt opens the historical receipt. Pay Later continues to show its credit-sale receipt.
 - An isolated production preview origin was used to complete a sample sale and verify the success dialog and empty cart, keeping the main origin's existing cart intact.
 - Actual printer / Save as PDF output remains a manual browser check.
+
+## Apps layout refinements (2026-10-19)
+
+Direct chat uses a conversation list, portrait bubbles, timestamps, message action menus and an anchored composer. Group chat adds the member panel on wide screens and an expandable member list on smaller screens. Existing reply/edit/delete, group membership checks and simulated auto-replies stay in the services. The mailbox now has a folder sidebar, image-based quick filters, sender portraits, full message rows and a reader dialog. Star, read/unread, Trash/restore, draft editing and composition remain available; bulk read/Trash applies only to selected messages in the current view. Template previews show light and dark designs, with a newsletter design sample that can open the composer or be saved as a custom copy. Existing system template edit/reset permissions remain enforced. Calendar behavior is unchanged.

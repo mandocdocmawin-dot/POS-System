@@ -41,7 +41,8 @@ export const productSchema = z.object({
   unitId: id,
   costPrice: money,
   sellingPrice: money,
-  taxRate: z.union([z.literal(0), z.literal(12)]),
+  taxRate: z.number().min(0).max(100),
+  taxRateId: z.string().optional(),
   discountPercent: z.number().min(0).max(100).optional(),
   reorderLevel: money,
   description: z.string().optional(),
@@ -64,6 +65,7 @@ export const variantSchema = z.object({
 export const movementSchema = z
   .object({
     id,
+    branchId: id.optional(),
     productId: id,
     variantId: z.string().optional(),
     type: z.enum(["in", "out", "adjustment", "initial"]),

@@ -3,6 +3,7 @@ import {ReportBoundary} from '../components/reports/ReportSection';
 function lazyReport(loader:()=>Promise<{Component:ComponentType}>){const Page=lazy(async()=>({default:(await loader()).Component}));return async()=>({Component:()=>createElement(ReportBoundary,null,createElement(Suspense,{fallback:createElement('div',{role:'status',className:'panel animate-pulse p-10'},'Loading report…')},createElement(Page)))});}
 // All feature pages remain code-split. Reports additionally defer loading until rendered.
 export const pageLoaders = {
+ chat8:()=>import('../pages/chat/ChatPage'),
  templates8:()=>import('../pages/email/TemplatesPage'),
  mailbox8:()=>import('../pages/email/MailboxPage'),
  calendar8:()=>import('../pages/calendar/CalendarPage'),
@@ -83,6 +84,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/chat/default':'chat8',
  '/email/templates':'templates8',
  '/email/mailbox':'mailbox8',
  '/calendar/list-view':'calendar8','/calendar/timeline':'calendar8',

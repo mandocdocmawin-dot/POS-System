@@ -1,11 +1,12 @@
+import {defaultSettings} from '../config/defaultSettings';
 import type { Backup } from '../services/backupSchema';
 import { settingsSchema } from '../types/settings';
-import { toCentavos } from './pos';
+import { calculateTotals, toCentavos } from './pos';
 import { accountBalance, mergeLedger } from './ledger';
 import type { FinanceData } from '../types/accounts';
 export interface IntegrityIssue { id: string; severity: 'error' | 'warning'; area: string; message: string; entity?: string; fixable: boolean }
 export function customerCredit(snapshot: Pick<Backup, 'orders'>, id: string) { return snapshot.orders.filter(o => o.customerId === id && o.orderStatus !== 'cancelled').reduce((sum, o) => sum + toCentavos(o.balanceDue), 0); }
-export function customerWallet(snapshot: Pick<Backup, 'walletTransactions'>, id: string) { return toCentavos(snapshot.walletTransactions.filter(t => t.customerId === id).at(-1)?.balanceAfter ?? 0); }
+export function customerWallet(snapshot: Pick<Backup, 'walletTransactions'>, id: string) { return toCentavos(snapshot.walletTransactions.filter(t => t.customerId === id).toSorted((a,b)=>a.createdAt.localeCompare(b.createdAt)).at(-1)?.balanceAfter ?? 0); }
 export function runIntegrityCheck(data: Backup): IntegrityIssue[] {
   const issues: IntegrityIssue[] = [];
   const add = (id: string, area: string, message: string, entity?: string, fixable = false, severity: IntegrityIssue['severity'] = 'error') => issues.push({ id, area, message, entity, fixable, severity });
@@ -13,6 +14,12 @@ export function runIntegrityCheck(data: Backup): IntegrityIssue[] {
   data.movements.forEach(m => { const key = `${m.productId}:${m.variantId ?? ''}:${m.branchId ?? 'Main Branch'}`; stock.set(key, (stock.get(key) ?? 0) + (m.type === 'out' ? -m.quantity : m.quantity)); });
   stock.forEach((quantity, key) => { if (quantity < -1e-8) add(`stock:${key}`, 'Stock', `Negative available quantity (${quantity}) for ${key}.`, key); });
   for (const order of data.orders) {
+    try {
+      const expected=calculateTotals(order.items,order.orderDiscount,{...defaultSettings.tax,...order.receiptSnapshot?.tax,mode:order.taxMode??'inclusive',vatRegistered:order.taxRegistered??true},order.coupon?order.items.map(l=>toCentavos(l.orderDiscountAmount)):undefined);
+      const summaryWrong=(['subtotal','itemDiscountTotal','taxTotal'] as const).some(k=>toCentavos(order[k])!==toCentavos(expected[k]));
+      const lineWrong=order.items.some((line,i)=>(['lineSubtotal','lineDiscount','orderDiscountAmount','lineTax','lineTotal'] as const).some(k=>toCentavos(line[k])!==toCentavos(expected.items[i][k])));
+      if(summaryWrong||lineWrong||(!order.coupon&&toCentavos(order.orderDiscount.amount)!==toCentavos(expected.orderDiscount.amount)))add('order-components:'+order.id,'Orders',order.orderNo+': line discounts, tax or subtotal are inconsistent.',order.id);
+    } catch {add('order-components:'+order.id,'Orders',order.orderNo+': items cannot be recalculated.',order.id);}
     const lines = order.items.reduce((sum, line) => sum + toCentavos(line.lineTotal), 0), total = toCentavos(order.grandTotal);
     if (lines + (order.roundingAdjustment ?? 0) !== total) add(`order-total:${order.id}`, 'Orders', `${order.orderNo}: totals do not equal the sum of allocated lines and rounding.`, order.id);
     const paid = order.payments.reduce((sum, payment) => sum + toCentavos(payment.amount), 0) - toCentavos(order.change), balance = Math.max(0, total - paid);

@@ -1,7 +1,7 @@
 import { useChatStore } from '../store/useChatStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { chatMessageSchema, conversationSchema, type Conversation } from '../types/phase8';
-import { currentUser, canUse, activePeople, timestamp } from './phase8Context';
+import { currentUser, activePeople, timestamp } from './phase8Context';
 import { PermissionError } from '../utils/permissions';
 const pending = new Map<string, ReturnType<typeof setTimeout>>();
 function conversation(id: string) {
@@ -25,7 +25,7 @@ export const chatService = {
   },
   updateGroup: (id: string, name: string, memberIds: string[]) => {
     const c = conversation(id), u = currentUser('chat:use'), members = [...new Set(memberIds)], state = useChatStore.getState();
-    if (c.type !== 'group' || (c.createdBy !== u.id && !canUse('help:manage'))) throw new PermissionError('chat:manage');
+    if (c.type !== 'group' || (c.createdBy !== u.id && u.role !== 'admin')) throw new PermissionError('chat:manage');
     if (c.name === '#general') throw new Error('The system #general channel cannot be renamed or have members removed.');
     if (!name.trim() || state.conversations.some(other => other.id !== id && other.name?.toLowerCase() === name.trim().toLowerCase())) throw new Error('Choose a unique group name.');
     if (members.length < 2 || members.some(id => !activePeople().some(s => s.id === id))) throw new Error('Select at least two active members.');
@@ -33,6 +33,7 @@ export const chatService = {
   },
   removeGroup: (id: string) => {
     const c = conversation(id), u = currentUser('chat:use');
+    if(c.type!=='group')throw new Error('Only group channels can be deleted here.');
     if (c.name === '#general') throw new Error('The system channel cannot be deleted.');
     if (c.createdBy !== u.id && u.role !== 'admin') throw new PermissionError('chat:manage');
     useChatStore.setState(s => ({ conversations: s.conversations.filter(c => c.id !== id), messages: s.messages.filter(m => m.conversationId !== id) }));

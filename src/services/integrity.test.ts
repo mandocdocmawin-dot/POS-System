@@ -8,10 +8,17 @@ import { useStaffStore } from '../store/useStaffStore';
 import { useRoleStore } from '../store/useRoleStore';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useActivityStore } from '../store/useActivityStore';
-import { runIntegrityCheck } from '../utils/integrity';
+import { customerWallet, runIntegrityCheck } from '../utils/integrity';
 import { integrityService } from './integrityService';
 beforeEach(() => { const s = createPhase5Seed(); useStaffStore.setState({ staff: s.staff }); useRoleStore.setState({ roles: s.roles }); useAuthStore.setState({ currentUserId: 'staff-admin' }); dataService.reset(); useAuthStore.setState({ currentUserId: 'staff-admin' }); });
 const cases: [string, (data: Backup) => void, string][] = [
+  ['tax components',d=>{d.orders[0].taxTotal+=1;},'order-components:'],
+  ['supplier return quantity',d=>{d.purchaseReturns[0].items[0].quantity=1000000;},'purchase:'],
+  ['transfer movements',d=>{const t=d.phase7.transfers.find(t=>t.status==='in_transit')!;d.movements=d.movements.filter(m=>m.reference!==t.transferNo);},'transfer:'],
+  ['account negative',d=>{const a=d.phase6.accounts[0];a.openingBalance=0;d.phase6.manualEntries.push({id:'bad-expense',type:'expense',date:'2026-10-18',categoryId:d.phase6.categories.find(c=>c.type==='expense')!.id,amount:100000000,accountId:a.id,branchId:'Main Branch',createdBy:'test',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});},'account:'],
+  ['missing brand',d=>{d.products[0].brandId='missing';},'product:'],
+  ['missing unit',d=>{d.products[0].unitId='missing';},'product:'],
+  ['record branch',d=>{d.orders[0].branchId='missing';},'branch:'],
   ['negative stock', d => { d.movements.push({ id:'bad',productId:d.products[0].id,branchId:'Main Branch',type:'out',quantity:1000000,reason:'test',createdAt:new Date().toISOString(),createdBy:'test' }); }, 'stock:'],
   ['order totals', d => { d.orders[0].grandTotal += 1; }, 'order-total:'],
   ['payments', d => { d.orders[0].amountPaid += 1; }, 'order-paid:'],
@@ -41,3 +48,5 @@ it('repairs only summary balances and is idempotent', () => {
   expect(runIntegrityCheck(data).some(issue => issue.fixable)).toBe(false);
   integrityService.repair('credit'); integrityService.repair('wallet'); expect(dataService.snapshot()).toEqual(data); expect(useActivityStore.getState().logs).toHaveLength(logCount);
 });
+
+it('uses the newest wallet transaction by timestamp rather than array position',()=>{const d=dataService.snapshot(),t=d.walletTransactions[0];d.walletTransactions=[{...t,id:'new',balanceAfter:70,createdAt:'2026-10-18T12:00:00.000Z'},{...t,id:'old',balanceAfter:10,createdAt:'2026-10-17T12:00:00.000Z'}];expect(customerWallet(d,t.customerId)).toBe(7000);});

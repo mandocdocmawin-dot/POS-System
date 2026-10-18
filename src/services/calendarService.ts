@@ -22,7 +22,7 @@ export const calendarService = {
     const u = currentUser('calendar:view'), old = useCalendarStore.getState().events.find(e => e.id === input.id);
     if ((old ? old.createdBy !== u.id : input.createdBy !== u.id) && !canUse('calendar:manage')) throw new PermissionError('calendar:manage');
     const event = calendarEventSchema.parse({ ...input, title: input.title.trim(), createdBy: old?.createdBy ?? u.id, createdAt: old?.createdAt ?? timestamp(), updatedAt: timestamp() });
-    if (new Date(event.end).getTime() < new Date(event.start).getTime() || (!event.allDay && event.end === event.start)) throw new Error('End must be after start. All-day events may end on their start date.');
+    if (event.allDay ? event.end.slice(0,10)<event.start.slice(0,10) : new Date(event.end).getTime() <= new Date(event.start).getTime()) throw new Error('End must be after start. All-day events may end on their start date.');
     if (event.attendeeStaffIds.some(id => !activePeople().some(s => s.id === id))) throw new Error('Attendees must be active staff.');
     if (event.recurrence?.until && event.recurrence.until < event.start.slice(0, 10)) throw new Error('Recurrence end must not precede the event.');
     if (event.branchId) branchService.assertAccess(event.branchId);

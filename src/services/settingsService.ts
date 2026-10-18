@@ -1,3 +1,4 @@
+import {useProductStore} from '../store/useProductStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useOrderStore } from '../store/useOrderStore';
 import { settingsSchema, type Settings, type SettingsSection } from '../types/settings';
@@ -27,6 +28,7 @@ export const settingsService = {
    if (next.invoice.nextNumber < Math.max(before.invoice.nextNumber, highest + 1)) throw new Error('Next invoice number can only be raised and must exceed existing numbers.');
   }
   if (section === 'tax') {
+   if (useProductStore.getState().products.some(p=>p.taxRateId && !next.tax.rates.some(r=>r.id===p.taxRateId))) throw new Error('Tax rates in use must be deactivated instead of deleted.');
    for (const rate of before.tax.rates.filter(r => r.isSystem)) {
     const replacement = next.tax.rates.find(r => r.id === rate.id);
     if (!replacement || replacement.rate !== rate.rate || replacement.taxClass !== rate.taxClass || !replacement.isSystem) throw new Error('System tax rates cannot be removed or changed.');

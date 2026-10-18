@@ -1,0 +1,4 @@
+import type { ReactNode } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useLocalData } from '../../services/useLocalData';
+export function AccountsShell({title,actions,children}:{title:string;actions?:ReactNode;children:ReactNode}){useLocalData();return <div className="space-y-5"><header className="flex flex-wrap items-center justify-between gap-3"><div><p className="mb-1 text-xs text-slate-500">Accounts</p><h1 className="text-2xl font-semibold">{title}</h1></div>{actions}</header><nav aria-label="Accounts" className="flex flex-wrap gap-2">{[['income','Income'],['expenses','Expenses'],['bank','Bank accounts'],['transfer','Money transfer']].map(([path,label])=><NavLink className={({isActive})=>isActive?'btn-primary':'btn'} key={path} to={`/accounts/${path}`}>{label}</NavLink>)}</nav>{children}</div>;}

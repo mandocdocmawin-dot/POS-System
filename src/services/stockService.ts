@@ -1,3 +1,4 @@
+import {activityService} from './activityService';
 import {branchService} from './branchService';
 import {approvalService} from './approvalService';
 import {authService} from './authService';
@@ -66,6 +67,7 @@ export const stockService = {
     localTransaction(() => {
       if(m.type==='adjustment')approvalService.ensure('adjustment',m.quantity,JSON.stringify(['adjustment',input]));
       useStockStore.setState((s) => ({ movements: [...s.movements, m] }));
+      activityService.log('stock',m.id,m.type,`${m.reason}: ${m.quantity}`);
     });
     return m;
   },

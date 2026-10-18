@@ -1,3 +1,4 @@
+import {activityService} from './activityService';
 import {settingsService} from './settingsService';
 import {branchService} from './branchService';
 import {authService} from './authService';
@@ -156,6 +157,8 @@ export const productService = {
       });
       if (initial.length)
         useStockStore.setState({ movements: [...movements, ...initial] });
+      activityService.log('product',p.id,current?'edit':'create',`${current?'Updated':'Created'} ${p.name}`);
+      if(initial.length)activityService.log('stock',p.id,'initial',`Opening stock for ${p.name}`);
     });
     return p;
   },

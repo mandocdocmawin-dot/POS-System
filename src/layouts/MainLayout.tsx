@@ -1,3 +1,4 @@
+import {DemoGuide} from '../components/guide/DemoGuide';
 import {usePageTitle} from '../hooks/usePageTitle';
 import { Outlet } from "react-router-dom";
 import { IconRail } from "../components/layout/IconRail";
@@ -25,7 +26,7 @@ export function MainLayout() {
         <main className={compact ? "flex-1 p-3" : "flex-1 p-4 md:p-6"}>
           <Outlet />
         </main>
-        <Footer />
+        <DemoGuide/><Footer />
       </div>
     </div>
   );

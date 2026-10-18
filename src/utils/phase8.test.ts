@@ -68,8 +68,8 @@ describe('search, templates and guide', () => {
     expect(decodeURIComponent(result.url)).toContain('A & B');
   });
   it('evaluates guide progress from activity and can scope the actor', () => {
-    const logs = [{ entityType: 'order', action: 'create', actor: 'Ana' }];
-    expect(evaluateGuide(logs, 'Ana')[0].complete).toBe(true);
-    expect(evaluateGuide(logs, 'Ben')[0].complete).toBe(false);
+    const logs = [{ entityType: 'order', action: 'create', createdAt: '2026-10-18T12:00:00Z' }];
+    expect(evaluateGuide(logs, '2026-10-18T00:00:00Z')[0].complete).toBe(true);
+    expect(evaluateGuide(logs, '2026-10-19T00:00:00Z')[0].complete).toBe(false);
   });
 });

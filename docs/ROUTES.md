@@ -34,11 +34,9 @@ A done route implements its local demo scope. Optional inventory and UI showcase
 | `/calendar/list-view` | done |
 | `/calendar/timeline` | done |
 | `/calendar/week-view` | done |
-| `/charts` | placeholder |
 | `/chat/default` | done |
 | `/chat/group` | done |
 | `/coming-soon` | done |
-| `/components` | placeholder |
 | `/contact-us` | done |
 | `/customers` | done |
 | `/customers/:id` | done |
@@ -56,7 +54,6 @@ A done route implements its local demo scope. Optional inventory and UI showcase
 | `/errors/500` | done |
 | `/faq-s` | done |
 | `/forgot-password` | done |
-| `/forms` | placeholder |
 | `/help-center` | done |
 | `/inventory/adjustment` | done |
 | `/inventory/alerts` | placeholder |
@@ -74,7 +71,6 @@ A done route implements its local demo scope. Optional inventory and UI showcase
 | `/landing` | done |
 | `/licenses` | done |
 | `/maintenance` | done |
-| `/maps` | placeholder |
 | `/multi-store/add-store` | done |
 | `/multi-store/store-list` | done |
 | `/orders` | done |
@@ -162,5 +158,4 @@ A done route implements its local demo scope. Optional inventory and UI showcase
 | `/suppliers/balance-report` | done |
 | `/suppliers/payments` | done |
 | `/suppliers/supplier-list` | done |
-| `/tables` | placeholder |
 | `/two-step-verification` | done |

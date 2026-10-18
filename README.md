@@ -74,7 +74,7 @@ Read [architecture](docs/ARCHITECTURE.md), [accounting](docs/ACCOUNTING.md), [de
 
 No real authentication, multi-user isolation, multi-device sync, email/chat/support delivery, billing, gateway, push or i18n. Browser owners can inspect/edit their data; role checks are demo behavior. Recurrence edits affect the entire series, with a 366-occurrence query cap. Dates use browser timezone. GitHub Pages cannot set arbitrary response headers.
 
-Reviews, Print Barcode, Bulk Import/Export, Warranty, Batch Management, Lost Items, Alerts, Valuation and Warehouse remain optional inventory placeholders. Components/Forms/Tables/Charts/Maps showcases remain placeholders. No later phase has started.
+Reviews, Print Barcode, Bulk Import/Export, Warranty, Batch Management, Lost Items, Alerts, Valuation and Warehouse remain optional inventory placeholders. Unused Components/Forms/Tables/Charts/Maps showcase sections have been removed. No later phase has started.
 
 ## Screenshot slots
 

@@ -482,31 +482,6 @@ const plannedFeaturesByPath: Record<string, string[]> = {
     "Filter by module and date",
     "Inspect individual activity entries",
   ],
-  "/components": [
-    "Review the planned components catalog",
-    "Preview accessible component examples",
-    "Browse usage guidance",
-  ],
-  "/forms": [
-    "Review the planned forms catalog",
-    "Preview accessible component examples",
-    "Browse usage guidance",
-  ],
-  "/tables": [
-    "Review the planned tables catalog",
-    "Preview accessible component examples",
-    "Browse usage guidance",
-  ],
-  "/charts": [
-    "Review the planned charts catalog",
-    "Preview accessible component examples",
-    "Browse usage guidance",
-  ],
-  "/maps": [
-    "Review the planned maps catalog",
-    "Preview accessible component examples",
-    "Browse usage guidance",
-  ],
 };
 export const featureStatus: Record<string, FeatureDefinition> =
   Object.fromEntries(

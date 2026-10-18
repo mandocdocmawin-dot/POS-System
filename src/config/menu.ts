@@ -2,29 +2,24 @@ import {
   Boxes,
   CalendarDays,
   ChartNoAxesCombined,
-  ChartPie,
   Circle,
   ClipboardList,
   Contact,
-  FileText,
   Headset,
   History,
   Home,
   LayoutGrid,
   Mail,
-  MapPin,
   MessagesSquare,
   Package,
   PanelTop,
   PanelsTopLeft,
-  Puzzle,
   ScrollText,
   Settings,
   ShieldUser,
   ShoppingBag,
   ShoppingCart,
   Store,
-  Table2,
   Truck,
   Users,
   Wallet,
@@ -770,91 +765,6 @@ export const menu: MenuSection[] = [
                 path: "/errors/500",
               },
             ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "components",
-    railIcon: Puzzle,
-    label: "Components",
-    groups: [
-      {
-        label: "COMPONENTS",
-        items: [
-          {
-            label: "Components",
-            icon: Circle,
-            path: "/components",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "forms",
-    railIcon: FileText,
-    label: "Forms",
-    groups: [
-      {
-        label: "FORMS",
-        items: [
-          {
-            label: "Forms",
-            icon: Circle,
-            path: "/forms",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "tables",
-    railIcon: Table2,
-    label: "Tables",
-    groups: [
-      {
-        label: "TABLES",
-        items: [
-          {
-            label: "Tables",
-            icon: Circle,
-            path: "/tables",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "charts",
-    railIcon: ChartPie,
-    label: "Charts",
-    groups: [
-      {
-        label: "CHARTS",
-        items: [
-          {
-            label: "Charts",
-            icon: Circle,
-            path: "/charts",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "maps",
-    railIcon: MapPin,
-    label: "Maps",
-    groups: [
-      {
-        label: "MAPS",
-        items: [
-          {
-            label: "Maps",
-            icon: Circle,
-            path: "/maps",
           },
         ],
       },

@@ -1,3 +1,4 @@
+import {usePermission} from '../../hooks/usePermission';
 import {useLocalData} from '../../services/useLocalData';
 import { findRoute } from "../../config/menu";
 import { dashboardService } from "../../services/dashboardService";
@@ -11,7 +12,7 @@ import { PageHeader } from "../../components/layout/PageHeader";
 import { useBranchStore } from "../../store/useBranchStore";
 import { SummaryRow } from "./SummaryRow";
 export function Component() {
-  useLocalData();
+  useLocalData();const {can}=usePermission();
   const branch = useBranchStore((s) => s.branch);
   const route = findRoute("/");
   const overview = dashboardService.getOverview();
@@ -38,10 +39,11 @@ export function Component() {
         <SummaryRow />
         <PerformanceRow />
         <ProductsRow />
-        <CustomersRow />
-        <AnalyticsRow />
+        {can("reports:view")&&<CustomersRow />}
+        {can("reports:view")&&<AnalyticsRow />}
         <RecentOrders />
       </div>
     </>
   );
 }
+

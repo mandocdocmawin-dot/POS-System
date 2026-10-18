@@ -1,12 +1,13 @@
+import {usePermission} from '../../hooks/usePermission';
 import { Users, ArrowUpRight } from "lucide-react";
 import { StatCard } from "../../components/common/StatCard";
 import { dashboardService } from "../../services/dashboardService";
 export function SummaryRow() {
-  const summary = dashboardService.getSummary();
+  const {can}=usePermission();const summary = dashboardService.getSummary();
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:col-span-9">
-        {dashboardService.getStats().map((stat) => (
+        {dashboardService.getStats().filter(s=>s.title!=="Net Profit"||can("reports:finance")).map((stat) => (
           <StatCard key={stat.title} {...stat} />
         ))}
       </div>
@@ -47,3 +48,4 @@ export function SummaryRow() {
     </div>
   );
 }
+

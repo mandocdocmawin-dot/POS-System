@@ -1,9 +1,10 @@
+import {usePermission} from '../../hooks/usePermission';
 import { StaffPerformanceCard } from "../../components/staff/StaffPerformanceCard";
 import { CardHeading } from "../../components/common/CardHeading";
 import { DashboardChart } from "./DashboardChart";
 import { dashboardService } from "../../services/dashboardService";
 export function PerformanceRow() {
-  const overview = dashboardService.getOverview();
+  const {can}=usePermission();const overview = dashboardService.getOverview();
   const gross = dashboardService.getGrossProfit();
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
@@ -33,7 +34,7 @@ export function PerformanceRow() {
         <DashboardChart kind="sales"/>
       </section>
       <StaffPerformanceCard />
-      <section className="card xl:col-span-3">
+      {can("reports:finance")&&<section className="card xl:col-span-3">
         <CardHeading title="Gross Profit" />
         <div className="mb-5 mt-3 flex items-center gap-2">
           <h3 className="text-2xl font-semibold tracking-tight">
@@ -55,8 +56,9 @@ export function PerformanceRow() {
             </div>
           ))}
         </div>
-      </section>
+      </section>}
     </div>
   );
 }
+
 

@@ -1,3 +1,4 @@
+import {usePermission} from '../../hooks/usePermission';
 import { Link } from "react-router-dom";
 import { CardHeading } from "../../components/common/CardHeading";
 import { DashboardChart } from "./DashboardChart";
@@ -7,7 +8,7 @@ import { DataTable } from "../../components/common/DataTable";
 import { dashboardService } from "../../services/dashboardService";
 export function ProductsRow() {
   useLocalData();
-  const stock = dashboardService.getLowStock();
+  const {can}=usePermission();const stock = dashboardService.getLowStock();
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
       <section className="card min-w-0 md:col-span-2 xl:col-span-5">
@@ -73,7 +74,7 @@ export function ProductsRow() {
           />
         </div>
       </section>
-      <section className="card xl:col-span-4">
+      {can("reports:finance")&&<section className="card xl:col-span-4">
         <CardHeading title="Profit vs Sales">
           
         </CardHeading>
@@ -88,8 +89,8 @@ export function ProductsRow() {
           </span>
         </div>
         <DashboardChart kind="profit"/>
-      </section>
-      <section className="card xl:col-span-3">
+      </section>}
+      {can('reports:view')&&<section className="card xl:col-span-3">
         <CardHeading title="Top Selling Products" />
         <p className="mt-2 text-xs text-slate-500">Net units sold · last 30 days</p>
         <ul className="mt-5 space-y-5">
@@ -116,9 +117,10 @@ export function ProductsRow() {
             </li>
           ))}
         </ul>
-      </section>
+      </section>}
     </div>
   );
 }
+
 
 

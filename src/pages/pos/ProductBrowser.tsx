@@ -1,3 +1,4 @@
+import {useSettings} from '../../hooks/useSettings';
 import {stockService} from '../../services/stockService';
 import {Modal} from '../../components/common/Modal';
 import type {Product} from '../../types/models';
@@ -12,12 +13,13 @@ import { useLocalData } from "../../services/useLocalData";
 import { toast, errorMessage } from "../../services/toastService";
 export function ProductBrowser() {
   useLocalData();
+  const autoFocus=useSettings(s=>s.pos.autoFocusSearch);
   const [category, setCategory] = useState(""),
     [brand, setBrand] = useState(""),
     [search, setSearch] = useState("");
   const [brandModal,setBrandModal]=useState(false),[filterModal,setFilterModal]=useState(false),[stockOnly,setStockOnly]=useState(false);
   const [variantProduct,setVariantProduct]=useState<Product|null>(null);
-  const add=(p:Product,variantId?:string)=>{if(p.hasVariants&&!variantId){setVariantProduct(p);return;}try{posService.add(p.id,variantId);setVariantProduct(null);requestAnimationFrame(()=>document.getElementById('pos-search')?.focus());}catch(e){toast.error(errorMessage(e));}};
+  const add=(p:Product,variantId?:string)=>{if(p.hasVariants&&!variantId){setVariantProduct(p);return;}try{posService.add(p.id,variantId);setVariantProduct(null);autoFocus&&requestAnimationFrame(()=>document.getElementById('pos-search')?.focus());}catch(e){toast.error(errorMessage(e));}};
   const focusSearch=()=>requestAnimationFrame(()=>{if(!document.querySelector('dialog[open]'))document.getElementById('pos-search')?.focus();});
   const scan=()=>{const query=search.trim().toLowerCase();if(!query)return;for(const p of productService.list().filter(p=>p.status==='active')){const v=productService.variants(p.id).find(v=>v.sku.toLowerCase()===query||v.barcode?.toLowerCase()===query);if(v||p.sku.toLowerCase()===query||p.barcode?.toLowerCase()===query){add(p,v?.id);setSearch('');focusSearch();return;}}toast.error('No exact barcode or SKU match.');};
   const categories = categoryService
@@ -67,7 +69,7 @@ export function ProductBrowser() {
               className="absolute left-3 top-3 text-slate-400"
             />
             <input
-              id="pos-search" autoFocus onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();scan();}}}
+              id="pos-search" autoFocus={autoFocus} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();scan();}}}
               className="w-full pl-9"
               placeholder="Search name, SKU or barcode…"
               value={search}

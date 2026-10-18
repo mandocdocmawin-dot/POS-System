@@ -1,3 +1,4 @@
+import {cashRounding} from '../utils/cashRounding';
 import {settingsService} from './settingsService';
 import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
@@ -21,7 +22,7 @@ function validateCart(cart:CartItem[]) {
  const quantities=new Map<string,number>();
  for(const input of cart){const line=cartItemSchema.parse(input);const p=productService.get(line.productId);if(!p||p.status!=='active')throw new Error(`${line.name} is no longer available.`);
  const unit=unitService.list().find(u=>u.id===p.unitId);
- if(!decimalUnit(unit?.shortName??'')&&!Number.isInteger(line.quantity))throw new Error('Quantity must be a positive whole number for this unit.');
+ if((!settingsService.get().pos.allowDecimalQty||!decimalUnit(unit?.shortName??''))&&!Number.isInteger(line.quantity))throw new Error('Quantity must be a positive whole number for this unit.');
  if(p.hasVariants&&!line.variantId)throw new Error('Choose a variant.');
  if(line.variantId&&!productService.variants(p.id).some(v=>v.id===line.variantId))throw new Error('Variant no longer exists.');
  const key=line.variantId??line.productId;const qty=(quantities.get(key)??0)+line.quantity;quantities.set(key,qty);
@@ -49,9 +50,9 @@ export const posService={
  clear:()=>usePosStore.setState({discountApproval:undefined,cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:orderService.nextOrderNo()}),
  restore:(data:Pick<PosState,'cart'|'customerId'|'note'|'orderDiscount'>)=>{validateCart(data.cart);if(!customerService.get(data.customerId))throw new Error('Customer no longer exists.');usePosStore.setState({...data,discountApproval:undefined,activeOrderNo:orderService.nextOrderNo()});},
  complete:(payments:Payment[],options:{payLater?:boolean;dueDate?:string}={}):Order=>{requirePermission('pos:use');
- for(const p of payments)if(p.amount>0)validatePaymentAccount(p.method);const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
- const c=customerService.get(s.customerId);if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
- discountApprovalService.ensure(s.cart,s.orderDiscount);const totals=calculateTotals(s.cart,s.orderDiscount,settingsService.get().tax);const paid=calculatePayments(totals.grandTotal,payments);
+ for(const p of payments)if(p.amount>0){const method=settingsService.get().payment.methods.find(m=>m.id===p.method);if(!method?.enabled)throw new Error('Payment method is disabled.');if(method.requireReference&&!p.reference?.trim())throw new Error(`${method.label} requires a reference.`);const amount=toCentavos(p.amount);if(amount<(method.minAmount??0)||amount>(method.maxAmount??Number.MAX_SAFE_INTEGER))throw new Error(`${method.label}: amount is outside configured limits.`);validatePaymentAccount(p.method);}const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
+ const c=customerService.get(s.customerId);if(settingsService.get().pos.requireCustomer&&c?.isWalkIn)throw new Error('Choose a named customer before selling.');if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
+ discountApprovalService.ensure(s.cart,s.orderDiscount);const totals=calculateTotals(s.cart,s.orderDiscount,settingsService.get().tax);const rounding=cashRounding(toCentavos(totals.grandTotal),payments.filter(p=>p.amount>0).map(p=>p.method),settingsService.get().pos.cashRounding);totals.grandTotal=fromCentavos(rounding.total);const paid=calculatePayments(totals.grandTotal,payments);
  if(!options.payLater&&paid.balanceDue>0)throw new Error('Payment does not cover the total.');
  const wallet=sumCentavos(payments.filter(p=>p.method==='wallet').map(p=>toCentavos(p.amount)));
  if(wallet&&(c.isWalkIn||c.status!=='active'||wallet>toCentavos(c.walletBalance)))throw new Error('Insufficient customer wallet balance.');
@@ -62,7 +63,7 @@ export const posService={
  for(const line of s.cart)stockService.record({productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});
  if(wallet)walletService.change({customerId:c.id,type:"spend",amount:-fromCentavos(wallet),orderId});
  const pointsEarned=customerService.recordSale(c.id,paid.amountPaid,paid.balanceDue);
- const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,...settingsService.snapshot(),payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:authService.getCurrentUser()?.name??'System',cashierId:authService.getCurrentUser()?.id,createdAt,refundedTotal:0,pointsEarned});
+ const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,...settingsService.snapshot(),roundingAdjustment:rounding.adjustment,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:authService.getCurrentUser()?.name??'System',cashierId:authService.getCurrentUser()?.id,createdAt,refundedTotal:0,pointsEarned});
  posService.clear();return order;
  });
  }

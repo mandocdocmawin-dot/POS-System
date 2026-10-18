@@ -1,3 +1,4 @@
+import {settingsService} from './settingsService';
 import {requirePermission} from './authService';
 import {customerFormSchema,type CustomerFormValues} from '../types/customer';
 import {walletService} from './walletService';
@@ -6,7 +7,7 @@ import {useOrderStore} from '../store/useOrderStore';
 import {activityService} from './activityService';
 import {z} from 'zod';
 import {useCustomerStore} from '../store/useCustomerStore';
-import {WALK_IN_ID,POS_CONFIG} from '../config/pos';
+import {WALK_IN_ID} from '../config/pos';
 import {customerSchema,type Customer} from '../types/pos';
 import {toCentavos,fromCentavos,sumCentavos} from '../utils/pos';
 export const quickCustomerSchema=z.object({name:z.string().trim().min(1,'Name is required.').max(120),phone:z.string().trim().max(40).optional()});
@@ -21,9 +22,9 @@ export const customerService={
  recordSale:(id:string,paid:number,balance:number)=>{
  const c=customerService.get(id);if(!c)throw new Error('Customer no longer exists.');
  if(c.isWalkIn){if(toCentavos(balance)>0)throw new Error('Pay Later requires a named customer.');return 0;}
- const earned=Math.floor(toCentavos(paid)/toCentavos(POS_CONFIG.loyaltyPesosPerPoint));
+ const earned=settingsService.get().pos.loyalty.enabled?Math.floor(toCentavos(paid)/toCentavos(settingsService.get().pos.loyalty.pesosPerPoint)):0;
  const points=c.points+earned;
- const tier=([...Object.entries(POS_CONFIG.tiers)] as [Customer['tier'],number][]).reverse().find(([,threshold])=>points>=threshold)![0];
+ const tier=([...settingsService.get().pos.loyalty.tiers.map(t=>[t.name,t.minPoints])] as [Customer['tier'],number][]).reverse().find(([,threshold])=>points>=threshold)![0];
  useCustomerStore.setState(s=>({customers:s.customers.map(x=>x.id===id?{...x,points,tier,creditBalance:fromCentavos(sumCentavos([toCentavos(x.creditBalance),toCentavos(balance)]))}:x)}));return earned;
  }
 };

@@ -10,8 +10,10 @@ import { localDay } from '../utils/calendar';
 import { toCentavos } from '../utils/pos';
 export const profileService = {
   get: (id = currentUser().id) => { requireOwn(id, 'staff:view'); const user = useStaffStore.getState().staff.find(s => s.id === id); if (!user) throw new Error('Staff profile not found.'); return structuredClone(user); },
-  saveOwn: (input: { name: string; email: string; phone?: string; avatarId?: string }) => {
-    const user = currentUser(), next = staffSchema.parse({ ...user, ...input });
+  saveOwn: (input: { name: string; email: string; phone?: string; avatarId?: string; defaultBranchId?: string; languageLabel?: string }) => {
+    const user = currentUser();
+    if(input.defaultBranchId && !user.branchIds.includes(input.defaultBranchId)) throw new Error('Choose one of your assigned branches.');
+    const next = staffSchema.parse({ ...user, ...input, email:user.email });
     if (useStaffStore.getState().staff.some(s => s.id !== user.id && s.email.toLowerCase() === next.email.toLowerCase())) throw new Error('Email must be unique.');
     useStaffStore.setState(s => ({ staff: s.staff.map(p => p.id === user.id ? next : p) })); activityService.log('staff', user.id, 'edit', 'Updated own account profile'); return next;
   },

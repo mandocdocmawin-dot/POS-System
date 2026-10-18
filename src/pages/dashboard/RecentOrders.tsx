@@ -1,3 +1,4 @@
+import {formatDateTime as displayDateTime} from '../../utils/date';
 import {Link} from 'react-router-dom';
 import {usePermission} from '../../hooks/usePermission';
 import {useState} from 'react';
@@ -16,7 +17,7 @@ export function RecentOrders() {
  return <section className="card min-w-0 p-0"><div className="flex items-center justify-between p-5"><h2 className="text-sm font-semibold">Recent Orders</h2><span className="text-xs text-slate-500">{orders.length} orders · current branch</span></div>
  <DataTable caption="Recent store orders" rows={orders.slice((current-1)*7,current*7)} rowKey={o=>o.id} columns={[
   {id:'no',header:'Order ID',cell:o=><Link className="font-medium text-indigo-500" to={`/orders/${o.id}`}>{o.orderNo}</Link>},
-  {id:'date',header:'Date',cell:o=>new Date(o.createdAt).toLocaleString()},
+  {id:'date',header:'Date',cell:o=>displayDateTime(new Date(o.createdAt))},
   {id:'product',header:'Products',cell:o=>o.items.map(l=>`${l.name}${l.variantName?' / '+l.variantName:''}`).join(', ')},
   {id:'customer',header:'Customer',cell:o=>o.customerName},
   {id:'items',header:'Items',cell:o=>o.items.length},

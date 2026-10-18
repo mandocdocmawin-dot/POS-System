@@ -1,3 +1,4 @@
+import {formatTime as displayTime} from '../utils/date';
 import {settingsService} from './settingsService';
 import {approvalService} from './approvalService';
 import {requirePermission} from './authService';
@@ -11,7 +12,7 @@ export const holdService={
  hold:(label='')=>{requirePermission('pos:hold');
   if(holdService.list().length>=settingsService.get().pos.holdOrderLimit)throw new Error('Held order limit reached.');
   const s=posService.state();if(!s.cart.length)throw new Error('Add items before holding an order.');
-  const held=heldOrderSchema.parse({id:crypto.randomUUID(),branchId:posService.branch(),label:label.trim()||`${customerService.get(s.customerId)?.name??'Customer'} · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`,cart:s.cart,customerId:s.customerId,orderDiscount:s.orderDiscount,note:s.note,createdAt:new Date().toISOString()});
+  const held=heldOrderSchema.parse({id:crypto.randomUUID(),branchId:posService.branch(),label:label.trim()||`${customerService.get(s.customerId)?.name??'Customer'} · ${displayTime(new Date())}`,cart:s.cart,customerId:s.customerId,orderDiscount:s.orderDiscount,note:s.note,createdAt:new Date().toISOString()});
   return localTransaction(()=>{useHeldOrderStore.setState(s=>({heldOrders:[...s.heldOrders,held]}));posService.clear();return held;});
  },
  resume:(id:string,replace=false)=>{requirePermission('pos:hold');

@@ -1,3 +1,5 @@
+import {useSettings} from '../../hooks/useSettings';
+import {formatDate as displayDate} from '../../utils/date';
 import { useState } from 'react';
 import type { Shift } from '../../types/staff';
 import { useStaffStore } from '../../store/useStaffStore';
@@ -22,7 +24,8 @@ export function Component() {
   const shifts = useShiftStore(s => s.shifts);
   const holidays = useHolidayStore(s => s.holidays);
   const records = useAttendanceStore(s => s.records);
-  const [start, setStart] = useState(() => weekStart(localDate()));
+  const weekStartsOn=useSettings(s=>s.general.weekStartsOn);
+  const [start, setStart] = useState(() => weekStart(localDate(),weekStartsOn));
   const [editing, setEditing] = useState<Shift>();
   const [confirmation, setConfirmation] = useState<'copy' | 'clear'>();
   const dates = Array.from({ length: 7 }, (_, index) => addDays(start, index));
@@ -41,11 +44,11 @@ export function Component() {
     <StaffShell title="Staff schedule" actions={<button type="button" className="btn" onClick={() => window.print()}>Print schedule</button>}>
       <div className="mb-5 flex flex-wrap items-end gap-3">
         <button type="button" className="btn" onClick={() => setStart(addDays(start, -7))}>Previous week</button>
-        <button type="button" className="btn" onClick={() => setStart(weekStart(localDate()))}>This week</button>
+        <button type="button" className="btn" onClick={() => setStart(weekStart(localDate(),weekStartsOn))}>This week</button>
         <button type="button" className="btn" onClick={() => setStart(addDays(start, 7))}>Next week</button>
         <label className="text-xs">Week containing
           <input className="mt-1 block" type="date" value={start} onChange={event => {
-            if (/^\d{4}-\d{2}-\d{2}$/.test(event.target.value)) setStart(weekStart(event.target.value));
+            if (/^\d{4}-\d{2}-\d{2}$/.test(event.target.value)) setStart(weekStart(event.target.value,weekStartsOn));
           }} />
         </label>
         {manage && <>
@@ -71,7 +74,7 @@ export function Component() {
               <tr>
                 <th scope="col" className="w-44 border border-slate-200 p-3 text-left align-top dark:border-slate-700">Staff</th>
                 {dates.map(date => <th key={date} scope="col" className={`border border-slate-200 p-3 text-left align-top dark:border-slate-700 ${date === localDate() ? 'bg-indigo-50 dark:bg-indigo-950/40' : ''}`}>
-                  <span className="block font-semibold">{new Date(date + 'T12:00:00Z').toLocaleDateString('en-PH', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Manila' })}</span>
+                  <span className="block font-semibold">{displayDate(new Date(date + 'T12:00:00Z'))}</span>
                   {holidays.filter(h => h.date === date).map(h => <span className="mt-2 block rounded bg-amber-100 px-2 py-1 text-xs font-normal text-amber-900" key={h.id}>{h.name}</span>)}
                 </th>)}
               </tr>

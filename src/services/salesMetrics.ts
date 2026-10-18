@@ -1,3 +1,4 @@
+import {formatDateTime as displayDateTime} from '../utils/date';
 import {refundService} from './refundService';
 import {PAYMENT_METHODS} from '../config/pos';
 import type {PaymentMethod} from '../types/pos';
@@ -20,7 +21,7 @@ export function salesMetrics() {
 export function recordedPayments() {
  return salesOrders().flatMap(o=>{
   let change=toCentavos(o.change);
-  return o.payments.map(p=>({...p})).reverse().map(p=>{const tender=toCentavos(p.amount);const returned=p.method==='cash'?Math.min(change,tender):0;change-=returned;return {id:p.id,orderNo:o.orderNo,method:p.method,time:new Date(p.createdAt).toLocaleString(),createdAt:p.createdAt,cents:tender-returned};}).reverse().filter(p=>p.cents>0);
+  return o.payments.map(p=>({...p})).reverse().map(p=>{const tender=toCentavos(p.amount);const returned=p.method==='cash'?Math.min(change,tender):0;change-=returned;return {id:p.id,orderNo:o.orderNo,method:p.method,time:displayDateTime(new Date(p.createdAt)),createdAt:p.createdAt,cents:tender-returned};}).reverse().filter(p=>p.cents>0);
  }).toSorted((a,b)=>b.createdAt.localeCompare(a.createdAt));
 }
 export function paymentShares() {

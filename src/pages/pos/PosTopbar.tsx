@@ -1,3 +1,4 @@
+import {formatDate,formatTime} from '../../utils/date';
 import {Popover} from '../../components/common/Popover';
 import {useCurrentUser} from '../../hooks/useCurrentUser';
 import {Can} from '../../components/auth/Can';
@@ -28,20 +29,11 @@ export function PosTopbar() {
         <Brand />
         <span className="ml-3 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs dark:border-slate-700">
           <CalendarDays size={15} />
-          {time.toLocaleDateString("en-PH", {
-            month: "short",
-            day: "2-digit",
-            year: "numeric",
-            timeZone: "Asia/Manila",
-          })}
+          {formatDate(time)}
         </span>
         <span className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs dark:border-slate-700">
           <Clock3 size={15} />
-          {time.toLocaleTimeString("en-PH", {
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "Asia/Manila",
-          })}
+          {formatTime(time)}
         </span>
         <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-600 dark:bg-emerald-500/10">
           <Power size={12} />

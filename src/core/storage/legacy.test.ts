@@ -38,3 +38,15 @@ it('protects differing IDB state and quarantines corrupt legacy JSON', async () 
 it('compares parsed values independent of object key order', () => {
   expect(equalJSON('{"a":1,"b":[2]}', '{"b":[2],"a":1}')).toBe(true);
 });
+it('renames near-quota data without needing double localStorage capacity', async () => {
+  localStorage.setItem(key, raw);
+  const original = localStorage.setItem.bind(localStorage);
+  const write = vi.spyOn(localStorage, 'setItem').mockImplementation((name, value) => {
+    if (name.startsWith('tindapos-legacy:') && localStorage.getItem(key)) throw new DOMException('Full', 'QuotaExceededError');
+    original(name, value);
+  });
+  expect(await migrateLegacyKey(key)).toBe(true);
+  expect(localStorage.getItem(`tindapos-legacy:${key}`)).toBe(raw);
+  expect(await rawDatabase.get(key)).toBe(raw);
+  write.mockRestore();
+});

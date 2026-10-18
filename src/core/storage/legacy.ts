@@ -27,8 +27,19 @@ export async function migrateLegacyKey(key: string): Promise<boolean> {
     const archive = `tindapos-legacy:${key}`;
     const old = localStorage.getItem(archive);
     if (old !== null && !equalJSON(old, value)) throw new Error('A different legacy archive already exists. Original data has been retained.');
-    localStorage.setItem(archive, value);
-    if (localStorage.getItem(archive) !== value) throw new Error('Legacy archive verification failed.');
+    if (old === null) {
+      try { localStorage.setItem(archive, value); }
+      catch (error) {
+        if (!(error instanceof Error) || error.name !== 'QuotaExceededError') throw error;
+        // A rename must not require double the old localStorage capacity.
+        // IndexedDB has already been verified; restore the source if archiving fails.
+        localStorage.removeItem(key);
+        try { localStorage.setItem(archive, value); }
+        catch (archiveError) { localStorage.setItem(key, value); throw archiveError; }
+      }
+    }
+    const archived = localStorage.getItem(archive);
+    if (archived === null || !equalJSON(archived, value)) throw new Error('Legacy archive verification failed.');
     localStorage.removeItem(key);
     return true;
   } catch (error) { reportStorageError(key, 'migration', error); throw error; }

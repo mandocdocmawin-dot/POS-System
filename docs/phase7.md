@@ -42,6 +42,19 @@ Draft transfers reserve no stock. Sending deducts the source; receiving adds the
 
 ## Validation and boundaries
 
+Final verification:
+
+- `npm run build`: passes strict TypeScript and the production build.
+- `npm run test`: 291 tests pass across 20 files, including Phase 1–6 regressions and Phase 7 integration tests.
+- `npm run test:phase2`: all 20 isolated legacy service checks pass with explicit branch arguments.
+- `npm run lint`: zero errors and warnings.
+- Local Chrome: all eight Settings pages, Stores/Add Store, Stock Transfer and POS load without runtime errors or external requests.
+- Browser interactions: Tax save/diff confirmation, staff-default dirty/route warnings, adding a store and its cash drawer, simulated GCash checkout with SIM reference, Manager read-only settings and Cashier access denial pass.
+- Mobile at 390px in dark mode: General, Tax, Currencies, Coupons, Store List, Add Store and Stock Transfer stay inside the viewport. All six Store Profile tabs open successfully.
+- No dependencies were added. The existing Vite large-chart chunk advisory remains a build warning; there are no build errors.
+- All 48 required commit messages were checked against the request in their exact order. Follow-up fixes are separate commits on `main`; no history was rewritten and nothing was pushed. See [the recorded Git log](phase7-history.txt).
+
+
 The build and full Vitest suite are run before each required commit; additional integration fixes use new commits. Existing permission tests were updated only where Phase 7 intentionally changes role access. Native printer output requires manual verification. See `phase7-routes.md` for the full done/placeholder inventory.
 
 Phase 8 has not started. Calendar, Chat, Email, Pages, Reviews, Barcode, Bulk Import/Export, Warranty, Batches, Lost Items, Alerts, Valuation, Warehouse and all component/form/table/chart/map demo routes remain placeholders. No real payment processing, map embedding, translation, loyalty redemption, register shifts, BIR compliance, messaging or PDF export is implemented.

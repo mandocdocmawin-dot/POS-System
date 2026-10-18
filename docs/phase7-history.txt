@@ -1,0 +1,61 @@
+Local Phase 7 history on main
+Command: git log --oneline bb13d70..HEAD
+Captured before the final documentation-only commit.
+
+4c10532 fix(stores): align profile sales with received revenue and resolve assigned managers
+53c0d57 test(phase7): cover snapshots, roundtrips, approvals and branch accounting
+55aa97b fix(settings): keep wide tables inside the mobile viewport
+c154e06 fix(payroll): snapshot the configured bank account when marking paid
+d98418a fix(stores): preserve branch history and scope reports to accessible locations
+6c6a1ef fix(formats): apply configured dates, times and week starts across screens
+4070dca fix(pos): finish coupon replacement and configured payment controls
+884c35a fix(refunds): allocate cash rounding across returned quantities
+8d14cb9 fix(settings): connect legacy controls and advance configured document numbers
+c3dfea2 docs: update readme with phase 7 status, settings guide and phase 8 notes
+f4ffc38 chore(config): mark phase 7 routes as done in feature status
+08b901c feat(data): include phase 7 data in reset, export and import
+0e0e15f feat(data): update demo history generator for branches and transfers
+4ffec5b feat(reports): add all-branches scope and sales by branch chart
+a7fd4da feat(accounts): add per-branch cash drawer accounts and mapping
+801146f feat(purchases): add receiving branch to purchases and returns
+bb42c94 feat(inventory): add stock transfer pages and printable slip
+ab58409 feat(inventory): make stock list, stock in, stock out and adjustment branch aware
+0f99088 feat(pos): sell from active branch and block non-selling locations
+77adbb8 feat(layout): make branch switcher dynamic with access control and auto-hold
+f4023fe feat(stores): add store profile drawer
+fe283cf feat(stores): add add/edit store form with hours and maps link
+0e02d78 feat(stores): add store list page with summary cards
+0ecc8fe test(services): add tests for migration, branch stock, access and transfers
+fb1d81a feat(services): add stock transfer service with send, receive and cancel
+348fdc7 feat(services): make stock service branch aware
+3390e11 feat(services): add branch service with delete and deactivate protection
+0d39460 feat(data): add branch seed and per-branch stock seed
+b2943b1 feat(migration): add branch model and idempotent migration of existing data
+7d4e098 feat(pos): save coupon on order and revalidate inside atomic sale
+d5f9cb4 feat(pos): add coupon input, chip and revalidation in cart
+ce4395c feat(settings): add coupons page with modal and live preview
+1a64f28 feat(services): add coupon service with derived usage
+bd7e845 test(utils): add coupon tests
+dce42c5 feat(utils): add coupon validation and discount distribution
+b0d2665 feat(data): add coupon, tax rate and currency seed data
+d196c53 feat(pos): add simulated payment gateway flow
+1067488 feat(pos): apply tax mode and vat breakdown on receipts
+5fdecf3 feat(pos): apply pos settings, payment methods, quick cash and cash rounding
+ed14b9c feat(approvals): add reusable approval dialog and apply to discounts, refunds, cancels and adjustments
+ae1a472 feat(settings): add manager approvals page
+be6c868 feat(settings): add payment gateway page with method config
+28a100e feat(settings): add pos settings page
+dc37398 feat(settings): add invoices page with live receipt preview
+65645a3 feat(settings): add currencies page with live preview and converter
+3b2ed0c feat(settings): add tax page with rates and receipt breakdown
+6d5aa50 feat(settings): add data and demo card to general page
+d6c3e84 feat(settings): add general page with formats and staff defaults
+c2cb6d3 feat(settings): add settings page shell with dirty bar, diff preview and read-only mode
+03c4350 feat(auth): add settings, stores, coupons, approvals and transfer permissions with role migration
+5a51b59 test(utils): add tests for settings-driven math, formatters, numbering and tax
+b3017eb feat(utils): add formatters, numbering, tax breakdown and cash rounding helpers
+78c1389 refactor(utils): make pos, payroll, attendance and ledger helpers take settings as parameters
+9bb9b4d feat(services): add settings service with diff logging and snapshot helpers
+b7fbbf2 feat(store): add persisted versioned settings store with migrations
+84e7179 feat(config): add typed default settings with zod section schemas
+9b5caf0 feat(types): add settings, tax, currency, coupon, branch and transfer models

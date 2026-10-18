@@ -472,3 +472,5 @@ Accounts, six Reports and all Dashboard charts are complete. See [the Phase 6 gu
 ## Phase 7
 
 Settings, coupons, store profiles, branch stock, stock transfers and branch cash drawers are implemented. See [the Phase 7 guide](docs/phase7.md) for behavior, permissions, snapshot rules, local persistence and the manual test checklist. [All routes and their statuses](docs/phase7-routes.md) are listed separately. No dependencies were added. Phase 8 has not started.
+
+Phase 7 final validation: production build, 291 Vitest tests, 20 legacy Phase 2 checks, lint, and local Chrome desktop/mobile checks pass. [Git history](docs/phase7-history.txt) records the required 48 commits and subsequent fixes. Native receipt/transfer printing remains on the manual checklist.

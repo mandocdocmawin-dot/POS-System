@@ -1,4 +1,8 @@
 import {useAuthStore} from '../store/useAuthStore';
+import {useAccountStore} from '../store/useAccountStore';
+import {useReportFilterStore} from '../store/useReportFilterStore';
+import {createAccountSeed} from '../data/seed/accounts';
+import {defaultReportFilter} from '../utils/reports/period';
 import {useStaffStore} from '../store/useStaffStore';
 import {useRoleStore} from '../store/useRoleStore';
 import {useAttendanceStore} from '../store/useAttendanceStore';
@@ -34,6 +38,8 @@ import { useStockStore } from "../store/useStockStore";
 function snapshot(): Backup {
   return {
     version: 1,
+    phase6:structuredClone(useAccountStore.getState()),
+    reportFilter:structuredClone(useReportFilterStore.getState().filter),
     phase5:structuredClone({staff:useStaffStore.getState().staff,roles:useRoleStore.getState().roles,records:useAttendanceStore.getState().records,holidays:useHolidayStore.getState().holidays,shifts:useShiftStore.getState().shifts,runs:usePayrollStore.getState().runs,auth:useAuthStore.getState()}),
     refunds:structuredClone(useRefundStore.getState().refunds),refundCounter:useRefundStore.getState().counter,
     suppliers:structuredClone(useSupplierStore.getState().suppliers),
@@ -50,6 +56,8 @@ function snapshot(): Backup {
 }
 function replace(data: Backup) {
   localTransaction(() => {
+    useAccountStore.setState(data.phase6,true);
+    useReportFilterStore.setState({filter:data.reportFilter},true);
     useCatalogStore.setState(
       {
         categories: data.categories,
@@ -85,13 +93,13 @@ function replace(data: Backup) {
 function resetData() {
     const seed=createPosSeed();
     const phase4=createPhase4Seed(seed.customers,seed.orders);
-    replace(structuredClone({version:1,phase5:{...createPhase5Seed(),auth:{currentUserId:null}},refunds:phase4.refunds,refundCounter:phase4.refundCounter,suppliers:phase4.suppliers,purchases:phase4.purchases,purchaseReturns:phase4.returns,supplierPayments:phase4.payments,purchaseCounter:phase4.purchaseCounter,returnCounter:phase4.returnCounter,walletTransactions:phase4.transactions,customerPayments:phase4.customerPayments,activityLogs:phase4.logs,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements,...phase4.movements],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
+    replace(structuredClone({version:1,phase6:createAccountSeed(),reportFilter:defaultReportFilter(),phase5:{...createPhase5Seed(),auth:{currentUserId:null}},refunds:phase4.refunds,refundCounter:phase4.refundCounter,suppliers:phase4.suppliers,purchases:phase4.purchases,purchaseReturns:phase4.returns,supplierPayments:phase4.payments,purchaseCounter:phase4.purchaseCounter,returnCounter:phase4.returnCounter,walletTransactions:phase4.transactions,customerPayments:phase4.customerPayments,activityLogs:phase4.logs,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements,...phase4.movements],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
 }
 
 export const dataService = {
   export: async () => {
     const data = snapshot();
-    const imageRefs=[...data.phase5.staff.map(s=>({imageId:s.avatarId})),...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)];
+    const imageRefs=[...data.phase6.manualEntries.map(e=>({imageId:e.attachmentId})),...data.phase5.staff.map(s=>({imageId:s.avatarId})),...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)];
     const all = imageRefs.some((p) => p.imageId)
       ? await imageService.export()
       : {};
@@ -132,7 +140,7 @@ export const dataService = {
       [...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)].forEach((p) => {
         if (p.imageId === id) p.imageId = freshId;
       });
-      data.phase5.staff.forEach(staff=>{if(staff.avatarId===id)staff.avatarId=freshId;});
+      data.phase5.staff.forEach(staff=>{if(staff.avatarId===id)staff.avatarId=freshId;});data.phase6.manualEntries.forEach(entry=>{if(entry.attachmentId===id)entry.attachmentId=freshId;});
       mapped.push([freshId, blob]);
     }
     if (mapped.length) await imageService.import(mapped);
@@ -154,3 +162,4 @@ export const dataService = {
       resetData();
   },
 };
+

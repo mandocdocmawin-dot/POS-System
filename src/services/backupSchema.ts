@@ -1,5 +1,9 @@
 import {staffBackupSchema,validateStaffBackup} from './staffBackup';
 import {migratePhase6Roles} from '../config/permissions';
+import {accountStateSchema} from '../types/accounts';
+import {createAccountSeed} from '../data/seed/accounts';
+import {validateAccountBackup} from './accountBackup';
+import {defaultReportFilter} from '../utils/reports/period';
 import {createPhase5Seed} from '../data/seed/phase5';
 import {refundSchema,supplierSchema,purchaseSchema,purchaseReturnSchema,supplierPaymentSchema,walletTransactionSchema,customerPaymentSchema,activitySchema} from '../types/phase4';
 import {purchaseBalance} from '../utils/supplierBalance';
@@ -24,6 +28,8 @@ import {
 export const backupSchema = z
   .object({
     version: z.literal(1),
+    phase6:accountStateSchema.default(createAccountSeed),
+    reportFilter:z.object({from:z.iso.date(),to:z.iso.date(),branchId:z.string(),compare:z.boolean()}).refine(r=>r.from<=r.to,'Invalid report period').default(defaultReportFilter),
     phase5:staffBackupSchema.default(()=>({...createPhase5Seed(),auth:{currentUserId:null}})),
     refunds:z.array(refundSchema).default([]),refundCounter:z.number().int().nonnegative().default(0),
     suppliers:z.array(supplierSchema).default([]),purchases:z.array(purchaseSchema).default([]),purchaseReturns:z.array(purchaseReturnSchema).default([]),supplierPayments:z.array(supplierPaymentSchema).default([]),purchaseCounter:z.number().int().nonnegative().default(0),returnCounter:z.number().int().nonnegative().default(0),
@@ -51,6 +57,7 @@ export const backupSchema = z
 export type Backup = z.infer<typeof backupSchema>;
 export function validateBackup(input: unknown): Backup {
   const d = backupSchema.parse(input);
+  validateAccountBackup(d.phase6);
   d.phase5.roles=migratePhase6Roles(d.phase5.roles);
   validateStaffBackup(d.phase5);
   const fail = (message: string): never => {

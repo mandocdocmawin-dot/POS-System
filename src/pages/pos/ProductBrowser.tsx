@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-autofocus -- The user-controlled POS autofocus setting supports keyboard barcode entry. */
 import {branchService} from '../../services/branchService';
 import {useSettings} from '../../hooks/useSettings';
 import {stockService} from '../../services/stockService';

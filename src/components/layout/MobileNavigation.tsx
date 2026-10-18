@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events -- The navigation dialog delegates link clicks and traps focus, with Escape and an explicit Close button. */
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { IconRail } from "./IconRail";

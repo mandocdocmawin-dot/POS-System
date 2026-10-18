@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions -- The dialog delegates native control clicks; its key handler supports Escape, Tab and arrow navigation. */
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 export function Popover({
@@ -19,6 +20,8 @@ export function Popover({
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!open) return;
+    const triggerButton = button.current;
+    panel.current?.querySelector<HTMLElement>('a,button,input,select,textarea')?.focus();
     const outside = (e: PointerEvent) => {
       if (e.target instanceof Node && !root.current?.contains(e.target))
         setOpen(false);
@@ -34,6 +37,7 @@ export function Popover({
     return () => {
       document.removeEventListener("pointerdown", outside);
       document.removeEventListener("keydown", key);
+      triggerButton?.focus();
     };
   }, [open]);
   useLayoutEffect(() => {
@@ -73,10 +77,17 @@ export function Popover({
           ref={panel}
           role="dialog"
           aria-label={label}
+          aria-modal="true"
           onClick={(e) => {
             if ((e.target as HTMLElement).closest("a,button")) setOpen(false);
           }}
           onKeyDown={(e) => {
+            if(e.key==='Tab'){
+              const items=Array.from(e.currentTarget.querySelectorAll<HTMLElement>('a,button:not(:disabled),input:not(:disabled),select,textarea'));
+              const first=items[0],last=items.at(-1);
+              if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}
+              else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+            }
             if ((e.target as HTMLElement).matches("input,select,textarea")) return;
             if (["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) {
               const items = Array.from(

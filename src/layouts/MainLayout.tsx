@@ -23,7 +23,7 @@ export function MainLayout() {
       {mobileOpen && <MobileNavigation />}
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
-        <main className={compact ? "flex-1 p-3" : "flex-1 p-4 md:p-6"}>
+        <main id="main-content" tabIndex={-1} className={compact ? "flex-1 p-3" : "flex-1 p-4 md:p-6"}>
           <Outlet />
         </main>
         <DemoGuide/><Footer />

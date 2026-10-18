@@ -11,7 +11,7 @@ export function Providers() {
   }, [theme]);
   return (
     <>
-      <Toast />
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded focus:bg-white focus:p-3 focus:text-slate-900">Skip to main content</a><Toast />
       <RouterProvider
         future={{ v7_startTransition: true }}
         router={router}

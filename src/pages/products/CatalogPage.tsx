@@ -86,7 +86,7 @@ function Editor({
     >
       <TextInput
         label="Name"
-        autoFocus
+       
         {...register("name")}
         error={errors.name?.message}
       />

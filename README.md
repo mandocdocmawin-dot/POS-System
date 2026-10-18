@@ -466,5 +466,9 @@ git status --short
 
 ## Phase 6
 
-Accounts, six Reports and all Dashboard charts are complete. See [the Phase 6 guide](docs/phase6.md) for accounting formulas, role access, persistence, the manual test checklist, validation notes and Phase 7 boundaries. Phase 7 remains unstarted.
+Accounts, six Reports and all Dashboard charts are complete. See [the Phase 6 guide](docs/phase6.md) for accounting formulas, role access, persistence, the manual test checklist, validation notes and Phase 7 boundaries. Phase 7 is implemented; see the Phase 7 guide below.
 
+
+## Phase 7
+
+Settings, coupons, store profiles, branch stock, stock transfers and branch cash drawers are implemented. See [the Phase 7 guide](docs/phase7.md) for behavior, permissions, snapshot rules, local persistence and the manual test checklist. [All routes and their statuses](docs/phase7-routes.md) are listed separately. No dependencies were added. Phase 8 has not started.

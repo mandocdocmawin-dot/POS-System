@@ -1,2 +1,2 @@
-import { accountService } from '../../services/accountService';
-export function BranchFilter({value,onChange}:{value:string;onChange:(s:string)=>void}){return <select aria-label="Branch" value={value} onChange={e=>onChange(e.target.value)}><option value="all">All branches</option>{accountService.branches().map(b=><option key={b}>{b}</option>)}</select>;}
+import {branchService} from '../../services/branchService';
+export function BranchFilter({value,onChange}:{value:string;onChange:(s:string)=>void}){const branches=branchService.reportBranches();return <select aria-label="Branch scope" value={value} onChange={e=>onChange(e.target.value)}>{branches.length>=2&&<option value="all">All branches</option>}{branches.map(b=><option value={b.id} key={b.id}>{b.name}{b.status==='inactive'?' (inactive)':''}</option>)}</select>;}

@@ -6,7 +6,7 @@ import {useOrderStore} from '../store/useOrderStore';
 import {useStockStore} from '../store/useStockStore';
 import {createPosSeed} from '../data/seed/pos';
 export function initializePosData() {
- if (localStorage.getItem('tindapos:customers')===null && localStorage.getItem('tindapos:orders')===null) {
+ if (useCustomerStore.getState().customers.length===0 && useOrderStore.getState().orders.length===0) {
   const seed=createPosSeed();
   // Existing catalogues may have been edited: only seed sales for unchanged, available products.
   const stock=useStockStore.getState().movements;

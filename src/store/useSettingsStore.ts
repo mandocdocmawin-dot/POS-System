@@ -1,3 +1,4 @@
+import { storageOptions } from '../core/storage/options';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { defaultSettings, SETTINGS_VERSION } from '../config/defaultSettings';
@@ -15,7 +16,7 @@ export function migrateSettings(value: unknown, fromVersion = 0): Settings {
 }
 export interface SettingsState { settings: Settings; updatedAt?: string; updatedBy?: string }
 export const useSettingsStore = create<SettingsState>()(persist(() => ({ settings: structuredClone(defaultSettings) }), {
- name: 'tindapos:settings', version: SETTINGS_VERSION,
+ name: 'tindapos:settings', ...storageOptions('tindapos:settings'), version: SETTINGS_VERSION,
  migrate: (value: unknown, version) => {
   const stored = record(value) ? value : {};
   return { settings: migrateSettings(stored.settings, version), updatedAt: typeof stored.updatedAt === 'string' ? stored.updatedAt : undefined, updatedBy: typeof stored.updatedBy === 'string' ? stored.updatedBy : undefined };

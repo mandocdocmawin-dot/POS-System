@@ -1,3 +1,4 @@
+import { storageOptions } from '../core/storage/options';
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Category, Subcategory, Brand, Unit } from "../types/models";
@@ -10,6 +11,6 @@ export interface CatalogData {
 export const useCatalogStore = create<CatalogData>()(
   persist<CatalogData>(
     () => ({ categories: [], subcategories: [], brands: [], units: [] }),
-    { name: "tindapos:catalog", version: 1 },
+    { name: "tindapos:catalog", ...storageOptions('tindapos:catalog'), version: 1 },
   ),
 );

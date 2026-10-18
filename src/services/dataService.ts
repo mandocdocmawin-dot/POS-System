@@ -173,9 +173,9 @@ export const dataService = {
   reset: () => { requirePermission('settings:manage'); resetData(); },
   initialize: () => {
     if (
-      ["catalog", "products", "stock"].every(
-        (key) => localStorage.getItem(`tindapos:${key}`) === null,
-      )
+      useCatalogStore.getState().categories.length === 0 &&
+      useProductStore.getState().products.length === 0 &&
+      useStockStore.getState().movements.length === 0
     )
       resetData();
   },

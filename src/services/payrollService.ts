@@ -74,7 +74,7 @@ export const payrollService = {
     const runs = usePayrollStore.getState().runs, run = runs.find(r => r.id === id);
     if (!run || (status === 'finalized' ? run.status !== 'draft' : run.status !== 'finalized')) throw new Error('Invalid payroll status transition.');
     validatePeriod(run.periodStart, run.periodEnd, runs, id);
-    const next = payrollRunSchema.parse({ ...run, status });
+    const next = payrollRunSchema.parse({ ...run, status, ...(status==='paid'?{paidAt:new Date().toISOString(),paymentAccountId:'account-bank',lines:run.lines.map(line=>({...line,branchId:useStaffStore.getState().staff.find(s=>s.id===line.staffId)?.branchIds[0]??'Main Branch'}))}:{}) });
     return localTransaction(() => {
       usePayrollStore.setState({ runs: runs.map(r => r.id === id ? next : r) });
       activityService.log('payroll', id, status, `${run.runNo} ${status}; demo only`, authService.getCurrentUser()!.name);
@@ -82,3 +82,4 @@ export const payrollService = {
     });
   },
 };
+

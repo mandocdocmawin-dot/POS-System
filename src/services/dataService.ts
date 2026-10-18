@@ -114,6 +114,7 @@ function resetData() {
 }
 
 export const dataService = {
+  snapshot,
   export: async () => {
     const data = snapshot();
     const imageRefs=[{imageId:data.phase7.settings.general.logoId},...data.phase7.branches.map(b=>({imageId:b.photoId})),...data.orders.map(o=>({imageId:o.receiptSnapshot?.general.logoId})),...data.phase6.manualEntries.map(e=>({imageId:e.attachmentId})),...data.phase5.staff.map(s=>({imageId:s.avatarId})),...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)];

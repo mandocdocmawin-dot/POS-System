@@ -4,6 +4,7 @@ import { flushStorage, localKeys, validEnvelope } from './storage';
 const snapshotSchema = z.object({ id: z.string(), createdAt: z.iso.datetime(), reason: z.string(), bytes: z.number().nonnegative(), data: z.record(z.string(), z.string()) });
 export type Snapshot = z.infer<typeof snapshotSchema>;
 const prefix = 'snapshots:';
+let lastSnapshotAt = 0;
 export async function readAllData(): Promise<Record<string, string>> {
   await flushStorage();
   const data: Record<string, string> = {};
@@ -19,7 +20,8 @@ export async function listSnapshots(): Promise<Snapshot[]> {
 }
 export async function takeSnapshot(reason: string): Promise<Snapshot> {
   const data = await readAllData(), id = crypto.randomUUID();
-  const snapshot = { id, createdAt: new Date().toISOString(), reason, bytes: new Blob([JSON.stringify(data)]).size, data };
+  lastSnapshotAt = Math.max(Date.now(), lastSnapshotAt + 1);
+  const snapshot = { id, createdAt: new Date(lastSnapshotAt).toISOString(), reason, bytes: new Blob([JSON.stringify(data)]).size, data };
   await rawDatabase.set(prefix + id, snapshot);
   const older = (await listSnapshots()).filter(item => item.id !== id).slice(2);
   await rawDatabase.removeMany(older.map(item => prefix + item.id));
@@ -29,7 +31,9 @@ export async function takeSnapshot(reason: string): Promise<Snapshot> {
 // A single read/write transaction verifies all replacement values before commit.
 // Local state is staged first; a journal allows restart recovery if the tab closes.
 async function replaceIndexedState(data: Record<string, string>) {
-  await stateDatabase('readwrite', store => {
+  await stateDatabase('readwrite', store => new Promise<void>((resolve, reject) => {
+    store.transaction.oncomplete = () => resolve();
+    store.transaction.onabort = store.transaction.onerror = () => reject(store.transaction.error ?? new Error('Snapshot transaction aborted.'));
     const request = store.getAllKeys();
     request.onsuccess = () => {
       for (const key of request.result) if (typeof key === 'string' && key.startsWith('tindapos:') && !localKeys.has(key) && !(key in data)) store.delete(key);
@@ -40,7 +44,7 @@ async function replaceIndexedState(data: Record<string, string>) {
         check.onsuccess = () => { if (check.result !== value) store.transaction.abort(); };
       }
     };
-  });
+  }));
 }
 function replaceLocalState(data: Record<string, string>) {
   for (const key of localKeys) {

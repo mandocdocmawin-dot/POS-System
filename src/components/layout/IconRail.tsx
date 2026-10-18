@@ -1,10 +1,9 @@
 import {Avatar} from '../common/Avatar';
-import {UserMenu} from './UserMenu';
 import {toast,errorMessage} from '../../services/toastService';
 import {authService} from '../../services/authService';
 import {useCurrentUser} from '../../hooks/useCurrentUser';
 import {useAccessibleMenu} from '../../hooks/usePermission';
-import { Moon, Sun, LogOut } from "lucide-react";
+import { Moon, Sun, LogOut, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { findRoute } from "../../config/menu";
@@ -61,7 +60,15 @@ export function IconRail() {
         >
           {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
         </button>
-        <UserMenu/>
+        <Link
+          to="/account/account"
+          title="Account settings"
+          aria-label="Account settings"
+          aria-current={pathname.startsWith('/account/') ? 'page' : undefined}
+          className={`icon-btn border-transparent ${pathname.startsWith('/account/') ? 'menu-active' : ''}`}
+        >
+          <UserRound size={18} />
+        </Link>
         <Link
           aria-label="Log out (demo)"
           to="/sign-in"
@@ -70,7 +77,15 @@ export function IconRail() {
         >
           <LogOut size={18} />
         </Link>
-        <Avatar name={user?.name??'Demo user'} imageId={user?.avatarId}/>
+        <Link
+          to="/profile/overview"
+          title="Profile overview"
+          aria-label="Profile overview"
+          aria-current={pathname === '/profile/overview' ? 'page' : undefined}
+          className="mx-auto rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500"
+        >
+          <Avatar name={user?.name??'Demo user'} imageId={user?.avatarId} size="h-10 w-10"/>
+        </Link>
       </div>
     </nav>
   );

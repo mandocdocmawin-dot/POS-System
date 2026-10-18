@@ -27,7 +27,7 @@ function discountCents(base: number, discount?: Discount): number {
   const [n,d]=fraction(Math.min(100,discount.value));
   return Math.min(base,rounded(BigInt(base)*n,d*100n));
 }
-export function calculateTotals(cart: CartItem[], discount?: Discount, options: Settings['tax'] | 'inclusive' | 'exclusive' = defaultSettings.tax): Totals {
+export function calculateTotals(cart: CartItem[], discount?: Discount, options: Settings['tax'] | 'inclusive' | 'exclusive' = defaultSettings.tax, couponAllocation?: number[]): Totals {
   const taxMode = typeof options === 'string' ? options : options.mode;
   const registered = typeof options === 'string' || options.vatRegistered;
   const raw = cart.map(input => {
@@ -47,7 +47,8 @@ export function calculateTotals(cart: CartItem[], discount?: Discount, options: 
   const leftover=orderDiscount-sumCentavos(allocation.map(x=>x.cents));
   for(let i=0;i<leftover;i++) ranked[i].cents++;
   const items=raw.map((x,i)=>{
-    const distributed=allocation[i].cents;
+    const distributed=couponAllocation?.[i]??allocation[i].cents;
+    if(!Number.isSafeInteger(distributed)||distributed<0||distributed>x.base)throw new Error("Invalid coupon allocation.");
     const discounted=x.base-distributed;
     const [rate,scale]=fraction(registered?x.item.taxRate:0);
     const tax=rounded(BigInt(discounted)*rate,taxMode==='inclusive'?100n*scale+rate:100n*scale);

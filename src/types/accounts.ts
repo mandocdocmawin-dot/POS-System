@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Order, Customer } from './pos';
+import type { Order, Customer, PaymentMethod } from './pos';
 import type { Refund, CustomerPayment, WalletTransaction, SupplierPayment, Purchase, PurchaseReturn, Supplier } from './phase4';
 import type { PayrollRun, Staff } from './staff';
 import type { Product, Category, StockMovement } from './models';
@@ -15,7 +15,8 @@ export type FinanceCategory = z.infer<typeof financeCategorySchema>;
 export type ManualEntry = z.infer<typeof manualEntrySchema>;
 export type Transfer = z.infer<typeof transferSchema>;
 export type AccountState = z.infer<typeof accountStateSchema>;
-export interface LedgerEntry { id: string; date: string; type: 'income'|'expense'|'transfer_in'|'transfer_out'; category: string; amount: number; accountId: string; branchId?: string; sourceType: 'order'|'collection'|'refund'|'wallet'|'supplier_payment'|'payroll'|'manual'|'transfer'; sourceId?: string; reference?: string; note?: string; payee?: string; createdBy?: string; attachmentId?: string; isLiability?: boolean; isAuto: boolean }
+export interface LedgerEntry { method?:PaymentMethod; id: string; date: string; type: 'income'|'expense'|'transfer_in'|'transfer_out'; category: string; amount: number; accountId: string; branchId?: string; sourceType: 'order'|'collection'|'refund'|'wallet'|'supplier_payment'|'payroll'|'manual'|'transfer'; sourceId?: string; reference?: string; note?: string; payee?: string; createdBy?: string; attachmentId?: string; isLiability?: boolean; isAuto: boolean }
 export interface ReportFilter { from: string; to: string; branchId: string; compare: boolean }
 export interface LedgerFilter { from?: string; to?: string; branchId?: string; accountId?: string; category?: string; type?: LedgerEntry['type']; source?: 'auto'|'manual'; search?: string }
 export interface FinanceData { orders: Order[]; collections: CustomerPayment[]; refunds: Refund[]; wallet: WalletTransaction[]; supplierPayments: SupplierPayment[]; purchases: Purchase[]; purchaseReturns: PurchaseReturn[]; suppliers: Supplier[]; payroll: PayrollRun[]; staff: Staff[]; products: Product[]; productCategories: Category[]; movements: StockMovement[]; customers: Customer[]; accounts: BankAccount[]; categories: FinanceCategory[]; manualEntries: ManualEntry[]; transfers: Transfer[] }
+

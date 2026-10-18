@@ -1,3 +1,4 @@
+import {useBranchStore} from '../store/useBranchStore';
 import {requirePermission} from './authService';
 import {supplierPaymentService} from './supplierPaymentService';
 import {paymentSchema,type PaymentMethod} from '../types/pos';
@@ -32,7 +33,7 @@ export const purchaseService={
   for(const l of input.items){const product=productService.get(l.productId);if(!product||product.status!=='active'||product.hasVariants!==!!l.variantId||l.variantId&&!productService.variants(product.id).some(v=>v.id===l.variantId))throw new Error('Choose an available product and variant.');if(l.receivedQty!==0)throw new Error('Use Receive stock after creating the purchase.');}
   if(new Set(input.items.map(l=>l.variantId??l.productId)).size!==input.items.length)throw new Error('Combine duplicate product lines.');
   const totals=purchaseTotals(input),n=usePurchaseStore.getState().counter+1;
-  const purchase=purchaseSchema.parse({...input,...totals,id:crypto.randomUUID(),purchaseNo:`PO-${String(n).padStart(6,'0')}`,amountPaid:0,balanceDue:totals.grandTotal,paymentStatus:totals.grandTotal?'unpaid':'paid',receiveStatus:'pending',createdAt:new Date().toISOString()});
+  const purchase=purchaseSchema.parse({...input,...totals,branchId:useBranchStore.getState().branch,id:crypto.randomUUID(),purchaseNo:`PO-${String(n).padStart(6,'0')}`,amountPaid:0,balanceDue:totals.grandTotal,paymentStatus:totals.grandTotal?'unpaid':'paid',receiveStatus:'pending',createdAt:new Date().toISOString()});
   return localTransaction(()=>{usePurchaseStore.setState(s=>({purchases:[...s.purchases,purchase],counter:n}));activityService.log('purchase',purchase.id,'create',`Created ${purchase.purchaseNo}`);return purchase;});
  },
  receive:(id:string,quantities:{id:string;quantity:number}[],updateCost=true,recordedAt?:string)=>{if(recordedAt){requirePermission("settings:manage");paymentSchema.shape.createdAt.parse(recordedAt);}requirePermission('purchases:create');
@@ -55,5 +56,6 @@ export const purchaseService={
  },
  cancel:(id:string)=>{requirePermission('purchases:create');const purchase=purchaseService.get(id);if(!purchase||purchase.receiveStatus==='cancelled'||purchase.items.some(l=>l.receivedQty>0)||purchase.amountPaid>0)throw new Error('Only unreceived, unpaid purchases can be cancelled.');return localTransaction(()=>{usePurchaseStore.setState(s=>({purchases:s.purchases.map(x=>x.id===id?{...x,receiveStatus:'cancelled',balanceDue:0}:x)}));activityService.log('purchase',id,'cancel',`${purchase.purchaseNo} cancelled`);});},
 };
+
 
 

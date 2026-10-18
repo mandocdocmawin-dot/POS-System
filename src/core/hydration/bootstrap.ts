@@ -11,6 +11,7 @@ import { ensureCashDrawers } from '../../services/cashDrawerService';
 import { runCentralMigrations } from '../migrations';
 import { finishInterruptedRestore, takeSnapshot } from '../snapshots';
 import { rawDatabase } from '../storage/database';
+import { startCrossTabSync } from '../sync';
 let boot: Promise<void> | undefined;
 export function hydrateApplication() {
   boot ??= (async () => {
@@ -30,6 +31,7 @@ export function hydrateApplication() {
     initializeBranches();
     ensureCashDrawers();
     await flushStorage();
+    startCrossTabSync(persistedStores);
   })();
   return boot;
 }

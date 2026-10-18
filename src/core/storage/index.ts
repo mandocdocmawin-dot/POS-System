@@ -1,6 +1,7 @@
 import type { StateStorage } from 'zustand/middleware';
 import { rawDatabase } from './database';
 import { reportStorageError } from './events';
+import { storageChanges } from './changes';
 
 export const localKeys = new Set(['tindapos:auth', 'tindapos:active-branch', 'tindapos:pos', 'tindapos:ui', 'tindapos-theme', 'tindapos:guide', 'tindapos:meta']);
 export function validEnvelope(raw: string): boolean {
@@ -50,6 +51,6 @@ export const idbStorage: StateStorage = {
       return raw;
     } catch (error) { reportStorageError(key, 'read', error); return null; }
   },
-  setItem: (key, value) => enqueue(key, () => rawDatabase.set(key, value)),
-  removeItem: key => enqueue(key, () => rawDatabase.remove(key)),
+  setItem: (key, value) => enqueue(key, async () => { await rawDatabase.set(key, value); storageChanges.publish(key); }),
+  removeItem: key => enqueue(key, async () => { await rawDatabase.remove(key); storageChanges.publish(key); }),
 };

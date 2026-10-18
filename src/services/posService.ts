@@ -1,3 +1,4 @@
+import {productTax} from '../utils/tax';
 import {cashRounding} from '../utils/cashRounding';
 import {settingsService} from './settingsService';
 import {validatePaymentAccount} from './financeData';
@@ -38,7 +39,7 @@ export const posService={
  const p=productService.get(productId);if(!p)throw new Error('Product not found.');
  const v=variantId?productService.variants(p.id).find(v=>v.id===variantId):undefined;
  const s=posService.state();const existing=s.cart.find(l=>l.productId===productId&&l.variantId===variantId);
- const line:CartItem=existing?{...existing,quantity:existing.quantity+1}:{id:crypto.randomUUID(),productId,variantId,name:p.name,sku:v?.sku??p.sku,unitPrice:v?.sellingPrice??p.sellingPrice,costPrice:v?.costPrice??p.costPrice,quantity:1,taxRate:p.taxRate,unitShortName:unitService.list().find(u=>u.id===p.unitId)?.shortName??'pcs',variantName:v?.name,imageId:p.imageId,discountType:p.discountPercent?'percent':undefined,discountValue:p.discountPercent};
+ const line:CartItem=existing?{...existing,quantity:existing.quantity+1}:{id:crypto.randomUUID(),productId,variantId,name:p.name,sku:v?.sku??p.sku,unitPrice:v?.sellingPrice??p.sellingPrice,costPrice:v?.costPrice??p.costPrice,quantity:1,taxRate:productTax(p,settingsService.get().tax).rate,taxClass:productTax(p,settingsService.get().tax).taxClass,unitShortName:unitService.list().find(u=>u.id===p.unitId)?.shortName??'pcs',variantName:v?.name,imageId:p.imageId,discountType:p.discountPercent?'percent':undefined,discountValue:p.discountPercent};
  const cart=existing?s.cart.map(l=>l.id===line.id?line:l):[...s.cart,line];validateCart(cart);usePosStore.setState({cart,activeOrderNo:orderService.nextOrderNo()});return line.id;
  },
  quantity:(id:string,quantity:number)=>{requirePermission("pos:use");const cart=posService.state().cart.map(l=>l.id===id?{...l,quantity}:l);validateCart(cart);usePosStore.setState({cart});},

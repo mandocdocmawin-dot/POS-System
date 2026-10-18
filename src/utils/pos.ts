@@ -49,7 +49,8 @@ export function calculateTotals(cart: CartItem[], discount?: Discount, options: 
   const items=raw.map((x,i)=>{
     const distributed=allocation[i].cents;
     const discounted=x.base-distributed;
-    const tax=ratioCentavos(discounted,(registered ? x.item.taxRate : 0),taxMode==='inclusive' ? 100+(registered ? x.item.taxRate : 0) : 100);
+    const [rate,scale]=fraction(registered?x.item.taxRate:0);
+    const tax=rounded(BigInt(discounted)*rate,taxMode==='inclusive'?100n*scale+rate:100n*scale);
     return {...x.item,lineSubtotal:fromCentavos(x.subtotal),lineDiscount:fromCentavos(x.itemDiscount),orderDiscountAmount:fromCentavos(distributed),lineTax:fromCentavos(tax),lineTotal:fromCentavos(discounted+(taxMode==='exclusive' ? tax : 0))};
   });
   return {items,subtotal:fromCentavos(sumCentavos(raw.map(x=>x.subtotal))),itemDiscountTotal:fromCentavos(sumCentavos(raw.map(x=>x.itemDiscount))),orderDiscount:{...(discount ?? {type:'fixed',value:0}),amount:fromCentavos(orderDiscount)},taxTotal:fromCentavos(sumCentavos(items.map(x=>toCentavos(x.lineTax)))),grandTotal:fromCentavos(sumCentavos(items.map(x=>toCentavos(x.lineTotal))))};

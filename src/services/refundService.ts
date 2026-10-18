@@ -29,8 +29,9 @@ export const refundService={
   return refundSchema.parse({id:crypto.randomUUID(),refundNo:`RF-${String(useRefundStore.getState().counter+1).padStart(6,'0')}`,orderId:o.id,items,reason:input.reason,refundAmount:p(total),refundMethod:input.refundMethod,restock:input.restock,note:input.note,createdAt:new Date().toISOString(),createdBy:authService.getCurrentUser()?.name??'System'});
  },
  create:(input:RefundInput,recordedAt?:string)=>{requirePermission('orders:refund');
-  validatePaymentAccount(input.refundMethod);if(recordedAt){requirePermission("settings:manage");refundSchema.shape.createdAt.parse(recordedAt);}const r={...refundService.preview(input),...(recordedAt?{createdAt:recordedAt}:{})},o=orderService.get(r.orderId)!;
+  if(recordedAt){requirePermission("settings:manage");refundSchema.shape.createdAt.parse(recordedAt);}const r={...refundService.preview(input),...(recordedAt?{createdAt:recordedAt}:{})},o=orderService.get(r.orderId)!;
   return localTransaction(()=>{
+   r.accountId=validatePaymentAccount(input.refundMethod,o.branchId);
    approvalService.ensure('refund',c(r.refundAmount),JSON.stringify(['refund',input]));
    if(r.restock)for(const l of r.items)stockService.record({branchId:o.branchId,productId:l.productId,variantId:l.variantId,type:'in',quantity:l.quantity,reason:'Customer return',reference:r.refundNo,createdAt:r.createdAt});
    if(r.refundMethod==='wallet')walletService.change({customerId:o.customerId,type:'refund',amount:r.refundAmount,orderId:o.id,note:r.reason});

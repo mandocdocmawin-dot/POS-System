@@ -1,3 +1,4 @@
+import {ensureCashDrawers} from './services/cashDrawerService';
 import {initializeBranches} from './services/initializeBranches';
 import {initializeAccountData} from './data/seed/accounts';
 import {initializeStaffData} from './data/seed/phase5';
@@ -14,6 +15,7 @@ initializePosData();
 initializeStaffData();
 initializeAccountData();
 initializeBranches();
+ensureCashDrawers();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

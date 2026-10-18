@@ -37,8 +37,8 @@ export const orderService={
   });
  },
  collect:(id:string,input:Pick<CustomerPayment,'amount'|'method'|'reference'|'note'>)=>{requirePermission('customers:manage');
-  validatePaymentAccount(input.method);const o=orderService.get(id);if(!o||o.orderStatus==='cancelled'||!o.balanceDue)throw new Error('Order has no collectible balance.');
-  const payment=customerPaymentSchema.parse({...input,id:crypto.randomUUID(),customerId:o.customerId,orderId:id,createdAt:new Date().toISOString()});
+  const o=orderService.get(id);if(!o||o.orderStatus==='cancelled'||!o.balanceDue)throw new Error('Order has no collectible balance.');
+  const payment=customerPaymentSchema.parse({...input,accountId:validatePaymentAccount(input.method,o.branchId),id:crypto.randomUUID(),customerId:o.customerId,orderId:id,createdAt:new Date().toISOString()});
   if(c(payment.amount)<=0||c(payment.amount)>c(o.balanceDue))throw new Error('Payment must be positive and no greater than the balance.');
   if(payment.method==='wallet'&&c(useCustomerStore.getState().customers.find(x=>x.id===o.customerId)?.walletBalance??0)<c(payment.amount))throw new Error('Insufficient wallet balance.');
   return localTransaction(()=>{

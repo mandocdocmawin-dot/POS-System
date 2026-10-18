@@ -75,7 +75,7 @@ export const posService={
  for(const line of s.cart)stockService.record({branchId:posService.branch(),productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});
  if(wallet)walletService.change({customerId:c.id,type:"spend",amount:-fromCentavos(wallet),orderId});
  const pointsEarned=customerService.recordSale(c.id,paid.amountPaid,paid.balanceDue);
- const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,...settingsService.snapshot(),roundingAdjustment:rounding.adjustment,coupon:coupon&&couponResult?.ok?{couponId:coupon.id,code:coupon.code,type:coupon.type,value:coupon.value,amount:fromCentavos(couponResult.discount)}:undefined,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:authService.getCurrentUser()?.name??'System',cashierId:authService.getCurrentUser()?.id,createdAt,refundedTotal:0,pointsEarned});
+ const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,...settingsService.snapshot(),roundingAdjustment:rounding.adjustment,coupon:coupon&&couponResult?.ok?{couponId:coupon.id,code:coupon.code,type:coupon.type,value:coupon.value,amount:fromCentavos(couponResult.discount)}:undefined,payments:payments.map(p=>({...p,accountId:validatePaymentAccount(p.method,posService.branch())})),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:authService.getCurrentUser()?.name??'System',cashierId:authService.getCurrentUser()?.id,createdAt,refundedTotal:0,pointsEarned});
  posService.clear();return order;
  });
  }

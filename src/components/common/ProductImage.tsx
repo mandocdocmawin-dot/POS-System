@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { imageService } from "../../services/imageService";
 import { ProductThumb } from "./ProductThumb";
+import {productArtwork} from '../../utils/productArtwork';
 export function ProductImage({
   imageId,
   name,
@@ -30,9 +31,12 @@ export function ProductImage({
       if (url) URL.revokeObjectURL(url);
     };
   }, [imageId]);
-  return source && source.id === imageId ? (
+  const url=source && source.id===imageId?source.url:productArtwork(name);
+  return url ? (
     <img
-      src={source.url}
+      src={url}
+      loading="lazy"
+      decoding="async"
       alt={name}
       className={`rounded-lg bg-slate-100 object-contain dark:bg-slate-800 ${large ? "aspect-square w-full" : "h-10 w-10"}`}
     />

@@ -101,3 +101,22 @@ p, dd, h1, h2, h3 { overflow-wrap: anywhere; }
  .text-red-400 { color: #b91c1c; }
  .dark .text-red-400 { color: #fca5a5; }
 }
+
+/* POS: cart lines scroll independently; checkout controls stay within the viewport. */
+.pos-order-panel > .pos-checkout-summary { max-height: 38%; padding-bottom: 12px; }
+.pos-cart-items { scrollbar-gutter: stable; }
+.pos-product-art img,.pos-product-art [role="img"] { aspect-ratio: 4/3; height: clamp(110px, 12vw, 185px); width: 100%; object-fit: contain; padding: 8px; }
+@media (max-height: 740px) {
+ .pos-order-panel { padding: 12px; }
+ .pos-order-panel > .shrink-0 > div.my-4 { margin-block: 8px; padding: 10px; }
+ .pos-order-panel .pos-checkout-actions { padding-top: 8px; }
+ .pos-order-panel .pos-checkout-actions > .grid { margin-top: 6px; }
+}
+@media (max-width: 767px) {
+ .pos-order-panel { padding: 12px; }
+ .pos-order-panel > .shrink-0 > div.my-4 { margin-block: 8px; padding: 10px; }
+ .pos-order-panel > .shrink-0 > div.my-3 { margin-block: 8px; }
+ .pos-order-panel > .shrink-0 .btn { min-height: 32px; padding: 6px; }
+}
+.pos-order-panel > .pos-checkout-summary { flex-shrink: 1; min-height: 0; }
+.pos-order-panel > .pos-cart-items { min-height: 80px; }

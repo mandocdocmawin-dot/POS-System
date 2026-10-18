@@ -6,7 +6,8 @@ import {Modal} from '../../components/common/Modal';
 import type {Product} from '../../types/models';
 import {VariantPicker} from '../../components/pos/VariantPicker';
 import { useState } from "react";
-import { LayoutGrid, Package, Search } from "lucide-react";
+import { Shapes, Search } from "lucide-react";
+import {categoryArtwork} from '../../utils/productArtwork';
 import { productService } from "../../services/productService";
 import { categoryService, brandService } from "../../services/catalogService";
 import { posService } from "../../services/posService";
@@ -48,7 +49,7 @@ export function ProductBrowser() {
         className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-28 sm:flex-col sm:border-b-0 sm:border-r md:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
       >
         {[{ id: "", name: "All" }, ...categories].map((c) => {
-          const Icon = c.id ? Package : LayoutGrid;
+          const image = categoryArtwork(c.name);
           return (
             <button
               key={c.id}
@@ -56,7 +57,7 @@ export function ProductBrowser() {
               onClick={() => {setCategory(c.id);focusSearch();}}
               className={`flex min-h-20 w-20 shrink-0 flex-col items-center justify-center gap-2 rounded-xl border px-1 text-center text-xs ${category === c.id ? "border-indigo-500 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300" : "border-slate-200 text-slate-500 dark:border-slate-700"}`}
             >
-              <Icon size={23} strokeWidth={1.5} />
+              {image?<img src={image} alt="" className="h-10 w-10 object-contain" width={40} height={40}/>:<Shapes size={25} aria-hidden="true"/>}
               {c.name}
             </button>
           );

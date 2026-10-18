@@ -61,8 +61,8 @@ dataService.initialize();authService.login();
 test("first run seeds 25 products and variant-level stock", () => {
   assert.equal(productService.list().length, 25);
   assert.equal(categoryService.list().length, 8);
-  assert.equal(stockService.getStock("prod-11"), 6);
-  assert.equal(stockService.getStock("prod-11", "prod-11-v0"), 3);
+  assert.equal(stockService.getStock("prod-11", undefined, "Main Branch"), 6);
+  assert.equal(stockService.getStock("prod-11", "prod-11-v0", "Main Branch"), 3);
   validateBackup(snapshot());
 });
 const seed = productService.list()[1];
@@ -90,8 +90,8 @@ const product = productService.save(
   { openingStock: 10 },
 );
 test("opening stock is an initial movement", () => {
-  assert.equal(stockService.getStock(product.id), 10);
-  assert.equal(stockService.history(product.id)[0].type, "initial");
+  assert.equal(stockService.getStock(product.id, undefined, "Main Branch"), 10);
+  assert.equal(stockService.history(product.id, undefined, "Main Branch")[0].type, "initial");
 });
 test("SKU uniqueness ignores case across products and variants", () => {
   assert.throws(
@@ -135,56 +135,56 @@ const movement = {
   createdAt: new Date().toISOString(),
 };
 test("stock in and out derive current quantity", () => {
-  stockService.record({ ...movement, type: "in" });
-  stockService.record({ ...movement, type: "out", quantity: 5 });
-  assert.equal(stockService.getStock(product.id), 7);
+  stockService.record({branchId:"Main Branch", ...movement, type: "in" });
+  stockService.record({branchId:"Main Branch", ...movement, type: "out", quantity: 5 });
+  assert.equal(stockService.getStock(product.id, undefined, "Main Branch"), 7);
 });
 test("stock out cannot go negative and failure is atomic", () => {
-  const count = stockService.history().length;
+  const count = stockService.history(undefined, undefined, "Main Branch").length;
   assert.throws(
-    () => stockService.record({ ...movement, type: "out", quantity: 8 }),
+    () => stockService.record({branchId:"Main Branch", ...movement, type: "out", quantity: 8 }),
     /Insufficient/,
   );
-  assert.equal(stockService.getStock(product.id), 7);
-  assert.equal(stockService.history().length, count);
+  assert.equal(stockService.getStock(product.id, undefined, "Main Branch"), 7);
+  assert.equal(stockService.history(undefined, undefined, "Main Branch").length, count);
 });
 test("adjustments support signed deltas and protect zero floor", () => {
-  stockService.record({ ...movement, type: "adjustment", quantity: -3 });
-  assert.equal(stockService.getStock(product.id), 4);
+  stockService.record({branchId:"Main Branch", ...movement, type: "adjustment", quantity: -3 });
+  assert.equal(stockService.getStock(product.id, undefined, "Main Branch"), 4);
   assert.throws(
     () =>
-      stockService.record({ ...movement, type: "adjustment", quantity: -5 }),
+      stockService.record({branchId:"Main Branch", ...movement, type: "adjustment", quantity: -5 }),
     /Insufficient/,
   );
   assert.throws(
-    () => stockService.record({ ...movement, type: "adjustment", quantity: 0 }),
+    () => stockService.record({branchId:"Main Branch", ...movement, type: "adjustment", quantity: 0 }),
     /matches/,
   );
 });
 test("invalid, nonfinite and negative receipt quantities are rejected", () => {
   for (const quantity of [0, -1, NaN, Infinity])
     assert.throws(() =>
-      stockService.record({ ...movement, type: "in", quantity }),
+      stockService.record({branchId:"Main Branch", ...movement, type: "in", quantity }),
     );
 });
 test("variant movements require correct ownership and variant selection", () => {
   assert.throws(
     () =>
-      stockService.record({ ...movement, productId: "prod-11", type: "in" }),
+      stockService.record({branchId:"Main Branch", ...movement, productId: "prod-11", type: "in" }),
     /specific variant/,
   );
   assert.throws(
     () =>
-      stockService.record({ ...movement, variantId: "prod-11-v0", type: "in" }),
+      stockService.record({branchId:"Main Branch", ...movement, variantId: "prod-11-v0", type: "in" }),
     /belong/,
   );
-  stockService.record({
+  stockService.record({branchId:"Main Branch",
     ...movement,
     productId: "prod-11",
     variantId: "prod-11-v0",
     type: "in",
   });
-  assert.equal(stockService.getStock("prod-11", "prod-11-v0"), 5);
+  assert.equal(stockService.getStock("prod-11", "prod-11-v0", "Main Branch"), 5);
 });
 test("variant history cannot be orphaned by edits", () => {
   assert.throws(() => productService.removeVariant("prod-11-v0"), /history/);
@@ -230,9 +230,9 @@ test("variant creation and opening balances are isolated", () => {
       variantOpening: { "TEST-L": 4, "TEST-S": 2 },
     },
   );
-  assert.equal(stockService.getStock(p.id), 6);
+  assert.equal(stockService.getStock(p.id, undefined, "Main Branch"), 6);
   const variants = productService.variants(p.id);
-  assert.equal(stockService.getStock(p.id, variants[0].id), 4);
+  assert.equal(stockService.getStock(p.id, variants[0].id, "Main Branch"), 4);
 });
 test("edited product form data preserves its variants", () => {
   const p = productService.get("prod-11")!;
@@ -270,11 +270,11 @@ test("reinitialization does not overwrite saved data", () => {
 test("removing products removes dependent variants and movements", () => {
   productService.removeMany([product.id]);
   assert.equal(productService.get(product.id), undefined);
-  assert.equal(stockService.history(product.id).length, 0);
+  assert.equal(stockService.history(product.id, undefined, "Main Branch").length, 0);
 });
 await dataService.import(JSON.stringify(snapshot()));authService.login();
 test("valid JSON backup round trips without losing stock", () => {
-  assert.equal(stockService.getStock("prod-11", "prod-11-v0"), 5);
+  assert.equal(stockService.getStock("prod-11", "prod-11-v0", "Main Branch"), 5);
 });
 test("failed storage writes roll back product and opening movements", () => {
   const before = snapshot();
@@ -293,7 +293,7 @@ test("failed storage writes roll back product and opening movements", () => {
 dataService.reset();authService.login();
 test("reset restores demo state", () => {
   assert.equal(productService.list().length, 25);
-  assert.equal(stockService.getStock("prod-11", "prod-11-v0"), 3);
+  assert.equal(stockService.getStock("prod-11", "prod-11-v0", "Main Branch"), 3);
   validateBackup(snapshot());
 });
 console.log(`${passed} Phase 2 service checks passed.`);

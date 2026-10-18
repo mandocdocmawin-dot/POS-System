@@ -12,7 +12,7 @@ export const staffBackupSchema = z.object({
   auth: z.object({ currentUserId: z.string().min(1).nullable() }).strict(),
 }).strict();
 export type StaffBackup = z.infer<typeof staffBackupSchema>;
-export function validateStaffBackup(data: StaffBackup) {
+export function validateStaffBackup(data: StaffBackup, branchIds:readonly string[]=branches) {
   const fail = (message: string): never => { throw new Error(`Invalid staff backup: ${message}`); };
   for (const rows of [data.staff, data.roles, data.records, data.holidays, data.shifts, data.runs]) {
     if (new Set(rows.map(r => r.id)).size !== rows.length) fail('duplicate IDs.');
@@ -33,7 +33,7 @@ export function validateStaffBackup(data: StaffBackup) {
   for (const staff of data.staff) {
     if (!data.roles.some(r => r.id === staff.role)) fail('staff role is missing.');
     unique(staff.branchIds, 'staff branches');
-    if (staff.branchIds.some(b => !branches.some(branch => branch === b))) fail('staff branch is missing.');
+    if (staff.branchIds.some(b => !branchIds.some(branch => branch === b))) fail('staff branch is missing.');
   }
   if (data.auth.currentUserId && !data.staff.some(s => s.id === data.auth.currentUserId)) fail('session staff is missing.');
   unique(data.records.map(r => `${r.staffId}:${r.date}`), 'staff/date attendance');
@@ -45,7 +45,7 @@ export function validateStaffBackup(data: StaffBackup) {
   }
   unique(data.holidays.map(h => `${h.date}:${h.name.trim().toLowerCase()}`), 'holiday date/name');
   for (const shift of data.shifts) {
-    if (!data.staff.some(s => s.id === shift.staffId) || !branches.some(b => b === shift.branchId)) fail('shift staff or branch is missing.');
+    if (!data.staff.some(s => s.id === shift.staffId) || !branchIds.some(b => b === shift.branchId)) fail('shift staff or branch is missing.');
     validateShift(shift, data.shifts);
   }
   unique(data.runs.map(r => r.runNo), 'payroll run numbers');

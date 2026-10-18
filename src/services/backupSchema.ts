@@ -1,5 +1,9 @@
+import {settingsSchema,branchSchema,couponSchema,stockTransferSchema} from '../types/settings';
+import {defaultSettings} from '../config/defaultSettings';
+import {defaultBranches,migrateBranchData} from '../utils/branchMigration';
+import {documentNumber} from '../utils/numbering';
 import {staffBackupSchema,validateStaffBackup} from './staffBackup';
-import {migratePhase6Roles} from '../config/permissions';
+import {migratePhase7Roles} from '../config/permissions';
 import {accountStateSchema} from '../types/accounts';
 import {createAccountSeed} from '../data/seed/accounts';
 import {validateAccountBackup} from './accountBackup';
@@ -14,7 +18,6 @@ import {customerSchema,orderSchema,heldOrderSchema,cartItemSchema,discountSchema
 import {WALK_IN_ID} from '../config/pos';
 import {createPosSeed} from '../data/seed/pos';
 import {calculatePayments,calculateTotals,toCentavos} from '../utils/pos';
-import {formatOrderNo} from '../utils/orderNo';
 import { z } from "zod";
 import {
   categorySchema,
@@ -28,6 +31,7 @@ import {
 export const backupSchema = z
   .object({
     version: z.literal(1),
+    phase7:z.object({settings:settingsSchema,branches:branchSchema.array().min(1),coupons:couponSchema.array(),transfers:stockTransferSchema.array(),activeBranchId:z.string()}).default(()=>({settings:structuredClone(defaultSettings),branches:defaultBranches(),coupons:[],transfers:[],activeBranchId:'Main Branch'})),
     phase6:accountStateSchema.default(createAccountSeed),
     reportFilter:z.object({from:z.iso.date(),to:z.iso.date(),branchId:z.string(),compare:z.boolean()}).refine(r=>r.from<=r.to,'Invalid report period').default(defaultReportFilter),
     phase5:staffBackupSchema.default(()=>({...createPhase5Seed(),auth:{currentUserId:null}})),
@@ -38,7 +42,7 @@ export const backupSchema = z
     orders:z.array(orderSchema).default([]),
     heldOrders:z.array(heldOrderSchema).default([]),
     counter:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER-1).default(0),
-    pos:z.object({cart:z.array(cartItemSchema),customerId:z.string(),orderDiscount:discountSchema,note:z.string().max(2000),activeOrderNo:z.string(),discountApproval:discountApprovalSchema.optional()}).default({cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:'TP-000001'}),
+    pos:z.object({cart:z.array(cartItemSchema),customerId:z.string(),orderDiscount:discountSchema,note:z.string().max(2000),activeOrderNo:z.string(),couponCode:z.string().optional(),discountApproval:discountApprovalSchema.optional()}).default({cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:'TP-000001'}),
     categories: z.array(categorySchema),
     subcategories: z.array(subcategorySchema),
     brands: z.array(brandSchema),
@@ -57,14 +61,17 @@ export const backupSchema = z
 export type Backup = z.infer<typeof backupSchema>;
 export function validateBackup(input: unknown): Backup {
   const d = backupSchema.parse(input);
-  validateAccountBackup(d.phase6);
-  d.phase5.roles=migratePhase6Roles(d.phase5.roles);
-  validateStaffBackup(d.phase5);
+  const migrated=migrateBranchData({branches:d.phase7.branches,movements:d.movements,orders:d.orders,heldOrders:d.heldOrders,purchases:d.purchases,accounts:d.phase6.accounts,attendance:d.phase5.records});
+  d.movements=migrated.movements;d.orders=migrated.orders;d.heldOrders=migrated.heldOrders;d.purchases=migrated.purchases;d.phase6.accounts=migrated.accounts;d.phase5.records=migrated.attendance;
+  const branchIds=d.phase7.branches.map(b=>b.id);
+  validateAccountBackup(d.phase6,branchIds);
+  d.phase5.roles=migratePhase7Roles(d.phase5.roles);
+  validateStaffBackup(d.phase5,branchIds);
   const fail = (message: string): never => {
     throw new Error(`Invalid backup: ${message}`);
   };
   for (const items of [
-    d.refunds,d.suppliers,d.purchases,d.purchaseReturns,d.supplierPayments,d.walletTransactions,d.customerPayments,d.activityLogs,
+    d.phase7.branches,d.phase7.coupons,d.phase7.transfers,d.refunds,d.suppliers,d.purchases,d.purchaseReturns,d.supplierPayments,d.walletTransactions,d.customerPayments,d.activityLogs,
     d.customers,d.orders,d.heldOrders,
     d.categories,
     d.subcategories,
@@ -120,7 +127,7 @@ export function validateBackup(input: unknown): Backup {
       )
     )
       fail("movement variant is invalid.");
-    const key = m.variantId ?? m.productId;
+    const key = `${m.branchId}:${m.variantId ?? m.productId}`;
     balances.set(
       key,
       (balances.get(key) ?? 0) + (m.type === "out" ? -m.quantity : m.quantity),
@@ -131,10 +138,12 @@ export function validateBackup(input: unknown): Backup {
   const walkIns=d.customers.filter(c=>c.isWalkIn);
   if(walkIns.length!==1||walkIns[0].id!==WALK_IN_ID||walkIns[0].name!=='Walk-in Customer'||walkIns[0].creditBalance!==0)fail('Walk-in customer must be preserved.');
   if(new Set(d.orders.map(o=>o.orderNo)).size!==d.orders.length)fail('duplicate order numbers.');
-  if(d.orders.some(o=>Number(o.orderNo.slice(3))>d.counter))fail('order counter would reuse a saved number.');
+  if(d.orders.some(o=>Number(o.orderNo.match(/(\d+)$/)?.[1])>d.counter))fail('order counter would reuse a saved number.');
   for(const order of d.orders){
    if(!d.customers.some(c=>c.id===order.customerId))fail('order customer is missing.');
-   const totals=calculateTotals(order.items,order.orderDiscount);
+   const totals=calculateTotals(order.items,order.orderDiscount,{...defaultSettings.tax,...order.receiptSnapshot?.tax,mode:order.taxMode??'inclusive',vatRegistered:order.taxRegistered??true},order.coupon?order.items.map(l=>toCentavos(l.orderDiscountAmount)):undefined);
+   if(order.coupon&&order.items.reduce((n,l)=>n+toCentavos(l.orderDiscountAmount),0)!==toCentavos(order.coupon.amount))fail('coupon allocation is inconsistent.');
+   totals.grandTotal+=(order.roundingAdjustment??0)/100;
    for(const key of ['subtotal','itemDiscountTotal','taxTotal','grandTotal'] as const)if(toCentavos(order[key])!==toCentavos(totals[key]))fail('order totals are inconsistent.');
    if(toCentavos(order.orderDiscount.amount)!==toCentavos(totals.orderDiscount.amount))fail('order discount amount is inconsistent.');
    order.items.forEach((line,i)=>{for(const key of ['lineSubtotal','lineDiscount','orderDiscountAmount','lineTax','lineTotal'] as const)if(toCentavos(line[key])!==toCentavos(totals.items[i][key]))fail('order line totals are inconsistent.');});
@@ -149,7 +158,7 @@ export function validateBackup(input: unknown): Backup {
   const cent=toCentavos;
   for(const [rows,counter,prefix] of [[d.refunds,d.refundCounter,'refundNo'],[d.purchases,d.purchaseCounter,'purchaseNo'],[d.purchaseReturns,d.returnCounter,'returnNo']] as const){
    const numbers=rows.map(r=>('refundNo' in r?r.refundNo:'purchaseNo' in r?r.purchaseNo:r.returnNo));
-   if(new Set(numbers).size!==numbers.length||numbers.some(n=>Number(n.slice(3))>counter))fail(`${prefix} counter or duplicate number.`);
+   if(new Set(numbers).size!==numbers.length||numbers.some(n=>Number(n.match(/(\d+)$/)?.[1])>counter))fail(`${prefix} counter or duplicate number.`);
   }
   for(const o of d.orders){const refunds=d.refunds.filter(r=>r.orderId===o.id);const refunded=refunds.reduce((n,r)=>n+cent(r.refundAmount),0);if(refunded!==cent(o.refundedTotal)||refunded>cent(o.amountPaid))fail('refund total is inconsistent.');const history:typeof refunds[number]['items']=[];for(const r of refunds){if(r.refundMethod==='wallet'&&o.customerId===WALK_IN_ID)fail('Walk-in wallet refund.');if(new Set(r.items.map(l=>l.orderLineId)).size!==r.items.length)fail('duplicate refund line.');for(const l of r.items){const line=o.items.find(x=>x.id===l.orderLineId);if(!line||line.productId!==l.productId||line.variantId!==l.variantId)fail('refund line reference.');const expected=refundLine(line!,l.quantity,history);if(cent(expected.lineRefund)!==cent(l.lineRefund))fail('refund line allocation.');history.push(l);}if(r.items.length&&r.items.reduce((n,l)=>n+cent(l.lineRefund),0)!==cent(r.refundAmount))fail('refund amount.');if(!r.items.length&&o.orderStatus!=='cancelled')fail('empty refund requires cancellation.');}}
   if(d.refunds.some(r=>!d.orders.some(o=>o.id===r.orderId)))fail('refund order is missing.');
@@ -160,6 +169,11 @@ export function validateBackup(input: unknown): Backup {
   for(const po of d.purchases){if(!d.suppliers.some(s=>s.id===po.supplierId))fail('purchase supplier missing.');if(new Set(po.items.map(l=>l.id)).size!==po.items.length||new Set(po.items.map(l=>l.variantId??l.productId)).size!==po.items.length)fail('duplicate purchase line.');const totals=purchaseTotals(po);for(const key of ['subtotal','taxTotal','grandTotal'] as const)if(cent(po[key])!==cent(totals[key]))fail('purchase totals.');for(const [i,l] of po.items.entries()){if(l.receivedQty>l.orderedQty||cent(l.lineTotal)!==cent(totals.items[i].lineTotal))fail('purchase line totals or receiving quantity.');const product=d.products.find(p=>p.id===l.productId);if(!product||product.hasVariants!==!!l.variantId||l.variantId&&!d.variants.some(v=>v.id===l.variantId&&v.productId===l.productId))fail('purchase product reference.');const returned=d.purchaseReturns.filter(r=>r.purchaseId===po.id).flatMap(r=>r.items).filter(r=>r.purchaseLineId===l.id).reduce((n,l)=>n+l.quantity,0);if(returned>l.receivedQty+1e-8)fail('purchase return quantity.');}const balance=purchaseBalance(po,d.purchaseReturns,d.supplierPayments);if(po.receiveStatus==='cancelled'){if(po.items.some(l=>l.receivedQty)||po.amountPaid||po.balanceDue)fail('cancelled purchase has receipts or payments.');}else if(cent(balance.balanceDue)!==cent(po.balanceDue)||cent(balance.amountPaid)!==cent(po.amountPaid)||balance.paymentStatus!==po.paymentStatus)fail('purchase balance.');}
   for(const r of d.purchaseReturns){const po=d.purchases.find(p=>p.id===r.purchaseId);if(!po||po.supplierId!==r.supplierId)fail('return purchase or supplier reference.');let total=0;for(const line of r.items){const l=po!.items.find(l=>l.id===line.purchaseLineId);if(!l||cent(l.unitCost)!==cent(line.unitCost))fail('return line reference.');total+=multiplyCentavos(cent(line.unitCost),line.quantity);}if(total!==cent(r.creditAmount))fail('return credit amount.');}
   for(const pay of d.supplierPayments){const po=d.purchases.find(p=>p.id===pay.purchaseId);if(!po||po.supplierId!==pay.supplierId||pay.method==='wallet'||pay.amount<=0)fail('supplier payment reference.');}
-  d.pos.activeOrderNo=formatOrderNo(d.counter+1);
+  d.pos.activeOrderNo=documentNumber(Math.max(d.counter+1,d.phase7.settings.invoice.nextNumber),d.phase7.settings.invoice,d.phase7.branches.find(b=>b.id===d.phase7.activeBranchId)?.code);
+  if(new Set(d.phase7.branches.map(b=>b.code)).size!==d.phase7.branches.length||!d.phase7.branches.some(b=>b.status==='active'&&b.canSell))fail('branch codes or active selling location.');
+  if(new Set(d.phase7.coupons.map(c=>c.code)).size!==d.phase7.coupons.length)fail('duplicate coupon codes.');
+  for(const r of [...d.movements,...d.orders,...d.heldOrders,...d.phase6.manualEntries,...d.phase5.records])if(r.branchId&&!branchIds.includes(r.branchId))fail('record branch is missing.');
+  for(const p of d.purchases)if(!branchIds.includes(p.receivingBranchId??''))fail('purchase receiving branch is missing.');
+  for(const t of d.phase7.transfers){if(!branchIds.includes(t.fromBranchId)||!branchIds.includes(t.toBranchId))fail('transfer branch missing.');for(const l of t.items){const product=d.products.find(p=>p.id===l.productId);if(!product||product.hasVariants!==!!l.variantId||l.receivedQty!==undefined&&l.receivedQty>l.quantity)fail('transfer item invalid.');}}
   return d;
 }

@@ -1,3 +1,15 @@
+import {useSettingsStore} from '../store/useSettingsStore';
+import {useCouponStore} from '../store/useCouponStore';
+import {useBranchesStore} from '../store/useBranchesStore';
+import {useTransferStore} from '../store/useTransferStore';
+import {useBranchStore} from '../store/useBranchStore';
+import {defaultSettings} from '../config/defaultSettings';
+import {defaultBranches} from '../utils/branchMigration';
+import {createCouponSeed} from '../data/seed/coupons';
+import {createBranchStockSeed} from '../data/seed/branches';
+import {createStockTransferSeed} from '../data/seed/stockTransfers';
+import {initializeBranches} from './initializeBranches';
+import {ensureCashDrawers} from './cashDrawerService';
 import {useAuthStore} from '../store/useAuthStore';
 import {useAccountStore} from '../store/useAccountStore';
 import {useReportFilterStore} from '../store/useReportFilterStore';
@@ -38,6 +50,7 @@ import { useStockStore } from "../store/useStockStore";
 function snapshot(): Backup {
   return {
     version: 1,
+    phase7:structuredClone({settings:useSettingsStore.getState().settings,coupons:useCouponStore.getState().coupons,branches:useBranchesStore.getState().branches,transfers:useTransferStore.getState().transfers,activeBranchId:useBranchStore.getState().activeBranchId}),
     phase6:structuredClone(useAccountStore.getState()),
     reportFilter:structuredClone(useReportFilterStore.getState().filter),
     phase5:structuredClone({staff:useStaffStore.getState().staff,roles:useRoleStore.getState().roles,records:useAttendanceStore.getState().records,holidays:useHolidayStore.getState().holidays,shifts:useShiftStore.getState().shifts,runs:usePayrollStore.getState().runs,auth:useAuthStore.getState()}),
@@ -56,6 +69,7 @@ function snapshot(): Backup {
 }
 function replace(data: Backup) {
   localTransaction(() => {
+    useSettingsStore.setState({settings:data.phase7.settings,updatedAt:undefined,updatedBy:undefined});useCouponStore.setState({coupons:data.phase7.coupons});useBranchesStore.setState({branches:data.phase7.branches,migrationVersion:0});useTransferStore.setState({transfers:data.phase7.transfers});useBranchStore.setState({activeBranchId:data.phase7.activeBranchId});
     useAccountStore.setState(data.phase6,true);
     useReportFilterStore.setState({filter:data.reportFilter},true);
     useCatalogStore.setState(
@@ -88,18 +102,21 @@ function replace(data: Backup) {
     useShiftStore.setState({shifts:data.phase5.shifts},true);
     usePayrollStore.setState({runs:data.phase5.runs},true);
     useAuthStore.setState(data.phase5.auth,true);
+    initializeBranches();ensureCashDrawers();
   });
 }
 function resetData() {
     const seed=createPosSeed();
     const phase4=createPhase4Seed(seed.customers,seed.orders);
-    replace(structuredClone({version:1,phase6:createAccountSeed(),reportFilter:defaultReportFilter(),phase5:{...createPhase5Seed(),auth:{currentUserId:null}},refunds:phase4.refunds,refundCounter:phase4.refundCounter,suppliers:phase4.suppliers,purchases:phase4.purchases,purchaseReturns:phase4.returns,supplierPayments:phase4.payments,purchaseCounter:phase4.purchaseCounter,returnCounter:phase4.returnCounter,walletTransactions:phase4.transactions,customerPayments:phase4.customerPayments,activityLogs:phase4.logs,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements,...phase4.movements],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
+    replace(structuredClone({version:1,phase7:{settings:structuredClone(defaultSettings),branches:defaultBranches(),coupons:createCouponSeed(),transfers:[],activeBranchId:'Main Branch'},phase6:createAccountSeed(),reportFilter:defaultReportFilter(),phase5:{...createPhase5Seed(),auth:{currentUserId:null}},refunds:phase4.refunds,refundCounter:phase4.refundCounter,suppliers:phase4.suppliers,purchases:phase4.purchases,purchaseReturns:phase4.returns,supplierPayments:phase4.payments,purchaseCounter:phase4.purchaseCounter,returnCounter:phase4.returnCounter,walletTransactions:phase4.transactions,customerPayments:phase4.customerPayments,activityLogs:phase4.logs,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements.map(m=>({...m,branchId:seed.orders.find(o=>o.orderNo===m.reference)?.branchId??'Main Branch'})),...phase4.movements,...createBranchStockSeed()],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
+    const product=products.find(p=>!p.hasVariants);if(product){const transfers=createStockTransferSeed(product.id);useTransferStore.setState({transfers});useStockStore.setState(s=>({movements:[...s.movements,...transfers.flatMap(t=>[{id:`${t.id}-out`,branchId:t.fromBranchId,productId:product.id,type:'out' as const,quantity:2,reason:'Transfer out',reference:t.transferNo,createdAt:t.createdAt,createdBy:'System'},...(t.status==='received'?[{id:`${t.id}-in`,branchId:t.toBranchId,productId:product.id,type:'in' as const,quantity:2,reason:'Transfer in',reference:t.transferNo,createdAt:t.createdAt,createdBy:'System'}]:[])])]}));}
+
 }
 
 export const dataService = {
   export: async () => {
     const data = snapshot();
-    const imageRefs=[...data.phase6.manualEntries.map(e=>({imageId:e.attachmentId})),...data.phase5.staff.map(s=>({imageId:s.avatarId})),...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)];
+    const imageRefs=[{imageId:data.phase7.settings.general.logoId},...data.phase7.branches.map(b=>({imageId:b.photoId})),...data.orders.map(o=>({imageId:o.receiptSnapshot?.general.logoId})),...data.phase6.manualEntries.map(e=>({imageId:e.attachmentId})),...data.phase5.staff.map(s=>({imageId:s.avatarId})),...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)];
     const all = imageRefs.some((p) => p.imageId)
       ? await imageService.export()
       : {};
@@ -140,6 +157,7 @@ export const dataService = {
       [...data.products,...data.pos.cart,...data.heldOrders.flatMap(h=>h.cart),...data.orders.flatMap(o=>o.items)].forEach((p) => {
         if (p.imageId === id) p.imageId = freshId;
       });
+      if(data.phase7.settings.general.logoId===id)data.phase7.settings.general.logoId=freshId;data.phase7.branches.forEach(b=>{if(b.photoId===id)b.photoId=freshId;});data.orders.forEach(o=>{if(o.receiptSnapshot?.general.logoId===id)o.receiptSnapshot.general.logoId=freshId;});
       data.phase5.staff.forEach(staff=>{if(staff.avatarId===id)staff.avatarId=freshId;});data.phase6.manualEntries.forEach(entry=>{if(entry.attachmentId===id)entry.attachmentId=freshId;});
       mapped.push([freshId, blob]);
     }

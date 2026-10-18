@@ -13,7 +13,7 @@ describe('role permissions', () => {
   it('grants Manager everything except staff management, payroll and settings', () => {
     for (const key of permissionKeys) {
       expect(hasPermission({ role: 'manager' }, key), key).toBe(
-        !['staff:manage', 'payroll:view', 'settings:manage'].includes(key),
+        !['staff:manage', 'payroll:view', 'settings:manage', 'accounts:manage', 'reports:finance'].includes(key),
       );
     }
     expect(hasPermission({ role: 'manager' }, 'future:manage')).toBe(false);
@@ -131,3 +131,4 @@ describe('staff navigation aliases',()=>{
   expect(resolveMenuPath(path)).toBe(expected);expect(findRoute(path)?.sectionId).toBe('apps');
  });
 });
+

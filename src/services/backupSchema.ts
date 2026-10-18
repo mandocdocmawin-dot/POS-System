@@ -1,4 +1,5 @@
 import {staffBackupSchema,validateStaffBackup} from './staffBackup';
+import {migratePhase6Roles} from '../config/permissions';
 import {createPhase5Seed} from '../data/seed/phase5';
 import {refundSchema,supplierSchema,purchaseSchema,purchaseReturnSchema,supplierPaymentSchema,walletTransactionSchema,customerPaymentSchema,activitySchema} from '../types/phase4';
 import {purchaseBalance} from '../utils/supplierBalance';
@@ -50,6 +51,7 @@ export const backupSchema = z
 export type Backup = z.infer<typeof backupSchema>;
 export function validateBackup(input: unknown): Backup {
   const d = backupSchema.parse(input);
+  d.phase5.roles=migratePhase6Roles(d.phase5.roles);
   validateStaffBackup(d.phase5);
   const fail = (message: string): never => {
     throw new Error(`Invalid backup: ${message}`);

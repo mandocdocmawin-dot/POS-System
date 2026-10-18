@@ -1,3 +1,4 @@
+import {startStorageMonitoring} from '../../services/storageUsageService';
 import { persistedStores } from './registry';
 import { localKeys, flushStorage } from '../storage';
 import { migrateLegacyKey } from '../storage/legacy';
@@ -34,6 +35,7 @@ export function hydrateApplication() {
     initializePhase8Data();
     await flushStorage();
     startCrossTabSync(persistedStores);
+    startStorageMonitoring();
   })();
   return boot;
 }

@@ -1,3 +1,4 @@
+import {initializeBranches} from './services/initializeBranches';
 import {initializeAccountData} from './data/seed/accounts';
 import {initializeStaffData} from './data/seed/phase5';
 import './styles/print.css';
@@ -12,6 +13,7 @@ dataService.initialize();
 initializePosData();
 initializeStaffData();
 initializeAccountData();
+initializeBranches();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

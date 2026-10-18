@@ -1,3 +1,4 @@
+import {useBranchesStore} from '../store/useBranchesStore';
 import {useCouponStore} from '../store/useCouponStore';
 import {useSettingsStore} from '../store/useSettingsStore';
 import {useAuthStore} from '../store/useAuthStore';
@@ -31,6 +32,7 @@ const changed = () => {
 };
 useSettingsStore.subscribe(changed);
 useCouponStore.subscribe(changed);
+useBranchesStore.subscribe(changed);
 useCatalogStore.subscribe(changed);
 useAccountStore.subscribe(changed);
 useReportFilterStore.subscribe(changed);

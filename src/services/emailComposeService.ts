@@ -12,7 +12,7 @@ export const emailComposeService = {
   suggestions: () => { currentUser('email:use'); return [...activePeople().map(s => ({ name: s.name, email: s.email })), ...(canUse('customers:view') ? useCustomerStore.getState().customers.filter(c => c.email).map(c => ({ name: c.name, email: c.email! })) : []), ...(canUse('suppliers:view') ? useSupplierStore.getState().suppliers.filter(s => s.email).map(s => ({ name: s.name, email: s.email! })) : [])]; },
   prepare: (type: string, id: string): Partial<Email> => {
     const user = currentUser('email:use'), values: Record<string, string> = { 'business.name': settingsService.get().general.businessName, 'staff.name': user.name };
-    let to: string[] = [], templateId = type, relatedType = 'order';
+    let to: string[], templateId = type, relatedType = 'order';
     if (type === 'purchase-order') {
       currentUser('purchases:view'); const purchase = purchaseService.get(id); if (!purchase) throw new Error('Purchase not found.'); const supplier = useSupplierStore.getState().suppliers.find(s => s.id === purchase.supplierId); to = supplier?.email ? [supplier.email] : []; Object.assign(values, { 'supplier.name': supplier?.name ?? 'Supplier', 'purchase.no': purchase.purchaseNo, 'branch.name': purchase.receivingBranchId ?? purchase.branchId ?? '' }); relatedType = 'purchase';
     } else {

@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
           ? Object.keys(implementedPages)
               .filter(
                 (path) =>
-                  ["/products","/inventory","/orders","/customers","/suppliers","/purchases","/staff","/accounts","/reports","/settings","/stores"].some(prefix=>path.startsWith(prefix)) &&
+                  ["/profile","/account","/pricing","/calendar","/email","/chat","/products","/inventory","/orders","/customers","/suppliers","/purchases","/staff","/accounts","/reports","/settings","/stores"].some(prefix=>path.startsWith(prefix)) &&
                   !routes.some((r) => r.path === path),
               )
               .map((path) => ({ path, lazy: getPageLoader(path) }))

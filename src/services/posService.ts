@@ -30,7 +30,7 @@ function validateCart(cart:CartItem[]) {
  if(p.hasVariants&&!line.variantId)throw new Error('Choose a variant.');
  if(line.variantId&&!productService.variants(p.id).some(v=>v.id===line.variantId))throw new Error('Variant no longer exists.');
  const key=line.variantId??line.productId;const qty=(quantities.get(key)??0)+line.quantity;quantities.set(key,qty);
- const available=stockService.getStock(line.productId,line.variantId);if(qty>available+1e-8)throw new Error(`${line.name}: only ${available} in stock.`);
+ const available=stockService.getStock(line.productId,line.variantId,posService.branch());if(qty>available+1e-8)throw new Error(`${line.name}: only ${available} in stock.`);
  }
  calculateTotals(cart,undefined,settingsService.get().tax);
 }
@@ -70,7 +70,7 @@ export const posService={
  return localTransaction(()=>{
  const freshCoupon=posService.couponResult();if(freshCoupon&&!freshCoupon.ok)throw new Error(couponReasons[freshCoupon.reason]);
  const orderNo=orderService.nextOrderNo();const createdAt=new Date().toISOString();
- for(const line of s.cart)stockService.record({productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});
+ for(const line of s.cart)stockService.record({branchId:posService.branch(),productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});
  if(wallet)walletService.change({customerId:c.id,type:"spend",amount:-fromCentavos(wallet),orderId});
  const pointsEarned=customerService.recordSale(c.id,paid.amountPaid,paid.balanceDue);
  const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,...settingsService.snapshot(),roundingAdjustment:rounding.adjustment,coupon:coupon&&couponResult?.ok?{couponId:coupon.id,code:coupon.code,type:coupon.type,value:coupon.value,amount:fromCentavos(couponResult.discount)}:undefined,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:authService.getCurrentUser()?.name??'System',cashierId:authService.getCurrentUser()?.id,createdAt,refundedTotal:0,pointsEarned});

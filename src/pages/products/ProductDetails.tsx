@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import { Drawer } from "../../components/common/Drawer";
 import { ProductImage } from "../../components/common/ProductImage";
 import { StockBadge } from "../../components/common/StockBadge";
@@ -34,7 +35,7 @@ export function ProductDetails({
     Tax: `${p.taxRate}%`,
     Discount: `${p.discountPercent ?? 0}%`,
     "Reorder level": p.reorderLevel,
-    Stock: stockService.getStock(id),
+    Stock: stockService.getStock(id,undefined,branchService.activeId()),
     Status: p.status,
     Created: formatDate(p.createdAt),
     Updated: formatDate(p.updatedAt),
@@ -45,7 +46,7 @@ export function ProductDetails({
         <ProductImage imageId={p.imageId} name={p.name} large />
       </div>
       <StockBadge
-        stock={stockService.getStock(id)}
+        stock={stockService.getStock(id,undefined,branchService.activeId())}
         reorderLevel={p.reorderLevel}
       />
       <dl className="my-5 grid grid-cols-2 gap-x-4 gap-y-3">
@@ -75,7 +76,7 @@ export function ProductDetails({
           </p>
           <p className="mt-1">
             Cost {formatPHP(v.costPrice)} · Price {formatPHP(v.sellingPrice)} ·
-            Stock {stockService.getStock(id, v.id)}
+            Stock {stockService.getStock(id, v.id,branchService.activeId())}
           </p>
         </div>
       ))}
@@ -83,7 +84,7 @@ export function ProductDetails({
       <h3 className="mb-3 font-semibold">Last 5 stock movements</h3>
       <ul className="space-y-3">
         {stockService
-          .history(id)
+          .history(id,undefined,branchService.activeId())
           .slice(0, 5)
           .map((m) => (
             <li
@@ -103,7 +104,7 @@ export function ProductDetails({
             </li>
           ))}
       </ul>
-      {!stockService.history(id).length && (
+      {!stockService.history(id,undefined,branchService.activeId()).length && (
         <p className="text-slate-500">No stock movements.</p>
       )}
     </Drawer>

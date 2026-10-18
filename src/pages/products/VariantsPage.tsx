@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import {Can} from '../../components/auth/Can';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -171,8 +172,8 @@ export function Component() {
             {
               id: "stock",
               header: "Stock",
-              cell: (v) => stockService.getStock(v.productId, v.id),
-              sortValue: (v) => stockService.getStock(v.productId, v.id),
+              cell: (v) => stockService.getStock(v.productId, v.id,branchService.activeId()),
+              sortValue: (v) => stockService.getStock(v.productId, v.id,branchService.activeId()),
             },
           ]}
           actions={(v) => (

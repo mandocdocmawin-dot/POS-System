@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import {useSettings} from '../../hooks/useSettings';
 import {stockService} from '../../services/stockService';
 import {Modal} from '../../components/common/Modal';
@@ -30,7 +31,7 @@ export function ProductBrowser() {
       p.status === "active" &&
       (!category || p.categoryId === category) &&
       (!brand || p.brandId === brand) &&
-      (!stockOnly || stockService.getStock(p.id)>0) &&
+      (!stockOnly || stockService.getStock(p.id,undefined,branchService.activeId())>0) &&
       `${p.name} ${p.sku} ${p.barcode ?? ""} ${productService
         .variants(p.id)
         .map((v) => `${v.sku} ${v.barcode ?? ""}`)

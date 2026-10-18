@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import { localDate } from "../../utils/date";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -29,7 +30,7 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
   const reasons = type === "in" ? inReasons : outReasons;
   useLocalData();
   const [error, setError] = useState("");
-  const items = stockService.items();
+  const items = stockService.items(branchService.activeId());
   const {
     register,
     control,
@@ -56,11 +57,11 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
         className="card mb-6 space-y-4"
         onSubmit={handleSubmit((v) => {
           try {
-            const selected = stockService.items().find((i) => i.key === v.item);
+            const selected = stockService.items(branchService.activeId()).find((i) => i.key === v.item);
             if (!selected) throw new Error("Choose an existing item");
             if (!reasons.includes(v.reason))
               throw new Error("Choose a valid reason");
-            stockService.record({
+            stockService.record({branchId:branchService.activeId(),
               productId: selected.product.id,
               variantId: selected.variant?.id,
               type,

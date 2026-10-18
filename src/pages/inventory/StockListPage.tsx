@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import { useState } from "react";
 import { DataTable } from "../../components/common/DataTable";
 import { PageActions } from "../../components/common/PageActions";
@@ -11,7 +12,7 @@ type Item = ReturnType<typeof stockService.items>[number];
 export function Component() {
   useLocalData();
   const [view, setView] = useState<Item>();
-  const rows = stockService.items();
+  const rows = stockService.items(branchService.activeId());
   const summary = {
     "Total items": rows.length,
     "Total stock value": formatPHP(

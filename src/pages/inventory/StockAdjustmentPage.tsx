@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import { localDate } from "../../utils/date";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -44,7 +45,7 @@ export function Component() {
     },
   });
   const values = useWatch({ control });
-  const items = stockService.items(),
+  const items = stockService.items(branchService.activeId()),
     item = items.find((i) => i.key === values.item);
   const difference = (values.counted ?? 0) - (item?.stock ?? 0);
   return (
@@ -53,7 +54,7 @@ export function Component() {
       <form
         className="card mb-6 space-y-4"
         onSubmit={handleSubmit((v) => {
-          const selected = stockService.items().find((i) => i.key === v.item);
+          const selected = stockService.items(branchService.activeId()).find((i) => i.key === v.item);
           if (!selected) {
             setError("Choose an existing item");
             return;
@@ -131,14 +132,14 @@ export function Component() {
           onConfirm={() => {
             try {
               const selected = stockService
-                .items()
+                .items(branchService.activeId())
                 .find((i) => i.key === pending.values.item);
               if (!selected) throw new Error("Item no longer exists");
               if (selected.stock !== pending.before)
                 throw new Error(
                   "Stock changed. Close this dialog and review the latest count.",
                 );
-              stockService.record({
+              stockService.record({branchId:branchService.activeId(),
                 productId: selected.product.id,
                 variantId: selected.variant?.id,
                 type: "adjustment",

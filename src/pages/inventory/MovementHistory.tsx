@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import { localDate } from "../../utils/date";
 import { useState } from "react";
 import { DataTable } from "../../components/common/DataTable";
@@ -21,7 +22,7 @@ export function MovementHistory({
   const products = productService.list();
   const variants = productService.variants();
   const rows = stockService
-    .history(productId || product || undefined, variantId)
+    .history(productId || product || undefined, variantId,branchService.activeId())
     .filter(
       (m) =>
         (!type || m.type === type) &&

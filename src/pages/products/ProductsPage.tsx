@@ -1,3 +1,4 @@
+import {branchService} from '../../services/branchService';
 import {Can} from '../../components/auth/Can';
 import { stockStatus } from "../../utils/stock";
 import { ProductDetails } from "./ProductDetails";
@@ -40,7 +41,7 @@ export function Component() {
         (!brand || p.brandId === brand) &&
         (!status || p.status === status) &&
         (!stock ||
-          stockStatus(stockService.getStock(p.id), p.reorderLevel) === stock),
+          stockStatus(stockService.getStock(p.id,undefined,branchService.activeId()), p.reorderLevel) === stock),
     );
   return (
     <>
@@ -55,7 +56,7 @@ export function Component() {
                 p.sku,
                 p.costPrice,
                 p.sellingPrice,
-                stockService.getStock(p.id),
+                stockService.getStock(p.id,undefined,branchService.activeId()),
               ]),
             ])
           }
@@ -178,14 +179,14 @@ export function Component() {
               header: "Stock",
               cell: (p) => (
                 <div className="flex items-center gap-2">
-                  {stockService.getStock(p.id)}
+                  {stockService.getStock(p.id,undefined,branchService.activeId())}
                   <StockBadge
-                    stock={stockService.getStock(p.id)}
+                    stock={stockService.getStock(p.id,undefined,branchService.activeId())}
                     reorderLevel={p.reorderLevel}
                   />
                 </div>
               ),
-              sortValue: (p) => stockService.getStock(p.id),
+              sortValue: (p) => stockService.getStock(p.id,undefined,branchService.activeId()),
             },
             {
               id: "status",

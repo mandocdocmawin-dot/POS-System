@@ -25,14 +25,14 @@ export const refundService={
   const items=input.lines.map(selection=>{const l=o.items.find(x=>x.id===selection.id);if(!l)throw new Error('Order line not found.');return refundLine(l,selection.quantity,history);});
   const total=items.reduce((n,l)=>n+c(l.lineRefund),0);
   if(!total||total+c(o.refundedTotal)>c(o.amountPaid))throw new Error('Refund cannot exceed the amount paid. Collect the balance or select fewer items.');
-  if(input.restock)for(const l of items)if(!stockService.items().some(x=>x.product.id===l.productId&&x.variant?.id===l.variantId))throw new Error('Restore the original product before restocking.');
+  if(input.restock)for(const l of items)if(!stockService.items(o.branchId).some(x=>x.product.id===l.productId&&x.variant?.id===l.variantId))throw new Error('Restore the original product before restocking.');
   return refundSchema.parse({id:crypto.randomUUID(),refundNo:`RF-${String(useRefundStore.getState().counter+1).padStart(6,'0')}`,orderId:o.id,items,reason:input.reason,refundAmount:p(total),refundMethod:input.refundMethod,restock:input.restock,note:input.note,createdAt:new Date().toISOString(),createdBy:authService.getCurrentUser()?.name??'System'});
  },
  create:(input:RefundInput,recordedAt?:string)=>{requirePermission('orders:refund');
   validatePaymentAccount(input.refundMethod);if(recordedAt){requirePermission("settings:manage");refundSchema.shape.createdAt.parse(recordedAt);}const r={...refundService.preview(input),...(recordedAt?{createdAt:recordedAt}:{})},o=orderService.get(r.orderId)!;
   return localTransaction(()=>{
    approvalService.ensure('refund',c(r.refundAmount),JSON.stringify(['refund',input]));
-   if(r.restock)for(const l of r.items)stockService.record({productId:l.productId,variantId:l.variantId,type:'in',quantity:l.quantity,reason:'Customer return',reference:r.refundNo,createdAt:r.createdAt});
+   if(r.restock)for(const l of r.items)stockService.record({branchId:o.branchId,productId:l.productId,variantId:l.variantId,type:'in',quantity:l.quantity,reason:'Customer return',reference:r.refundNo,createdAt:r.createdAt});
    if(r.refundMethod==='wallet')walletService.change({customerId:o.customerId,type:'refund',amount:r.refundAmount,orderId:o.id,note:r.reason});
    const total=p(c(o.refundedTotal)+c(r.refundAmount));
    const reversed=reversedPoints(o.pointsEarned,total,o.amountPaid)-reversedPoints(o.pointsEarned,o.refundedTotal,o.amountPaid);

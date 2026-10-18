@@ -1,3 +1,4 @@
+import {branchService} from './branchService';
 import {approvalService} from './approvalService';
 import {authService} from './authService';
 import {requirePermission} from './authService';
@@ -9,29 +10,32 @@ import { categoryService } from "./categoryService";
 export const movementDelta = (m: Pick<StockMovement, "type" | "quantity">) =>
   m.type === "out" ? -m.quantity : m.quantity;
 export const stockService = {
-  getStock: (productId: string, variantId?: string): number =>
+  getStock: (productId: string, variantId: string|undefined, branchId:string): number =>
     Math.round(
       useStockStore
         .getState()
         .movements.filter(
           (m) =>
+            (m.branchId??"Main Branch") === branchId &&
             m.productId === productId &&
             (!variantId || m.variantId === variantId),
         )
         .reduce((sum, m) => sum + movementDelta(m), 0) * 1e8,
     ) / 1e8,
-  history: (productId?: string, variantId?: string) =>
+  history: (productId: string|undefined, variantId: string|undefined, branchId:string) =>
     structuredClone(
       useStockStore
         .getState()
         .movements.filter(
           (m) =>
+            (m.branchId??"Main Branch") === branchId &&
             (!productId || m.productId === productId) &&
             (!variantId || m.variantId === variantId),
         )
         .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)),
     ),
-  record: (input: Omit<StockMovement, "id" | "createdBy">) => {requirePermission(input.reason==='Sale'?'pos:use':input.reason==='Order cancelled'?'orders:cancel':input.reason==='Customer return'?'orders:refund':['Purchase','Supplier return'].includes(input.reason)?'purchases:create':'inventory:adjust');
+  record: (input: Omit<StockMovement, "id" | "createdBy" | "branchId"> & {branchId:string}) => {requirePermission(input.reason==='Sale'?'pos:use':input.reason==='Order cancelled'?'orders:cancel':input.reason==='Customer return'?'orders:refund':['Purchase','Supplier return'].includes(input.reason)?'purchases:create':'inventory:adjust');
+    if(!branchService.get(input.branchId))throw new Error("Choose an existing branch.");
     const m = movementSchema.parse({
       ...input,
       id: crypto.randomUUID(),
@@ -51,7 +55,7 @@ export const stockService = {
         "Opening stock can only be recorded when creating a product.",
       );
     if (
-      stockService.getStock(m.productId, m.variantId) + movementDelta(m) <
+      stockService.getStock(m.productId, m.variantId,input.branchId) + movementDelta(m) <
       -1e-8
     )
       throw new Error("Insufficient stock. Stock cannot become negative.");
@@ -65,7 +69,8 @@ export const stockService = {
     });
     return m;
   },
-  items: () => {
+  getStockAllBranches:(productId:string,variantId?:string):Record<string,number>=>Object.fromEntries(branchService.list().map(b=>[b.id,stockService.getStock(productId,variantId,b.id)])),
+  items: (branchId:string) => {
     const categories = categoryService.list();
     return productService.list().flatMap((p) =>
       (p.hasVariants ? productService.variants(p.id) : [undefined]).map(
@@ -75,7 +80,7 @@ export const stockService = {
           variant: v,
           name: p.name + (v ? ` / ${v.name}` : ""),
           sku: v?.sku ?? p.sku,
-          stock: stockService.getStock(p.id, v?.id),
+          stock: stockService.getStock(p.id, v?.id,branchId),
           cost: v?.costPrice ?? p.costPrice,
           category: categories.find((c) => c.id === p.categoryId)?.name ?? "—",
         }),

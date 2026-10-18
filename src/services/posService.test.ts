@@ -1,3 +1,4 @@
+import {branchService} from './branchService';
 import {ManagerApprovalRequired} from './discountApprovalService';
 import {useRoleStore} from '../store/useRoleStore';
 import {useActivityStore} from '../store/useActivityStore';
@@ -43,27 +44,27 @@ beforeEach(()=>{
 });
 describe('checkout service',()=>{
  it('saves once, snapshots prices, records stock, awards points and resets cart',()=>{
-  const id=posService.add('prod-1');posService.quantity(id,2);posService.customer('customer-1');const before=stockService.getStock('prod-1');
+  const id=posService.add('prod-1');posService.quantity(id,2);posService.customer('customer-1');const before=stockService.getStock('prod-1',undefined,branchService.activeId());
   const order=posService.complete([cash(200)]);expect(order).toMatchObject({orderNo:'TP-000001',grandTotal:136,change:64,pointsEarned:1,paymentStatus:'paid'});
-  expect(stockService.getStock('prod-1')).toBe(before-2);expect(stockService.history('prod-1').filter(m=>m.reference===order.orderNo)).toHaveLength(1);expect(posService.state().cart).toHaveLength(0);expect(orderService.nextOrderNo()).toBe('TP-000002');
+  expect(stockService.getStock('prod-1',undefined,branchService.activeId())).toBe(before-2);expect(stockService.history('prod-1',undefined,branchService.activeId()).filter(m=>m.reference===order.orderNo)).toHaveLength(1);expect(posService.state().cart).toHaveLength(0);expect(orderService.nextOrderNo()).toBe('TP-000002');
   useProductStore.setState(s=>({products:s.products.map(p=>p.id==='prod-1'?{...p,sellingPrice:999}:p)}));expect(orderService.get(order.id)?.items[0].unitPrice).toBe(68);expect(()=>posService.complete([cash(200)])).toThrow();
  });
  it('rejects overselling and fractional pieces before any write',()=>{
   const id=posService.add('prod-2');expect(()=>posService.quantity(id,0.5)).toThrow();expect(()=>posService.quantity(id,9999)).toThrow();expect(orderService.list()).toHaveLength(0);expect(posService.state().cart[0].quantity).toBe(1);
  });
  it('validates all stock before committing any sale line',()=>{
-  posService.add('prod-1');posService.add('prod-2');const before=stockService.getStock('prod-1');stockService.record({productId:'prod-2',type:'out',quantity:stockService.getStock('prod-2'),reason:'Other cashier',createdAt:new Date().toISOString()});expect(()=>posService.complete([cash(1000)])).toThrow();expect(stockService.getStock('prod-1')).toBe(before);expect(orderService.list()).toHaveLength(0);expect(posService.state().cart).toHaveLength(2);
+  posService.add('prod-1');posService.add('prod-2');const before=stockService.getStock('prod-1',undefined,branchService.activeId());stockService.record({branchId:branchService.activeId(),productId:'prod-2',type:'out',quantity:stockService.getStock('prod-2',undefined,branchService.activeId()),reason:'Other cashier',createdAt:new Date().toISOString()});expect(()=>posService.complete([cash(1000)])).toThrow();expect(stockService.getStock('prod-1',undefined,branchService.activeId())).toBe(before);expect(orderService.list()).toHaveLength(0);expect(posService.state().cart).toHaveLength(2);
  });
  it('rolls back memory and persisted data when saving orders fails',()=>{
-  posService.add('prod-1');posService.customer('customer-1');const before=stockService.getStock('prod-1'),customer=customerService.get('customer-1');
+  posService.add('prod-1');posService.customer('customer-1');const before=stockService.getStock('prod-1',undefined,branchService.activeId()),customer=customerService.get('customer-1');
   const original=storage.setItem;let fail=true;vi.spyOn(storage,'setItem').mockImplementation((key,value)=>{if(fail&&key==='tindapos:orders'){fail=false;throw new Error('Storage full');}original(key,value);});
-  expect(()=>posService.complete([cash(100)])).toThrow('Unable to save');expect(stockService.getStock('prod-1')).toBe(before);expect(customerService.get('customer-1')).toEqual(customer);expect(posService.state().cart).toHaveLength(1);expect(orderService.nextOrderNo()).toBe('TP-000001');expect(JSON.parse(storage.getItem('tindapos:orders')!).state.orders).toHaveLength(0);
+  expect(()=>posService.complete([cash(100)])).toThrow('Unable to save');expect(stockService.getStock('prod-1',undefined,branchService.activeId())).toBe(before);expect(customerService.get('customer-1')).toEqual(customer);expect(posService.state().cart).toHaveLength(1);expect(orderService.nextOrderNo()).toBe('TP-000001');expect(JSON.parse(storage.getItem('tindapos:orders')!).state.orders).toHaveLength(0);
  });
  it('records partial credit and blocks Walk-in credit',()=>{
   posService.add('prod-1');expect(()=>posService.complete([],{payLater:true})).toThrow('named customer');posService.customer('customer-1');const order=posService.complete([cash(20)],{payLater:true,dueDate:'2026-12-01'});expect(order).toMatchObject({balanceDue:48,paymentStatus:'partial',orderStatus:'pending'});expect(customerService.get('customer-1')?.creditBalance).toBe(48);
  });
  it('holds without stock changes and resumes only with explicit replacement',()=>{
-  posService.add('prod-1');const before=stockService.getStock('prod-1');const held=holdService.hold('Lunch');expect(stockService.getStock('prod-1')).toBe(before);posService.add('prod-2');expect(()=>holdService.resume(held.id)).toThrow('replacement');holdService.resume(held.id,true);expect(posService.state().cart[0].productId).toBe('prod-1');expect(holdService.list()).toHaveLength(0);
+  posService.add('prod-1');const before=stockService.getStock('prod-1',undefined,branchService.activeId());const held=holdService.hold('Lunch');expect(stockService.getStock('prod-1',undefined,branchService.activeId())).toBe(before);posService.add('prod-2');expect(()=>holdService.resume(held.id)).toThrow('replacement');holdService.resume(held.id,true);expect(posService.state().cart[0].productId).toBe('prod-1');expect(holdService.list()).toHaveLength(0);
  });
 });
 
@@ -100,10 +101,10 @@ describe('Phase 3 data and Dashboard',()=>{
   useBranchStore.getState().setBranch('Branch 2');expect(salesMetrics().totalOrders).toBe(0);expect(paymentShares().every(p=>p.percent===0)).toBe(true);useBranchStore.getState().setBranch('Main Branch');
  });
  it('previews a draft without allocating a number or changing stock',()=>{
-  posService.add('prod-1');const before=stockService.getStock('prod-1'),number=orderService.nextOrderNo();const draft=receiptService.draft();expect(draft.draft).toBe(true);expect(draft.orderNo).toBeUndefined();expect(stockService.getStock('prod-1')).toBe(before);expect(orderService.nextOrderNo()).toBe(number);expect(posService.state().cart).toHaveLength(1);
+  posService.add('prod-1');const before=stockService.getStock('prod-1',undefined,branchService.activeId()),number=orderService.nextOrderNo();const draft=receiptService.draft();expect(draft.draft).toBe(true);expect(draft.orderNo).toBeUndefined();expect(stockService.getStock('prod-1',undefined,branchService.activeId())).toBe(before);expect(orderService.nextOrderNo()).toBe(number);expect(posService.state().cart).toHaveLength(1);
  });
  it('protects historical sale movements when deleting catalogue products',()=>{
-  posService.add('prod-1');posService.complete([cash(100)]);expect(()=>productService.removeMany(['prod-1'])).toThrow('Sold products');expect(stockService.history('prod-1').some(m=>m.reason==='Sale')).toBe(true);
+  posService.add('prod-1');posService.complete([cash(100)]);expect(()=>productService.removeMany(['prod-1'])).toThrow('Sold products');expect(stockService.history('prod-1',undefined,branchService.activeId()).some(m=>m.reason==='Sale')).toBe(true);
  });
  it('rejects unsafe discounts without corrupting the persisted cart',()=>{
   const id=posService.add('prod-1');expect(()=>posService.discount({type:'fixed',value:1e20})).toThrow();expect(()=>posService.lineDiscount(id,{type:'fixed',value:1e20})).toThrow();expect(posService.totals().grandTotal).toBe(68);

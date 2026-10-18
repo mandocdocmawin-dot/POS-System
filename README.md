@@ -1,6 +1,6 @@
 # TindaPOS
 
-A frontend-only POS web app for Filipino stores. **Phases 1–5 are complete: POS, inventory, orders, customers, suppliers, purchases, demo login/roles and the Staff workspace, including attendance, schedules, holidays and demo payroll. Phase 6 has not started.** Built with Vite, React, strict TypeScript, React Router v6, Tailwind, lucide-react and Zustand. No backend, API calls or database server.
+A frontend-only POS web app for Filipino stores. **Phases 1–6 are complete: POS, inventory, orders, customers, suppliers, purchases, demo roles, Staff/payroll, cash-basis Accounts, six Reports and live Dashboard charts. Phase 7 has not started.** Built with Vite, React, strict TypeScript, React Router v6, Tailwind, lucide-react and Zustand. No backend, API calls or database server.
 
 ## Run locally
 
@@ -11,7 +11,13 @@ npm install
 npm run dev
 ```
 
-Phase 5 adds no dependencies. No new install command is required for an existing checkout.
+Phase 6 adds only the chart dependencies for an existing checkout:
+
+```sh
+npm install apexcharts react-apexcharts
+```
+
+See [Phase 6 accounting rules, route summary and acceptance checklist](docs/phase6.md).
 
 `@hookform/resolvers` connects React Hook Form to Zod. The lockfile records the installed versions.
 
@@ -33,12 +39,12 @@ The build runs TypeScript checking and produces `dist/`. Static hosting must rew
 - Variants: inline editor plus a shared overview with add/edit/remove, unique SKUs, free-text attributes and independent prices/stock. Enter attributes as `Size: L, Color: Red`. New product variants accept their own opening quantities.
 - Inventory: product/variant stock list, summary totals and valuation; history drawer; stock in/out with reasons, reference, note, date and date/product history filters; counted stock adjustments with before/after confirmation.
 - POS: the Phase 2 product browser now supports the complete Phase 3 cashier workflow described below.
-- Dashboard: real low-stock products with reorder progress; real names/SKUs for top products while sales numbers remain explicitly mock.
+- Dashboard: real low-stock products, sales, customers, product rankings, finance metrics and charts; calculations are shared with Reports.
 - Settings → General: Data card for reset and JSON export/import, including images. The remainder of General stays a placeholder.
 
 Reusable components include `DataTable<T>`, native modal dialogs and drawers with focus containment/Escape/focus restoration, confirmation dialogs, labeled form fields, switches, compressed image upload, toasts, page actions and stock badges. Tables scroll horizontally on narrow screens. New components support the existing dark theme.
 
-Reviews, Print Barcode, Bulk Import, Bulk Export, Warranty, Stock Transfer, Batch Management, Lost Items, Alerts, Valuation and Warehouse remain placeholders. JSON backups in Settings and CSV export from All Products do not implement the reserved Bulk Import/Export pages. Orders, Customers, Suppliers and Purchases are implemented in Phase 4. Accounts, Reports, Staff, Multi-Store, Settings (apart from the existing Data card), Calendar, Chat and Email remain placeholders. Real authentication is not implemented.
+Reviews, Print Barcode, Bulk Import, Bulk Export, Warranty, Stock Transfer, Batch Management, Lost Items, Alerts, Valuation and Warehouse remain placeholders. JSON backups in Settings and CSV export from All Products do not implement the reserved Bulk Import/Export pages. Orders, Customers, Suppliers and Purchases are implemented in Phase 4. Accounts and Reports are implemented in Phase 6; Staff is implemented in Phase 5. Multi-Store, Settings (apart from the existing Data card), Calendar, Chat and Email remain placeholders. Real authentication is not implemented.
 
 ## Data and service boundaries
 
@@ -62,7 +68,7 @@ src/
 
 New pages and components call services, including the `useLocalData` subscription hook; they do not access business stores or browser storage directly. Services wrap the stores so their implementation can later be replaced by a backend.
 
-Structured business data uses Zustand persist and localStorage keys `tindapos:catalog`, `tindapos:products`, `tindapos:stock`, `tindapos:pos`, `tindapos:orders`, `tindapos:customers`, `tindapos:held-orders`, `tindapos:refund`, `tindapos:supplier`, `tindapos:purchase`, `tindapos:wallet` and `tindapos:activity`, plus Phase 5 keys `tindapos:auth`, `tindapos:staff`, `tindapos:roles`, `tindapos:attendance`, `tindapos:holidays`, `tindapos:shifts` and `tindapos:payroll`. Product records contain only an `imageId`. JPEG/PNG/WebP uploads are compressed in-browser to JPEG at quality 0.8 with a maximum dimension of 800px, then stored with idb-keyval in IndexedDB `tindapos:images`. Missing/inaccessible images show a neutral placeholder. No remote image requests are made.
+Structured business data uses Zustand persist and localStorage keys `tindapos:catalog`, `tindapos:products`, `tindapos:stock`, `tindapos:pos`, `tindapos:orders`, `tindapos:customers`, `tindapos:held-orders`, `tindapos:refund`, `tindapos:supplier`, `tindapos:purchase`, `tindapos:wallet` and `tindapos:activity`, plus Phase 6 keys `tindapos:accounts` and `tindapos:report-filters`, and Phase 5 keys `tindapos:auth`, `tindapos:staff`, `tindapos:roles`, `tindapos:attendance`, `tindapos:holidays`, `tindapos:shifts` and `tindapos:payroll`. Product records contain only an `imageId`. JPEG/PNG/WebP uploads are compressed in-browser to JPEG at quality 0.8 with a maximum dimension of 800px, then stored with idb-keyval in IndexedDB `tindapos:images`. Missing/inaccessible images show a neutral placeholder. No remote image requests are made.
 
 The first empty browser is seeded with eight categories and sixteen subcategories, eight brands, six units, 25 products and six variants. Some items have low or zero stock. Empty catalogs saved intentionally are not reseeded on refresh. Reset restores the demo catalog, six customers, 12 dated orders and matching Sale movements, and clears held orders and the open cart; export first to preserve your work. The catalog and stock remain shared, while saved orders and Dashboard figures are filtered by the selected branch.
 
@@ -98,7 +104,7 @@ The first empty browser is seeded with eight categories and sixteen subcategorie
 - Pay Later with optional down payment, informational due date, pending order, partial/unpaid status and customer credit balance. Stock is deducted for credit sales too. No repayment management is included.
 - Receipt dialog after checkout, customer and branch snapshots, discounts/VAT, payments/change, points and BALANCE DUE. Draft invoice previews do not allocate an order number or alter stock. Today's branch-filtered POS history supports search and receipt reprint.
 - Desktop/tablet order panel stays on the right. Phones use a floating cart count/total button and a bottom sheet with focus containment. F2 search, F4 customer, F8 payment, F9 hold, F10 confirmed clear, and +/− for the selected or last cart line; typing and open dialogs are protected from conflicting shortcuts. The ? menu lists shortcuts.
-- Dashboard Today Sales, Total Orders, Net Profit, Sales Return, Recent Orders, Recent Transactions and Payment Methods read real orders. Today Sales includes non-cancelled order totals; Net Profit subtracts snapshot cost of goods and refunds, returning COGS for restocked refund lines. Today's branch-filtered refund records drive Sales Return. Cancelled orders are excluded from revenue and their refunds are not subtracted twice. Payment shares use amounts actually retained, after cash change, across this branch's recorded orders. Other cards/charts remain demo placeholders.
+- Dashboard Today Sales, Total Orders, Net Profit, Sales Return, Recent Orders, Recent Transactions and Payment Methods read real orders. Today Sales uses retained cash receipts less refunds; Net Profit uses the shared Finance functions, including snapshot COGS, restocked refunds, other income and operating expenses. Today's branch-filtered refund records drive Sales Return. Cancelled orders are excluded from revenue and their refunds are not subtracted twice. Payment shares use amounts actually retained, after cash change, across this branch's recorded orders. Phase 6 replaces all remaining Dashboard chart/card demo values with shared cash-basis report calculations.
 - Reset/export/import include customers, orders, held orders, the persisted order counter, open cart and referenced images. Legacy Phase 2 JSON imports remain supported and create no fictional sales. Imports validate protected Walk-in, numbering, totals and relationships before replacing data.
 
 ### Money and checkout rules
@@ -132,7 +138,7 @@ Browser verification confirmed receipt rendering and the Print action; the embed
 
 ## Route status
 
-`done` means implemented for its current phase. POS checkout and the specified Dashboard sales metrics use real browser-persisted orders; Staff Performance also reads real cashier orders; unrelated Dashboard cards and charts retain their demo/placeholder status. All routes not marked done remain placeholders. Existing menu URLs and the shorter Phase 2 URLs are both supported.
+`done` means implemented for its current phase. POS checkout and the specified Dashboard sales metrics use real browser-persisted orders; Staff Performance also reads real cashier orders; all Dashboard cards and charts now use computed data and role visibility. All routes not marked done remain placeholders. Existing menu URLs and the shorter Phase 2 URLs are both supported.
 
 | Route | Screen | Layout | Status |
 | --- | --- | --- | --- |
@@ -185,16 +191,16 @@ Browser verification confirmed receipt rendering and the Print action; the embed
 | `/purchases/add-purchase` | Apps > Purchases > Add Purchase | main | done |
 | `/purchases/returns` | Apps > Purchases > Returns | main | done |
 | `/purchases/payments` | Apps > Purchases > Payments | main | done |
-| `/accounts/income` | Apps > Accounts > Income | main | placeholder |
-| `/accounts/expenses` | Apps > Accounts > Expenses | main | placeholder |
-| `/accounts/bank-accounts` | Apps > Accounts > Bank Accounts | main | placeholder |
-| `/accounts/money-transfer` | Apps > Accounts > Money Transfer | main | placeholder |
-| `/reports/sales` | Apps > Reports > Sales | main | placeholder |
-| `/reports/product` | Apps > Reports > Product | main | placeholder |
-| `/reports/expense` | Apps > Reports > Expense | main | placeholder |
-| `/reports/purchases` | Apps > Reports > Purchases | main | placeholder |
-| `/reports/finance` | Apps > Reports > Finance | main | placeholder |
-| `/reports/supplier` | Apps > Reports > Supplier | main | placeholder |
+| `/accounts/income` | Apps > Accounts > Income | main | done |
+| `/accounts/expenses` | Apps > Accounts > Expenses | main | done |
+| `/accounts/bank-accounts` | Apps > Accounts > Bank Accounts | main | done |
+| `/accounts/money-transfer` | Apps > Accounts > Money Transfer | main | done |
+| `/reports/sales` | Apps > Reports > Sales | main | done |
+| `/reports/product` | Apps > Reports > Product | main | done |
+| `/reports/expense` | Apps > Reports > Expense | main | done |
+| `/reports/purchases` | Apps > Reports > Purchases | main | done |
+| `/reports/finance` | Apps > Reports > Finance | main | done |
+| `/reports/supplier` | Apps > Reports > Supplier | main | done |
 | `/staff/staff-list` | Apps > Staff > Staff List | main | done |
 | `/staff/add-staff` | Apps > Staff > Add Staff | main | done |
 | `/staff/role-permission` | Apps > Staff > Role Permission | main | done |
@@ -361,8 +367,8 @@ Open `/sign-in` or `/auth/sign-in`. The form starts with the Admin demo email. *
 | Quick login | Email | Default access |
 | --- | --- | --- |
 | Admin | `admin@tindapos.demo` | All permissions, including staff management and payroll. Admin permissions are locked. |
-| Manager | `manager@tindapos.demo` | Every configured permission except `staff:manage`, `payroll:view` and `settings:manage`. This includes attendance, schedules, holidays and editable non-Admin roles. |
-| Cashier | `cashier@tindapos.demo` | POS/hold, order history, product viewing, customer creation, own attendance and own read-only schedule. Refund, cancellation, inventory adjustment and existing-customer edits are unavailable by default. |
+| Manager | `manager@tindapos.demo` | Every configured permission except `staff:manage`, `payroll:view`, `settings:manage`, `accounts:manage` and `reports:finance`. This includes attendance, schedules, holidays and editable non-Admin roles. |
+| Cashier | `cashier@tindapos.demo` | Sales-only Dashboard, POS/hold, order history, product viewing, customer creation, own attendance and own read-only schedule. Refund, cancellation, inventory adjustment and existing-customer edits are unavailable by default. |
 
 The user dropdown shows the actual name and role, a DEMO chip, a minimal profile drawer, Switch role and Logout. The POS Workspace menu links to permitted orders, customers, products and own attendance/schedule screens. Switching roles keeps the demo convenient without logging out; the first accessible route is selected after a switch or login. Access changes apply immediately to menus, route guards and service mutations. A forbidden direct URL renders 403.
 
@@ -417,9 +423,9 @@ The full route table above remains the inventory for Phases 1–5.
 | `/staff/holidays` | done | Admin, Manager |
 | `/staff/payroll` | done | Admin |
 | `/403` and forbidden protected URLs | done | No-access recovery |
-| `/` | done | Admin, Manager; includes real staff performance |
+| `/` | done | Admin, Manager; Cashier sales basics only |
 | `/pos`, implemented Products/Inventory/Orders/Customers/Suppliers/Purchases routes | done | Existing modules with role guards and action checks |
-| Accounts, Reports, Multi-Store, Calendar, Chat, Email, Pages/Profile/Account/Pricing | placeholder | Permission-filtered planned pages |
+| Multi-Store, Calendar, Chat, Email, Pages/Profile/Account/Pricing | placeholder | Permission-filtered planned pages |
 | Settings routes, including `/settings/general` | placeholder | Existing Data backup/reset card only |
 | Previously unbuilt product/inventory pages | placeholder | As listed in the full route table |
 
@@ -458,6 +464,7 @@ git log --oneline ca567bc..HEAD
 git status --short
 ```
 
-## Phase 6 notes
+## Phase 6
 
-Stop after Phase 5 and wait for a new instruction. Accounts/expenses integration, Reports, full Settings, Multi-Store separation, Calendar, Chat, Email, Pages/Profile/Account/Pricing, statutory payroll deductions, new charts, real authentication, online payments and backend/server integration remain unimplemented. Phase 6 has not started.
+Accounts, six Reports and all Dashboard charts are complete. See [the Phase 6 guide](docs/phase6.md) for accounting formulas, role access, persistence, the manual test checklist, validation notes and Phase 7 boundaries. Phase 7 remains unstarted.
+

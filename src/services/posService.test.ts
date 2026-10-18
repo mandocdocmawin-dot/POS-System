@@ -131,7 +131,7 @@ describe('Cashier permissions and manager discount approval',()=>{
  it('persists a cart-specific approval and immediately rechecks the approver permissions',async()=>{
   authService.switchRole('cashier');posService.add('prod-1');posService.discount({type:'percent',value:20},'staff-manager');
   await usePosStore.persist.rehydrate();expect(posService.state().discountApproval?.approverId).toBe('staff-manager');
-  useRoleStore.setState(s=>({roles:s.roles.map(r=>r.id==='manager'?{...r,permissions:r.permissions.filter(p=>p!=='pos:discount')}:r)}));
+  useRoleStore.setState(s=>({roles:s.roles.map(r=>r.id==='manager'?{...r,permissions:r.permissions.filter(p=>p!=='pos:discount'&&p!=='approvals:grant')}:r)}));
   expect(()=>posService.complete([cash(100)])).toThrow(ManagerApprovalRequired);
   expect(useOrderStore.getState().orders).toHaveLength(0);
  });

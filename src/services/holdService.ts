@@ -1,3 +1,4 @@
+import {approvalService} from './approvalService';
 import {requirePermission} from './authService';
 import {useHeldOrderStore} from '../store/useHeldOrderStore';
 import {heldOrderSchema} from '../types/pos';
@@ -16,5 +17,5 @@ export const holdService={
   if(posService.state().cart.length&&!replace)throw new Error('Confirm replacement of the current cart first.');
   localTransaction(()=>{posService.restore({cart:held.cart,customerId:held.customerId,orderDiscount:held.orderDiscount??{type:'fixed',value:0},note:held.note??''});holdService.remove(id);});
  },
- remove:(id:string)=>{requirePermission('pos:hold');useHeldOrderStore.setState(s=>({heldOrders:s.heldOrders.filter(o=>o.id!==id)}));},
+ remove:(id:string)=>{requirePermission('pos:hold');approvalService.ensure('void-held',0,'void-held:'+id);useHeldOrderStore.setState(s=>({heldOrders:s.heldOrders.filter(o=>o.id!==id)}));},
 };

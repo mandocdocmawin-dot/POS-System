@@ -1,3 +1,4 @@
+import {approvalService} from './approvalService';
 import {authService} from './authService';
 import {requirePermission} from './authService';
 import { localTransaction } from "./localTransaction";
@@ -58,9 +59,10 @@ export const stockService = {
       throw new Error(
         "Counted stock matches current stock; no adjustment is needed.",
       );
-    localTransaction(() =>
-      useStockStore.setState((s) => ({ movements: [...s.movements, m] })),
-    );
+    localTransaction(() => {
+      if(m.type==='adjustment')approvalService.ensure('adjustment',m.quantity,JSON.stringify(['adjustment',input]));
+      useStockStore.setState((s) => ({ movements: [...s.movements, m] }));
+    });
     return m;
   },
   items: () => {

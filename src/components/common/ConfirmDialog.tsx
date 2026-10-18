@@ -1,3 +1,5 @@
+import {ManagerApprovalRequired} from '../../services/approvalService';
+import {ApprovalDialog} from '../approvals/ApprovalDialog';
 import { useState } from "react";
 import { Modal } from "./Modal";
 export function ConfirmDialog({
@@ -13,10 +15,11 @@ export function ConfirmDialog({
   onClose: () => void;
   onConfirm: () => void | Promise<void>;
 }) {
+  const [approval,setApproval]=useState<string>();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   return (
-    <Modal
+    <> <Modal
       open={open}
       title={title}
       onClose={() => {
@@ -46,6 +49,8 @@ export function ConfirmDialog({
               await onConfirm();
               onClose();
             } catch (e) {
+              const cause=e instanceof Error&&e.cause instanceof Error?e.cause:e;
+              if(cause instanceof ManagerApprovalRequired){setApproval(cause.scope);return;}
               setError(
                 e instanceof Error
                   ? e.message
@@ -59,6 +64,6 @@ export function ConfirmDialog({
           Confirm
         </button>
       </div>
-    </Modal>
+    </Modal>{approval&&<ApprovalDialog scope={approval} onClose={()=>setApproval(undefined)} onApproved={async()=>{await onConfirm();onClose();}}/>}</>
   );
 }

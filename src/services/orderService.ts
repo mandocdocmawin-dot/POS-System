@@ -1,3 +1,4 @@
+import {approvalService} from './approvalService';
 import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
 import {requirePermission} from './authService';
@@ -26,6 +27,7 @@ export const orderService={
   if(!reason.trim())throw new Error('A cancellation reason is required.');
   for(const line of o.items){if(!stockService.items().some(x=>x.product.id===line.productId&&x.variant?.id===line.variantId))throw new Error('Restore the original product before cancelling.');}
   return localTransaction(()=>{
+   approvalService.ensure('cancel',0,JSON.stringify(['cancel',id,reason]));
    const createdAt=new Date().toISOString();
    for(const line of o.items)stockService.record({productId:line.productId,variantId:line.variantId,type:'in',quantity:line.quantity,reason:'Order cancelled',reference:o.orderNo,createdAt});
    if(o.amountPaid>0){const n=useRefundStore.getState().counter+1;useRefundStore.setState(s=>({counter:n,refunds:[...s.refunds,{id:crypto.randomUUID(),refundNo:`RF-${String(n).padStart(6,'0')}`,orderId:id,items:[],reason:'Order cancelled',refundAmount:o.amountPaid,refundMethod:'cash',restock:false,note:reason,createdAt,createdBy:authService.getCurrentUser()?.name??'System'}]}));}

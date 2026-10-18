@@ -1,3 +1,4 @@
+import {approvalService} from './approvalService';
 import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
 import {requirePermission} from './authService';
@@ -30,6 +31,7 @@ export const refundService={
  create:(input:RefundInput,recordedAt?:string)=>{requirePermission('orders:refund');
   validatePaymentAccount(input.refundMethod);if(recordedAt){requirePermission("settings:manage");refundSchema.shape.createdAt.parse(recordedAt);}const r={...refundService.preview(input),...(recordedAt?{createdAt:recordedAt}:{})},o=orderService.get(r.orderId)!;
   return localTransaction(()=>{
+   approvalService.ensure('refund',c(r.refundAmount),JSON.stringify(['refund',input]));
    if(r.restock)for(const l of r.items)stockService.record({productId:l.productId,variantId:l.variantId,type:'in',quantity:l.quantity,reason:'Customer return',reference:r.refundNo,createdAt:r.createdAt});
    if(r.refundMethod==='wallet')walletService.change({customerId:o.customerId,type:'refund',amount:r.refundAmount,orderId:o.id,note:r.reason});
    const total=p(c(o.refundedTotal)+c(r.refundAmount));

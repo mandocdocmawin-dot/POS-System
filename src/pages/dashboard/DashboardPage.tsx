@@ -38,7 +38,7 @@ export function Component() {
       <div className="space-y-5">
         <SummaryRow />
         <PerformanceRow />
-        <ProductsRow />
+        {(can("reports:view")||can("inventory:view"))&&<ProductsRow />}
         {can("reports:view")&&<CustomersRow />}
         {can("reports:view")&&<AnalyticsRow />}
         <RecentOrders />
@@ -46,5 +46,6 @@ export function Component() {
     </>
   );
 }
+
 
 

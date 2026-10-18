@@ -20,7 +20,7 @@ describe('role permissions', () => {
   });
 
   it('limits Cashier to sales, read access, customer creation and own attendance/schedule', () => {
-    const allowed = ['pos:use', 'pos:hold', 'orders:view', 'customers:view', 'customers:edit',
+    const allowed = ['dashboard:view', 'pos:use', 'pos:hold', 'orders:view', 'customers:view', 'customers:edit',
       'products:view', 'attendance:view', 'schedule:view'];
     for (const key of permissionKeys) {
       expect(hasPermission({ role: 'cashier' }, key), key).toBe(allowed.includes(key));
@@ -59,7 +59,7 @@ describe('role permissions', () => {
 describe('route permission mapping', () => {
   // Each tuple independently specifies Admin, Manager and Cashier access.
   const cases: [string, string, boolean, boolean, boolean][] = [
-    ['/', 'dashboard:view', true, true, false],
+    ['/', 'dashboard:view', true, true, true],
     ['/pos', 'pos:use', true, true, true],
     ['/products', 'products:view', true, true, true],
     ['/products/all-products', 'products:view', true, true, true],
@@ -131,4 +131,5 @@ describe('staff navigation aliases',()=>{
   expect(resolveMenuPath(path)).toBe(expected);expect(findRoute(path)?.sectionId).toBe('apps');
  });
 });
+
 

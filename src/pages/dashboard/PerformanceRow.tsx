@@ -33,7 +33,7 @@ export function PerformanceRow() {
         </div>
         <DashboardChart kind="sales"/>
       </section>
-      <StaffPerformanceCard />
+      {can("staff:view")&&<StaffPerformanceCard />}
       {can("reports:finance")&&<section className="card xl:col-span-3">
         <CardHeading title="Gross Profit" />
         <div className="mb-5 mt-3 flex items-center gap-2">
@@ -60,5 +60,6 @@ export function PerformanceRow() {
     </div>
   );
 }
+
 
 

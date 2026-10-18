@@ -1,113 +1,25 @@
-import {demoHistoryService} from '../../services/demoHistoryService';
-import { useState } from "react";
-import { Component as GeneralPlaceholder } from "../misc/RoutePage";
-import { ConfirmDialog } from "../../components/common/ConfirmDialog";
-import { dataService } from "../../services/dataService";
-import { toast, errorMessage } from "../../services/toastService";
-import { downloadFile } from "../../utils/csv";
-export function Component() {
-  const [pending, setPending] = useState<string>();
-  const [reset, setReset] = useState(false);const [history,setHistory]=useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  return (
-    <>
-      <GeneralPlaceholder />
-      <section className="card mt-6 space-y-4">
-        <h2 className="text-base font-semibold">Data</h2><button className="btn" disabled={busy||demoHistoryService.generated()} onClick={()=>setHistory(true)}>{demoHistoryService.generated()?"Demo history generated":"Generate demo history"}</button>
-        <p className="text-sm text-slate-500">
-          Demo data is stored in this browser. JSON backups include product
-          images, staff avatars, roles, attendance, holidays, shifts, payroll, the demo session, customers, orders, held orders and the open cart. Import and reset
-          replace all current local business data.
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            className="btn"
-            disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              setError("");
-              try {
-                downloadFile(
-                  "tindapos-backup.json",
-                  await dataService.export(),
-                  "application/json",
-                );
-                toast.success("Data exported");
-              } catch (e) {
-                setError(errorMessage(e));
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            Export data (JSON)
-          </button>
-          <label className="btn cursor-pointer">
-            Import data (JSON)
-            <input
-              className="sr-only"
-              type="file"
-              accept="application/json,.json"
-              disabled={busy}
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                e.target.value = "";
-                if (!file) return;
-                setError("");
-                try {
-                  if (file.size > 50 * 1024 * 1024)
-                    throw new Error("Backup must be smaller than 50 MB.");
-                  const text = await file.text();
-                  dataService.validate(text);
-                  setPending(text);
-                } catch (e) {
-                  setError(errorMessage(e));
-                }
-              }}
-            />
-          </label>
-          <button
-            className="btn text-red-500"
-            disabled={busy}
-            onClick={() => setReset(true)}
-          >
-            Reset demo data
-          </button>
-        </div>
-        {busy && <p role="status">Preparing backup…</p>}
-        {error && (
-          <p role="alert" className="break-words text-red-500">
-            {error}
-          </p>
-        )}
-      </section>
-      <ConfirmDialog open={history} title="Generate 90 days of demo history?" message="This adds realistic sales, supplier purchases and payments, refunds and manual expenses using the real services. It runs once until data is reset." onClose={()=>setHistory(false)} onConfirm={()=>{const result=demoHistoryService.generate();toast.success(`Generated ${result.orders} orders and ${result.purchases} purchases`);}}/>
-      {pending && (
-        <ConfirmDialog
-          open
-          title="Replace current data?"
-          message="The JSON structure and relationships are valid. Import replaces all business and staff records, payroll snapshots, roles, avatars and the demo session."
-          onClose={() => setPending(undefined)}
-          onConfirm={async () => {
-            await dataService.import(pending);
-            toast.success("Data imported");
-          }}
-        />
-      )}
-      {reset && (
-        <ConfirmDialog
-          open
-          title="Reset demo data?"
-          message="This replaces all business and staff records with demo data, resets roles and payroll runs, clears the cart and signs you out."
-          onClose={() => setReset(false)}
-          onConfirm={() => {
-            dataService.reset();
-            toast.success("Demo data reset");
-          }}
-        />
-      )}
-    </>
-  );
+import { useState } from 'react';
+import { SettingsPage, SettingsCard } from '../../components/settings/SettingsPage';
+import { SettingText, SettingNumber, SettingSelect } from '../../components/settings/SettingFields';
+import { ImageUpload } from '../../components/forms/ImageUpload';
+import { imageService } from '../../services/imageService';
+import { settingsService } from '../../services/settingsService';
+import { useSettings } from '../../hooks/useSettings';
+import { usePermission } from '../../hooks/usePermission';
+import { ConfirmDialog } from '../../components/common/ConfirmDialog';
+import { formatDate, formatTime, formatMoney } from '../../utils/formatters';
+function StaffDefaults() {
+ const saved=useSettings(s=>s.staffDefaults), [draft,setDraft]=useState(()=>structuredClone(saved)), [confirm,setConfirm]=useState(false);const {can}=usePermission();
+ return <fieldset disabled={!can('settings:manage')}><SettingsCard title="Attendance and payroll defaults"><p className="md:col-span-2 text-sm text-slate-500">Applies to new payroll runs only; finalized runs unchanged.</p>
+ <SettingText label="Default shift start" type="time" value={draft.defaultShiftStart} onChange={v=>setDraft({...draft,defaultShiftStart:v})}/>
+ {(['lateGraceMinutes','overtimeMultiplier','regularHolidayMultiplier','specialHolidayMultiplier','workHoursPerDay'] as const).map(k=><SettingNumber key={k} label={k.replace(/([A-Z])/g,' $1')} value={draft[k]} onChange={v=>setDraft({...draft,[k]:v})}/>)}
+ <button className="btn" disabled={JSON.stringify(saved)===JSON.stringify(draft)} onClick={()=>setConfirm(true)}>Save staff defaults</button>
+ </SettingsCard><ConfirmDialog open={confirm} title="Save staff defaults?" message={settingsService.preview('staffDefaults',draft).join('\n')} onClose={()=>setConfirm(false)} onConfirm={()=>{settingsService.save('staffDefaults',draft);}}/></fieldset>;
 }
-
+export function Component() {
+ return <SettingsPage section="general" title="General" extra={<StaffDefaults/>}>{(s,change)=><>
+ <SettingsCard title="Business information">{(['businessName','legalName','tin','phone','email','address'] as const).map(k=><SettingText key={k} label={k.replace(/([A-Z])/g,' $1')} value={s[k]??''} onChange={v=>change({...s,[k]:v})}/>)}
+ <ImageUpload label="Business logo" onChange={blob=>{if(blob)void imageService.save(blob).then(logoId=>change({...s,logoId}));else change({...s,logoId:undefined});}}/></SettingsCard>
+ <SettingsCard title="Formats and defaults"><SettingSelect label="Date format" value={s.dateFormat} options={['MMM d, yyyy','dd/MM/yyyy','yyyy-MM-dd']} onChange={v=>change({...s,dateFormat:v})}/><SettingSelect label="Time format" value={s.timeFormat} options={['12h','24h']} onChange={v=>change({...s,timeFormat:v})}/><SettingSelect label="Week starts on" value={s.weekStartsOn} options={['monday','sunday']} onChange={v=>change({...s,weekStartsOn:v})}/><SettingSelect label="Default theme" value={s.defaultTheme} options={['light','dark','system']} onChange={v=>change({...s,defaultTheme:v})}/><SettingNumber label="Default reorder level" value={s.lowStockDefaultReorder} onChange={v=>change({...s,lowStockDefaultReorder:v})}/><p aria-live="polite">Preview: {formatDate(new Date(),s.dateFormat)} · {formatTime(new Date(),s.timeFormat)} · {formatMoney(123456)}</p></SettingsCard>
+ </>}</SettingsPage>;
+}

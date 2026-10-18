@@ -37,4 +37,4 @@ export const router = createBrowserRouter([{errorElement:createElement(RouteErro
     Component: () => createElement(RouteGuard,null,createElement(MainLayout)),
     children: [{ path: "*", lazy: getPageLoader("*") }],
   },
- ]}]);
+ ]}], {basename: import.meta.env.BASE_URL});

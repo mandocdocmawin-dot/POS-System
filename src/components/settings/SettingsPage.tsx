@@ -16,10 +16,10 @@ export function SettingsPage<K extends SettingsSection>({ section, title, childr
  const blocker = useBlocker(dirty && writable);
  useEffect(() => { const handler = (event: BeforeUnloadEvent) => { if (dirty && writable) {event.preventDefault();event.returnValue='';} }; window.addEventListener('beforeunload',handler);return () => window.removeEventListener('beforeunload',handler); },[dirty,writable]);
  const meta = settingsService.metadata();
- return <div className="space-y-6 pb-24"><header><p className="text-sm text-slate-500">Workspace settings</p><h1 className="text-2xl font-semibold">{title}</h1></header>
+ return <div className="min-w-0 space-y-6 pb-24"><header><p className="text-sm text-slate-500">Workspace settings</p><h1 className="text-2xl font-semibold">{title}</h1></header>
  <nav aria-label="Settings sections" className="flex flex-wrap gap-2">{['general','tax','currencies','invoices','pos','payment-gateway','manager','coupons'].map(path => <NavLink key={path} className={({isActive}) => isActive ? 'btn-primary' : 'btn'} to={`/settings/${path}`}>{path.replaceAll('-',' ')}</NavLink>)}</nav>
  {!writable && <p className="card border-amber-300" role="status">Read-only access. An administrator can change these settings.</p>}
- <fieldset disabled={!writable} className="space-y-6">{children(draft,setDraft)}<button className="btn text-red-500" type="button" onClick={() => setConfirm('reset')}>Reset this section to defaults</button></fieldset>
+ <fieldset disabled={!writable} className="min-w-0 w-full space-y-6">{children(draft,setDraft)}<button className="btn text-red-500" type="button" onClick={() => setConfirm('reset')}>Reset this section to defaults</button></fieldset>
  {extra}
  <p className="text-xs text-slate-500">{meta.updatedAt ? `Last updated by ${meta.updatedBy} on ${formatDate(meta.updatedAt)} ${formatTime(meta.updatedAt)}` : 'Using default settings'}</p>
  {dirty && writable && <div className="sticky bottom-0 z-20 flex justify-end gap-3 rounded-xl border bg-white p-4 shadow-lg dark:border-slate-700 dark:bg-slate-900"><button className="btn" onClick={() => {setDraft(structuredClone(saved));related?.discard();}}>Discard</button><button className="btn-primary" onClick={() => setConfirm('save')}>Save changes</button></div>}

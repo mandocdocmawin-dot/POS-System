@@ -25,6 +25,7 @@ export function Component() {
   };
   return (
     <>
+      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
       <PageActions title="Stock List" />
       <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Object.entries(summary).map(([label, value]) => (

@@ -1,3 +1,4 @@
+import {branchService} from './branchService';
 import {authService} from './authService';
 import {requirePermission} from './authService';
 import {useOrderStore} from '../store/useOrderStore';
@@ -136,6 +137,7 @@ export const productService = {
           throw new Error("Opening stock must be nonnegative.");
         if (item.quantity > 0)
           initial.push({
+            branchId:branchService.activeId(),
             id: crypto.randomUUID(),
             productId: p.id,
             ...item,

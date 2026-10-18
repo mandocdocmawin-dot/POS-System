@@ -52,6 +52,7 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
   const item = items.find((i) => i.key === key);
   return (
     <>
+      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
       <PageActions title={type === "in" ? "Stock In" : "Stock Out"} />
       <form
         className="card mb-6 space-y-4"

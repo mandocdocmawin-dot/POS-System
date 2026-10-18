@@ -50,6 +50,7 @@ export function Component() {
   const difference = (values.counted ?? 0) - (item?.stock ?? 0);
   return (
     <>
+      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
       <PageActions title="Stock Adjustment" />
       <form
         className="card mb-6 space-y-4"

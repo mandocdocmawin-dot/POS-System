@@ -1,5 +1,5 @@
-import { CardHeading, PeriodSelect } from "../../components/common/CardHeading";
-import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
+import { CardHeading } from "../../components/common/CardHeading";
+import { DashboardChart } from "./DashboardChart";
 import { Avatar } from "../../components/common/Avatar";
 import { dashboardService } from "../../services/dashboardService";
 function ProgressRing({ percent, color }: { percent: number; color: string }) {
@@ -88,14 +88,11 @@ export function CustomersRow() {
             </div>
           ))}
         </div>
-        <ChartPlaceholder height="h-36" donut />
+        <DashboardChart kind="payments"/>
       </section>
       <section className="card md:col-span-2 xl:col-span-5">
         <CardHeading title="Inventory Management">
-          <PeriodSelect
-            label="Inventory period"
-            options={["Monthly", "Weekly", "Yearly"]}
-          />
+          
         </CardHeading>
         <div className="mt-4 flex gap-4 text-xs text-slate-400">
           <span>
@@ -107,8 +104,9 @@ export function CustomersRow() {
             Stock Out
           </span>
         </div>
-        <ChartPlaceholder height="h-48" />
+        <DashboardChart kind="inventory"/>
       </section>
     </div>
   );
 }
+

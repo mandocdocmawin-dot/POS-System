@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { CardHeading, PeriodSelect } from "../../components/common/CardHeading";
-import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
+import { CardHeading } from "../../components/common/CardHeading";
+import { DashboardChart } from "./DashboardChart";
 import { ProductImage } from "../../components/common/ProductImage";
 import { useLocalData } from "../../services/useLocalData";
 import { DataTable } from "../../components/common/DataTable";
@@ -75,10 +75,7 @@ export function ProductsRow() {
       </section>
       <section className="card xl:col-span-4">
         <CardHeading title="Profit vs Sales">
-          <PeriodSelect
-            label="Profit versus sales period"
-            options={["Monthly", "Weekly", "Yearly"]}
-          />
+          
         </CardHeading>
         <div className="mt-4 flex gap-4 text-xs text-slate-400">
           <span>
@@ -90,7 +87,7 @@ export function ProductsRow() {
             Sales
           </span>
         </div>
-        <ChartPlaceholder height="h-48" />
+        <DashboardChart kind="profit"/>
       </section>
       <section className="card xl:col-span-3">
         <CardHeading title="Top Selling Products" />
@@ -123,3 +120,4 @@ export function ProductsRow() {
     </div>
   );
 }
+

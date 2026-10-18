@@ -1,6 +1,6 @@
 import { StaffPerformanceCard } from "../../components/staff/StaffPerformanceCard";
-import { CardHeading, PeriodSelect } from "../../components/common/CardHeading";
-import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
+import { CardHeading } from "../../components/common/CardHeading";
+import { DashboardChart } from "./DashboardChart";
 import { dashboardService } from "../../services/dashboardService";
 export function PerformanceRow() {
   const overview = dashboardService.getOverview();
@@ -12,7 +12,7 @@ export function PerformanceRow() {
           title="Sales Trend"
           subtitle="Track your store's sales performance"
         >
-          <PeriodSelect label="Sales trend period" />
+          
         </CardHeading>
         <div className="mt-5 flex items-center justify-between">
           <p className="text-xs font-semibold text-emerald-500">
@@ -30,7 +30,7 @@ export function PerformanceRow() {
             </span>
           </div>
         </div>
-        <ChartPlaceholder height="h-44" />
+        <DashboardChart kind="sales"/>
       </section>
       <StaffPerformanceCard />
       <section className="card xl:col-span-3">
@@ -59,3 +59,4 @@ export function PerformanceRow() {
     </div>
   );
 }
+

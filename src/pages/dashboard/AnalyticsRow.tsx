@@ -1,6 +1,6 @@
 import { ArrowDownLeft, Shirt, Footprints } from "lucide-react";
-import { CardHeading, PeriodSelect } from "../../components/common/CardHeading";
-import { ChartPlaceholder } from "../../components/common/ChartPlaceholder";
+import { CardHeading } from "../../components/common/CardHeading";
+import { DashboardChart } from "./DashboardChart";
 import { dashboardService } from "../../services/dashboardService";
 import {formatPHP} from "../../utils/money";
 export function AnalyticsRow() {
@@ -9,12 +9,9 @@ export function AnalyticsRow() {
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
       <section className="card md:col-span-2 xl:col-span-5">
         <CardHeading title="Order Analytics">
-          <PeriodSelect
-            label="Order analytics period"
-            options={["Yearly", "Monthly", "Weekly"]}
-          />
+          
         </CardHeading>
-        <ChartPlaceholder height="h-52" />
+        <DashboardChart kind="orders"/>
       </section>
       <section className="card xl:col-span-4">
         <CardHeading title="Recent Transactions" />
@@ -84,3 +81,4 @@ export function AnalyticsRow() {
     </div>
   );
 }
+

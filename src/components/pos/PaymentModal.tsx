@@ -1,3 +1,4 @@
+import {SimulatedGateway} from './SimulatedGateway';
 import {useSettings} from '../../hooks/useSettings';
 import {cashRounding} from '../../utils/cashRounding';
 import {useState} from 'react';
@@ -17,6 +18,8 @@ const schema=z.object({rows:z.array(rowSchema).min(1).max(20),dueDate:z.union([z
 type FormValues=z.infer<typeof schema>;
 export function PaymentModal({onClose,onComplete,payLater=false}:{onClose:()=>void;onComplete?:(payments:Payment[],dueDate?:string)=>void;payLater?:boolean}) {
  const config=useSettings(s=>s.pos), PAYMENT_METHODS=useSettings(s=>s.payment.methods).filter(m=>m.enabled);
+ const simulated=useSettings(s=>s.payment.simulatedGateway);
+ const [gateway,setGateway]=useState<{payments:Payment[];dueDate?:string}>();
  const customer=customerService.get(posService.state().customerId);
  const walletBalance=customer&&!customer.isWalkIn?customer.walletBalance:0;
  const baseTotal=posService.totals().grandTotal;
@@ -34,7 +37,7 @@ export function PaymentModal({onClose,onComplete,payLater=false}:{onClose:()=>vo
  const walletUsed=payments.filter(p=>p.method==='wallet').reduce((n,p)=>n+toCentavos(p.amount),0);
  if(walletUsed>toCentavos(walletBalance)){validation='Wallet payments exceed the customer wallet balance.';result=null;}
  const remaining=result?.balanceDue??total;
- return <Modal open title={payLater?'Pay Later':'Payment'} onClose={onClose}><form onSubmit={handleSubmit(values=>{if(!onComplete||!result||(!payLater&&result.balanceDue>0))return;try{onComplete(payments.filter(p=>p.amount>0).map(p=>({...p,id:crypto.randomUUID()})),values.dueDate||undefined);}catch(e){setError(errorMessage(e));}})}>
+ return <><Modal open title={payLater?'Pay Later':'Payment'} onClose={onClose}><form onSubmit={handleSubmit(values=>{if(!onComplete||!result||(!payLater&&result.balanceDue>0))return;try{const final=payments.filter(p=>p.amount>0).map(p=>({...p,id:crypto.randomUUID()}));if(simulated&&final.some(p=>['gcash','maya','card'].includes(p.method)))setGateway({payments:final,dueDate:values.dueDate||undefined});else onComplete(final,values.dueDate||undefined);}catch(e){setError(errorMessage(e));}})}>
   <p className="text-sm text-slate-500">{customerService.get(posService.state().customerId)?.name}</p><p className="text-xs text-slate-500">Wallet available: {formatPHP(walletBalance)}</p><p className="my-3 text-3xl font-semibold">{formatPHP(total)}</p>
   <p className="mb-4 text-xs text-slate-400">Record payments received by the cashier. Non-cash methods do not process or verify payments.</p>
   {payLater&&<div className="mb-4 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-500/10"><p>Down payment is optional. The balance is added to this customer’s credit balance.</p><label className="mt-3 block">Due date (informational)<input type="date" className="ml-3" {...register('dueDate')}/></label></div>}
@@ -49,5 +52,5 @@ export function PaymentModal({onClose,onComplete,payLater=false}:{onClose:()=>vo
   <div className="my-4 flex justify-between"><span>Change</span><strong>{formatPHP(result?.change??0)}</strong></div><div className="my-4 flex justify-between"><span>Remaining</span><strong>{formatPHP(remaining)}</strong></div>
   {(error||validation)&&<p role="alert" className="my-3 text-red-500">{error||validation}</p>}
   <button className="btn-primary w-full disabled:opacity-40" disabled={!onComplete||!result||(!payLater&&remaining>0)||isSubmitting}>{payLater?'Save Pay Later':'Complete Sale'}</button>
- </form></Modal>;
+ </form></Modal>{gateway&&<SimulatedGateway onFailure={()=>{setGateway(undefined);setError('Simulated payment failed. Try again.');}} onSuccess={reference=>{try{onComplete?.(gateway.payments.map(p=>['gcash','maya','card'].includes(p.method)?{...p,reference}:p),gateway.dueDate);setGateway(undefined);}catch(cause){setGateway(undefined);setError(errorMessage(cause));}}}/>}</>;
 }

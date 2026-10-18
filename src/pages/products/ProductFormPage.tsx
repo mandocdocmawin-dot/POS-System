@@ -1,3 +1,4 @@
+import {useSettings} from '../../hooks/useSettings';
 import {
   productFormSchema,
   type ProductFormValues,
@@ -61,6 +62,7 @@ export function Component() {
 }
 function ProductForm({ id }: { id?: string }) {
   useLocalData();
+  const tax=useSettings(s=>s.tax),general=useSettings(s=>s.general);
   const current = id ? productService.get(id) : undefined;
   const navigate = useNavigate();
   const skip = useRef(false);
@@ -78,7 +80,7 @@ function ProductForm({ id }: { id?: string }) {
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
-      ...defaults,
+      ...defaults,taxRateId:tax.rates.find(r=>r.isDefault)?.id,reorderLevel:general.lowStockDefaultReorder,
       ...current,
       variants: current
         ? productService.variants(current.id).map((v) => ({
@@ -139,7 +141,7 @@ function ProductForm({ id }: { id?: string }) {
       toast.success(id ? "Product updated" : "Product added");
       setBlob(null);
       if (another && !id) {
-        reset(defaults);
+        reset({...defaults,taxRateId:tax.rates.find(r=>r.isDefault)?.id,reorderLevel:general.lowStockDefaultReorder});
         setImageKey((k) => k + 1);
         skip.current = false;
         window.scrollTo({ top: 0 });
@@ -284,10 +286,11 @@ function ProductForm({ id }: { id?: string }) {
             />
             <Select
               label="Tax rate"
-              {...register("taxRate", { setValueAs: Number })}
+              disabled={!tax.vatRegistered}
+              {...register("taxRateId",{onChange:e=>setValue('taxRate',tax.rates.find(r=>r.id===e.target.value)?.rate??0,{shouldDirty:true})})}
             >
-              <option value="0">0%</option>
-              <option value="12">12%</option>
+              <option value="">Legacy numeric rate ({current?.taxRate??12}%)</option>
+              {tax.rates.filter(r=>r.status==='active'||r.id===current?.taxRateId).map(r=><option key={r.id} value={r.id}>{r.name} · {r.rate}%</option>)}
             </Select>
             <NumberInput
               label="Discount (%)"

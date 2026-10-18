@@ -1,7 +1,7 @@
 import { orderService } from './orderService';
 import { customerService } from './customerService';
 import { sidebarBadges } from '../config/sidebarBadges';
-import { attendanceConfig } from '../config/attendance';
+import {settingsService} from './settingsService';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAttendanceStore } from '../store/useAttendanceStore';
 import { useHolidayStore } from '../store/useHolidayStore';
@@ -16,7 +16,7 @@ function staffAttention(now: Date) {
     if (record) return record.status === 'late' || record.status === 'absent';
     if (useHolidayStore.getState().holidays.some(h => h.date === date)) return false;
     const shift = useShiftStore.getState().shifts.filter(s => s.staffId === staff.id && s.date === date).toSorted((a, b) => a.startTime.localeCompare(b.startTime))[0];
-    return !!shift && clockMinutes(now.toISOString()) > timeMinutes(shift.startTime) + attendanceConfig.lateGraceMinutes;
+    return !!shift && clockMinutes(now.toISOString()) > timeMinutes(shift.startTime) + settingsService.get().staffDefaults.lateGraceMinutes;
   }).length;
 }
 export const navigationService = {

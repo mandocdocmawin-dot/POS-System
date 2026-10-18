@@ -29,7 +29,7 @@ export function ConfirmDialog({
         }
       }}
     >
-      <p className="mb-5">{message}</p>
+      <p className="mb-5 whitespace-pre-line">{message}</p>
       {error && (
         <p role="alert" className="mb-4 text-red-500">
           {error}

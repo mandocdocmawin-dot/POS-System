@@ -1,8 +1,11 @@
+import {useSettingsStore} from '../store/useSettingsStore';
 import {approvalService} from './approvalService';
 import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
 import {requirePermission} from './authService';
-import {POS_CONFIG} from '../config/pos';
+import {settingsService} from './settingsService';
+import {documentNumber} from '../utils/numbering';
+import {branchService} from './branchService';
 import type {Customer} from '../types/pos';
 import {useCustomerStore} from '../store/useCustomerStore';
 import {useWalletStore} from '../store/useWalletStore';
@@ -17,7 +20,7 @@ import {useOrderStore} from '../store/useOrderStore';
 import {useBranchStore} from '../store/useBranchStore';
 import {usePosStore} from '../store/usePosStore';
 import {orderSchema,type Order} from '../types/pos';
-import {formatOrderNo} from '../utils/orderNo';
+
 export const orderService={
  list:(options:{today?:boolean;search?:string;branchId?:string}={})=>structuredClone(useOrderStore.getState().orders.filter(o=>(options.branchId==='all'||o.branchId===(options.branchId??useBranchStore.getState().activeBranchId))&&(!options.today||new Date(o.createdAt).toDateString()===new Date().toDateString())&&(!options.search||o.orderNo.toLowerCase().includes(options.search.toLowerCase()))).toSorted((a,b)=>b.createdAt.localeCompare(a.createdAt))),
  get:(id:string)=>structuredClone(useOrderStore.getState().orders.find(o=>o.id===id)),
@@ -30,7 +33,7 @@ export const orderService={
    approvalService.ensure('cancel',0,JSON.stringify(['cancel',id,reason]));
    const createdAt=new Date().toISOString();
    for(const line of o.items)stockService.record({branchId:o.branchId,productId:line.productId,variantId:line.variantId,type:'in',quantity:line.quantity,reason:'Order cancelled',reference:o.orderNo,createdAt});
-   if(o.amountPaid>0){const n=useRefundStore.getState().counter+1;useRefundStore.setState(s=>({counter:n,refunds:[...s.refunds,{id:crypto.randomUUID(),refundNo:`RF-${String(n).padStart(6,'0')}`,orderId:id,items:[],reason:'Order cancelled',refundAmount:o.amountPaid,refundMethod:'cash',restock:false,note:reason,createdAt,createdBy:authService.getCurrentUser()?.name??'System'}]}));}
+   if(o.amountPaid>0){const n=useRefundStore.getState().counter+1;useRefundStore.setState(s=>({counter:n,refunds:[...s.refunds,{id:crypto.randomUUID(),refundNo:documentNumber(n,settingsService.get().invoice,branchService.get(o.branchId)?.code,settingsService.get().invoice.refundPrefix),orderId:id,items:[],reason:'Order cancelled',refundAmount:o.amountPaid,refundMethod:'cash',restock:false,note:reason,createdAt,createdBy:authService.getCurrentUser()?.name??'System'}]}));}
    useOrderStore.setState(s=>({orders:s.orders.map(x=>x.id===id?{...x,orderStatus:'cancelled',cancelReason:reason,cancelledAt:createdAt,balanceDue:0,refundedTotal:o.amountPaid}:x)}));
    useCustomerStore.setState(s=>({customers:s.customers.map(x=>x.id===o.customerId?{...x,creditBalance:p(Math.max(0,c(x.creditBalance)-c(o.balanceDue))),points:Math.max(0,x.points-o.pointsEarned),tier:tierFor(Math.max(0,x.points-o.pointsEarned))}:x)}));
    activityService.log('order',id,'cancel',`${o.orderNo} cancelled: ${reason}. Paid amount recorded as cash refund.`);
@@ -55,9 +58,8 @@ export const orderService={
   if(input.method==='wallet'&&remaining>c(useCustomerStore.getState().customers.find(x=>x.id===customerId)?.walletBalance??0))throw new Error('Insufficient wallet balance.');
   return localTransaction(()=>{for(const o of orders){const amount=Math.min(remaining,c(o.balanceDue));if(amount)orderService.collect(o.id,{...input,amount:p(amount)});remaining-=amount;}});
  },
- nextOrderNo:()=>formatOrderNo(useOrderStore.getState().counter+1),
- save:(input:Order)=>{requirePermission('pos:use');const order=orderSchema.parse(input);const state=useOrderStore.getState();if(order.orderNo!==orderService.nextOrderNo())throw new Error('Order number changed. Please retry.');if(state.orders.some(o=>o.id===order.id))throw new Error('Sale already saved.');useOrderStore.setState({orders:[...state.orders,order],counter:state.counter+1});usePosStore.setState({activeOrderNo:orderService.nextOrderNo()});activityService.log("order",order.id,"create",`Created ${order.orderNo}`);return order;},
+ nextOrderNo:()=>{const config=settingsService.get().invoice;return documentNumber(Math.max(useOrderStore.getState().counter+1,config.nextNumber),config,branchService.get(branchService.activeId())?.code);},
+ save:(input:Order)=>{requirePermission('pos:use');const order=orderSchema.parse(input);const state=useOrderStore.getState();if(order.orderNo!==orderService.nextOrderNo())throw new Error('Order number changed. Please retry.');if(state.orders.some(o=>o.id===order.id))throw new Error('Sale already saved.');useOrderStore.setState({orders:[...state.orders,order],counter:Number(order.orderNo.match(/(\d+)$/)?.[1])});useSettingsStore.setState(s=>({settings:{...s.settings,invoice:{...s.settings.invoice,nextNumber:Math.max(s.settings.invoice.nextNumber,Number(order.orderNo.match(/(\d+)$/)?.[1])+1)}}}));usePosStore.setState({activeOrderNo:orderService.nextOrderNo()});activityService.log("order",order.id,"create",`Created ${order.orderNo}`);return order;},
 };
 
-export function tierFor(points:number):Customer['tier']{return ([...Object.entries(POS_CONFIG.tiers)] as [Customer['tier'],number][]).reverse().find(([,n])=>points>=n)![0];}
-
+export function tierFor(points:number):Customer['tier']{return settingsService.get().pos.loyalty.tiers.toSorted((a,b)=>b.minPoints-a.minPoints).find(t=>points>=t.minPoints)?.name??'Regular';}

@@ -1,3 +1,5 @@
+import {useSettingsStore} from '../store/useSettingsStore';
+import {defaultSettings} from '../config/defaultSettings';
 import {branchService} from './branchService';
 import {ManagerApprovalRequired} from './discountApprovalService';
 import {useRoleStore} from '../store/useRoleStore';
@@ -35,7 +37,7 @@ import {holdService} from './holdService';
 import type {Payment} from '../types/pos';
 const cash=(amount:number):Payment=>({id:crypto.randomUUID(),method:'cash',amount,createdAt:new Date().toISOString()});
 beforeEach(()=>{
- vi.restoreAllMocks();storage.clear();initializeStaffData();useRoleStore.setState({roles:structuredClone(defaultRoles)});useActivityStore.setState({logs:[]});useAuthStore.setState({currentUserId:"staff-admin"});
+ vi.restoreAllMocks();storage.clear();useSettingsStore.setState({settings:structuredClone(defaultSettings)});initializeStaffData();useRoleStore.setState({roles:structuredClone(defaultRoles)});useActivityStore.setState({logs:[]});useAuthStore.setState({currentUserId:"staff-admin"});
  useCatalogStore.setState({categories,subcategories,brands,units});
  useProductStore.setState({products:structuredClone(products),variants:structuredClone(variants)});
  useStockStore.setState({movements:structuredClone(movements)});

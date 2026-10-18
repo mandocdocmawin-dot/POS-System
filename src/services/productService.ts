@@ -1,3 +1,4 @@
+import {settingsService} from './settingsService';
 import {branchService} from './branchService';
 import {authService} from './authService';
 import {requirePermission} from './authService';
@@ -76,6 +77,7 @@ export const productService = {
       id: current?.id ?? crypto.randomUUID(),
       updatedAt: now,
     });
+    if(p.taxRateId){const rate=settingsService.get().tax.rates.find(r=>r.id===p.taxRateId);if(!rate)throw new Error('Choose an existing tax rate.');p.taxRate=rate.rate;}
     validateClassification(p);
     const existing = state.variants.filter((v) => v.productId === p.id);
     const variants = options.variants

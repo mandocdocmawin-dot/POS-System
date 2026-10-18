@@ -19,6 +19,8 @@ import { useSyncExternalStore } from "react";
 import { useCatalogStore } from "../store/useCatalogStore";
 import { useProductStore } from "../store/useProductStore";
 import { useStockStore } from "../store/useStockStore";
+import {useAccountStore} from '../store/useAccountStore';
+import {useReportFilterStore} from '../store/useReportFilterStore';
 let revision = 0;
 const listeners = new Set<() => void>();
 const changed = () => {
@@ -26,6 +28,8 @@ const changed = () => {
   listeners.forEach((fn) => fn());
 };
 useCatalogStore.subscribe(changed);
+useAccountStore.subscribe(changed);
+useReportFilterStore.subscribe(changed);
 useAuthStore.subscribe(changed);
 useStaffStore.subscribe(changed);
 useRoleStore.subscribe(changed);

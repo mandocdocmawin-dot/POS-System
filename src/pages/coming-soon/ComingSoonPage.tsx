@@ -1,0 +1,5 @@
+import { FeaturePage } from '../../components/common/FeaturePage';
+import { useAction } from '../../hooks/useAction';
+import { roadmapService } from '../../services/roadmapService';
+import { useLocalData } from '../../services/useLocalData';
+export function Component() { useLocalData(); const items = roadmapService.list(), action = useAction(); return <FeaturePage title="Coming soon" description="These items remain placeholders. Votes are saved only in this browser and do not submit feedback.">{action.feedback}{[...new Set(items.map(i => i.sectionId))].map(section => <section className="card space-y-4" key={section}><h2 className="text-xl font-semibold capitalize">{section}</h2>{items.filter(i => i.sectionId === section).map(item => <div className="flex flex-wrap items-center justify-between gap-3" key={item.path}><span>{item.title}</span><button className="btn" onClick={() => { void action.run(() => roadmapService.vote(item.path), 'Vote saved locally'); }}>I want this · {item.votes}</button></div>)}</section>)}</FeaturePage>; }

@@ -3,6 +3,8 @@ import {ReportBoundary} from '../components/reports/ReportSection';
 function lazyReport(loader:()=>Promise<{Component:ComponentType}>){const Page=lazy(async()=>({default:(await loader()).Component}));return async()=>({Component:()=>createElement(ReportBoundary,null,createElement(Suspense,{fallback:createElement('div',{role:'status',className:'panel animate-pulse p-10'},'Loading report…')},createElement(Page)))});}
 // All feature pages remain code-split. Reports additionally defer loading until rendered.
 export const pageLoaders = {
+ roadmap8:()=>import('../pages/coming-soon/ComingSoonPage'),
+ maintenance8:()=>import('../pages/maintenance/MaintenancePage'),
  licenses8:()=>import('../pages/licenses/LicensesPage'),
  privacy8:()=>import('../pages/privacy/PrivacyPage'),
  faq8:()=>import('../pages/faq/FaqPage'),
@@ -89,6 +91,8 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/coming-soon':'roadmap8',
+ '/maintenance':'maintenance8',
  '/licenses':'licenses8',
  '/privacy-policy':'privacy8',
  '/faq-s':'faq8',

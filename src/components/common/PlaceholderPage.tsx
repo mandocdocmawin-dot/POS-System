@@ -17,7 +17,7 @@ export function PlaceholderPage({
 }: PlaceholderPageProps) {
   return (
     <>
-      <PageHeader title={title} breadcrumb={breadcrumb} />
+      <PageHeader title={title} breadcrumb={breadcrumb} /><Link className="btn mt-4" to="/coming-soon">See the roadmap →</Link>
       <section className="card mx-auto mt-10 max-w-3xl border-dashed px-6 py-14 md:px-14">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15">
           <Construction size={28} />

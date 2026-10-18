@@ -1,0 +1,2 @@
+import type { FinanceCategory } from '../../types/accounts';
+export const financeCategories:FinanceCategory[]=[...['Sales','Other income','Interest','Rental income','Miscellaneous'].map((name,i):FinanceCategory=>({id:`income-${i}`,name,type:'income',isSystem:i===0,status:'active'})),...['Purchases','Salaries','Refunds','Rent','Electricity','Water','Internet','Supplies','Transportation','Marketing','Repairs','Taxes & Licenses','Miscellaneous'].map((name,i):FinanceCategory=>({id:`expense-${i}`,name,type:'expense',isSystem:i<3,status:'active'}))];

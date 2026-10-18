@@ -1,0 +1,3 @@
+import type { ManualEntry } from '../../types/accounts';
+import { localDay, shiftDay } from '../../utils/reports/period';
+export function seedManualEntries():ManualEntry[]{return Array.from({length:25},(_,i)=>{const date=shiftDay(localDay(),-i*2);return {id:`manual-seed-${i}`,type:i%9===0?'income':'expense',date,categoryId:i%9===0?'income-1':`expense-${3+i%10}`,amount:i%10===0?1500000:15000+i*2500,accountId:i%2===0?'account-bank':'account-cash',branchId:i%5===0?'Branch 2':'Main Branch',payee:i%9===0?'Local customer':['Landlord','Utility provider','Office supplier'][i%3],reference:`DEMO-${i+1}`,note:'Demo manual entry',createdBy:'Demo Admin',createdAt:`${date}T04:00:00.000Z`,updatedAt:`${date}T04:00:00.000Z`};});}

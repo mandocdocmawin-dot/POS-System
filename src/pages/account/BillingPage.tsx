@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FeaturePage, accountTabs, useAction } from '../../components/common/FeaturePage';
+import {FeaturePage} from '../../components/common/FeaturePage';
+import {useAction} from '../../hooks/useAction';
+import {accountTabs} from '../../config/accountTabs';
 import { DataTable } from '../../components/common/DataTable';
 import { Modal } from '../../components/common/Modal';
 import { planService, demoPaymentMethods } from '../../services/planService';

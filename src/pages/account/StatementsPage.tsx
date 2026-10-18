@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { FeaturePage, accountTabs } from '../../components/common/FeaturePage';
+import {FeaturePage} from '../../components/common/FeaturePage';
+import {accountTabs} from '../../config/accountTabs';
 import { DataTable } from '../../components/common/DataTable';
 import { profileService } from '../../services/profileService';
 import { useLocalData } from '../../services/useLocalData';

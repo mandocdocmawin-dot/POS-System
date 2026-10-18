@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FeaturePage, useAction } from '../../components/common/FeaturePage';
+import {FeaturePage} from '../../components/common/FeaturePage';
+import {useAction} from '../../hooks/useAction';
 import { Modal } from '../../components/common/Modal';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { planService, yearlySaving } from '../../services/planService';

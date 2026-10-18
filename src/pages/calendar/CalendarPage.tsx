@@ -4,7 +4,8 @@ import {calendarLayers} from '../../types/phase8';
 import {TimeGrid} from '../../components/calendar/TimeGrid';
 import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { FeaturePage } from '../../components/common/FeaturePage';
+import {FeaturePage} from '../../components/common/FeaturePage';
+
 import { EventEditor } from '../../components/calendar/EventEditor';
 import { calendarService } from '../../services/calendarService';
 import { calendarViewService, moveDay, type CalendarDisplayItem } from '../../services/calendarViewService';

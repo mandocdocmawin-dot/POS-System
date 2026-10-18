@@ -1,0 +1,1 @@
+export const accountTabs: [string, string][] = [['Account', '/account/account'], ['Security', '/account/security'], ['Notifications', '/account/notification'], ['Statements', '/account/statements'], ['Logs', '/account/logs']];

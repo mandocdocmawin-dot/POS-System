@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { FeaturePage, useAction, accountTabs } from '../../components/common/FeaturePage';
+import {FeaturePage} from '../../components/common/FeaturePage';
+import {useAction} from '../../hooks/useAction';
+import {accountTabs} from '../../config/accountTabs';
 import { DataTable } from '../../components/common/DataTable';
 import { profileService } from '../../services/profileService';
 import { usePermission } from '../../hooks/usePermission';

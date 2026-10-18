@@ -1,7 +1,7 @@
 import { Modal } from '../common/Modal';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { useState } from 'react';
-import { useAction } from '../common/FeaturePage';
+import {useAction} from '../../hooks/useAction';
 import { calendarService } from '../../services/calendarService';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
 import { usePermission } from '../../hooks/usePermission';

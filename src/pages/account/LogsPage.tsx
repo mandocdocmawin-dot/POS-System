@@ -1,4 +1,5 @@
-import { FeaturePage, accountTabs } from '../../components/common/FeaturePage';
+import {FeaturePage} from '../../components/common/FeaturePage';
+import {accountTabs} from '../../config/accountTabs';
 import { ActivityList } from '../../components/account/ActivityList';
 import { profileService } from '../../services/profileService';
 import { useLocalData } from '../../services/useLocalData';

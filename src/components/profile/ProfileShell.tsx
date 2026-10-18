@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
-import { FeaturePage } from '../common/FeaturePage';
+import {FeaturePage} from '../common/FeaturePage';
+
 import { profileService } from '../../services/profileService';
 export function ProfileShell({ children }: { children: ReactNode }) {
   const { staffId } = useParams(), user = profileService.get(staffId), prefix = staffId ? `/profile/${staffId}` : '/profile';

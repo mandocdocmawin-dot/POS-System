@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ProfileShell } from '../../components/profile/ProfileShell';
 import { Modal } from '../../components/common/Modal';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
-import { useAction } from '../../components/common/FeaturePage';
+import {useAction} from '../../hooks/useAction';
 import { noteService } from '../../services/noteService';
 import { profileService } from '../../services/profileService';
 import { useCurrentUser } from '../../hooks/useCurrentUser';

@@ -43,7 +43,7 @@
     @apply btn h-10 w-10 shrink-0 p-0;
   }
   .muted {
-    @apply text-xs text-slate-400 dark:text-slate-500;
+    @apply text-xs text-slate-600 dark:text-slate-400;
   }
   .menu-active {
     @apply bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300;
@@ -52,4 +52,24 @@
 * {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
+}
+
+/* Constrain layout tracks so wide tables scroll inside their own cards. */
+main, .panel, .card { min-width: 0; }
+img, video { max-width: 100%; }
+input, select, textarea { max-width: 100%; }
+p, dd, h1, h2, h3 { overflow-wrap: anywhere; }
+@media (max-width: 639px) {
+ dialog[aria-modal="true"] { width: calc(100% - 1rem); max-height: 96dvh; }
+ dialog.h-dvh { width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+ .card { padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+ *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@media print {
+ .report-document *, #purchase-order *, #staff-schedule * { color: #111 !important; background-color: white !important; }
+ .report-document table { width: 100%; min-width: 0; }
+ .report-document input, .report-document select, .report-document nav { display: none !important; }
+ .report-document [role="status"], .report-document [role="alert"] { display: none !important; }
 }

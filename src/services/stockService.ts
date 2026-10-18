@@ -34,7 +34,7 @@ export const stockService = {
         )
         .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)),
     ),
-  record: (input: Omit<StockMovement, "id" | "createdBy" | "branchId"> & {branchId:string}) => {requirePermission(input.reason==='Sale'?'pos:use':input.reason==='Order cancelled'?'orders:cancel':input.reason==='Customer return'?'orders:refund':['Purchase','Supplier return'].includes(input.reason)?'purchases:create':'inventory:adjust');
+  record: (input: Omit<StockMovement, "id" | "createdBy" | "branchId"> & {branchId:string}) => {requirePermission(input.reason.startsWith('Transfer ')?'inventory:transfer':input.reason==='Sale'?'pos:use':input.reason==='Order cancelled'?'orders:cancel':input.reason==='Customer return'?'orders:refund':['Purchase','Supplier return'].includes(input.reason)?'purchases:create':'inventory:adjust');
     if(!branchService.get(input.branchId))throw new Error("Choose an existing branch.");
     const m = movementSchema.parse({
       ...input,

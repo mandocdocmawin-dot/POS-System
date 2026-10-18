@@ -1,0 +1,8 @@
+import { useState } from 'react';
+import { ticketService } from '../../services/ticketService';
+import { useAction } from '../../hooks/useAction';
+import type { Ticket } from '../../types/phase8';
+export function TicketForm({ source = 'help', saved }: { source?: Ticket['source']; saved: (ticket: Ticket) => void }) {
+  const [subject, setSubject] = useState(''), [message, setMessage] = useState(''), [category, setCategory] = useState('Getting Started'), [priority, setPriority] = useState<Ticket['priority']>('normal'), action = useAction();
+  return <form className="space-y-4" onSubmit={e => { e.preventDefault(); void action.run(() => { const ticket = ticketService.create({ subject, message, category, priority, source }); saved(ticket); setSubject(''); setMessage(''); }, 'Demo ticket saved locally'); }}>{action.feedback}<label className="grid gap-2">Subject<input required value={subject} onChange={e => setSubject(e.target.value)} /></label><label className="grid gap-2">Category<select value={category} onChange={e => setCategory(e.target.value)}>{['Getting Started', 'Sales & POS', 'Inventory', 'Accounts & Reports', 'Staff & Roles', 'Settings'].map(c => <option key={c}>{c}</option>)}</select></label><label className="grid gap-2">Priority<select value={priority} onChange={e => setPriority(e.target.value as Ticket['priority'])}>{['low', 'normal', 'high'].map(p => <option key={p}>{p}</option>)}</select></label><label className="grid gap-2">Message<textarea required rows={6} value={message} onChange={e => setMessage(e.target.value)} /></label><button className="btn-primary" disabled={action.busy}>Create local ticket</button></form>;
+}

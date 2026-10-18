@@ -10,6 +10,7 @@ import { AuthLayout } from "../layouts/AuthLayout";
 const layouts = { main: MainLayout, pos: PosLayout, auth: AuthLayout };
 export const router = createBrowserRouter([
   {path:'/403',Component:ForbiddenPage},
+  {path:'/landing',lazy:getPageLoader('/landing')},
   {path:'/maintenance',lazy:getPageLoader('/maintenance')},
   {path:'/errors/404',lazy:getPageLoader('/errors/404')},
   {path:'/errors/500',lazy:getPageLoader('/errors/500')},
@@ -17,7 +18,7 @@ export const router = createBrowserRouter([
   ...Object.entries(layouts).map(([layout, Component]) => ({
     Component: layout === "auth" ? Component : () => createElement(RouteGuard, null, createElement(Component)),
     children: routes
-      .filter((route) => route.layout === layout && !['/maintenance','/errors/404','/errors/500'].includes(route.path))
+      .filter((route) => route.layout === layout && !['/landing','/maintenance','/errors/404','/errors/500'].includes(route.path))
       .map((route) => ({ path: route.path, lazy: getPageLoader(route.path) }))
       .concat(
         layout === "main"

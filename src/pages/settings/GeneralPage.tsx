@@ -1,3 +1,4 @@
+import {DataDemoCard} from '../../components/settings/DataDemoCard';
 import { useState } from 'react';
 import { SettingsPage, SettingsCard } from '../../components/settings/SettingsPage';
 import { SettingText, SettingNumber, SettingSelect } from '../../components/settings/SettingFields';
@@ -17,7 +18,7 @@ function StaffDefaults() {
  </SettingsCard><ConfirmDialog open={confirm} title="Save staff defaults?" message={settingsService.preview('staffDefaults',draft).join('\n')} onClose={()=>setConfirm(false)} onConfirm={()=>{settingsService.save('staffDefaults',draft);}}/></fieldset>;
 }
 export function Component() {
- return <SettingsPage section="general" title="General" extra={<StaffDefaults/>}>{(s,change)=><>
+ return <SettingsPage section="general" title="General" extra={<><StaffDefaults/><DataDemoCard/></>}>{(s,change)=><>
  <SettingsCard title="Business information">{(['businessName','legalName','tin','phone','email','address'] as const).map(k=><SettingText key={k} label={k.replace(/([A-Z])/g,' $1')} value={s[k]??''} onChange={v=>change({...s,[k]:v})}/>)}
  <ImageUpload label="Business logo" onChange={blob=>{if(blob)void imageService.save(blob).then(logoId=>change({...s,logoId}));else change({...s,logoId:undefined});}}/></SettingsCard>
  <SettingsCard title="Formats and defaults"><SettingSelect label="Date format" value={s.dateFormat} options={['MMM d, yyyy','dd/MM/yyyy','yyyy-MM-dd']} onChange={v=>change({...s,dateFormat:v})}/><SettingSelect label="Time format" value={s.timeFormat} options={['12h','24h']} onChange={v=>change({...s,timeFormat:v})}/><SettingSelect label="Week starts on" value={s.weekStartsOn} options={['monday','sunday']} onChange={v=>change({...s,weekStartsOn:v})}/><SettingSelect label="Default theme" value={s.defaultTheme} options={['light','dark','system']} onChange={v=>change({...s,defaultTheme:v})}/><SettingNumber label="Default reorder level" value={s.lowStockDefaultReorder} onChange={v=>change({...s,lowStockDefaultReorder:v})}/><p aria-live="polite">Preview: {formatDate(new Date(),s.dateFormat)} · {formatTime(new Date(),s.timeFormat)} · {formatMoney(123456)}</p></SettingsCard>

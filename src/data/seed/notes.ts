@@ -1,0 +1,2 @@
+import type {Note} from '../../types/phase8';
+export function createNoteSeed(authorId:string,now=new Date()):Note[]{return ['Welcome to your profile','Check your shift','Weekly stock review','Document reminders','Team goals'].map((title,i)=>({id:'note-seed-'+i,profileStaffId:authorId,authorId,title,body:'Demo note. Update this with your own sample details.',color:['amber','blue','green'][i%3],pinned:i===0,tags:['demo'],visibility:i%2?'managers':'private',createdAt:now.toISOString(),updatedAt:now.toISOString()}));}

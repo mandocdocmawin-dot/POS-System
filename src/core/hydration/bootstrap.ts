@@ -12,6 +12,7 @@ import { runCentralMigrations } from '../migrations';
 import { finishInterruptedRestore, takeSnapshot } from '../snapshots';
 import { rawDatabase } from '../storage/database';
 import { startCrossTabSync } from '../sync';
+import { initializePhase8Data } from '../../services/initializePhase8Data';
 let boot: Promise<void> | undefined;
 export function hydrateApplication() {
   boot ??= (async () => {
@@ -30,6 +31,7 @@ export function hydrateApplication() {
     initializeAccountData();
     initializeBranches();
     ensureCashDrawers();
+    initializePhase8Data();
     await flushStorage();
     startCrossTabSync(persistedStores);
   })();

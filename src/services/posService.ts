@@ -42,7 +42,7 @@ export const posService={
  revalidateCoupon:()=>{const result=posService.couponResult();if(result&&!result.ok){usePosStore.setState({couponCode:undefined});toast.info('Coupon removed: '+couponReasons[result.reason]);}},
  state:()=>structuredClone(usePosStore.getState()),
  totals:()=>{const s=usePosStore.getState(),coupon=posService.couponResult();return calculateTotals(s.cart,s.orderDiscount,settingsService.get().tax,coupon?.ok?coupon.perLine:undefined);},
- branch:()=>useBranchStore.getState().branch,
+ branch:()=>useBranchStore.getState().activeBranchId,
  add:(productId:string,variantId?:string)=>{requirePermission('pos:use');
  const p=productService.get(productId);if(!p)throw new Error('Product not found.');
  const v=variantId?productService.variants(p.id).find(v=>v.id===variantId):undefined;

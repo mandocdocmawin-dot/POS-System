@@ -9,7 +9,7 @@ import { useShiftStore } from '../store/useShiftStore';
 import { useBranchStore } from '../store/useBranchStore';
 import { localDate, clockMinutes, timeMinutes } from '../utils/attendance';
 function staffAttention(now: Date) {
-  const date = localDate(now), branch = useBranchStore.getState().branch;
+  const date = localDate(now), branch = useBranchStore.getState().activeBranchId;
   return useStaffStore.getState().staff.filter(staff => {
     if (staff.status !== 'active' || !staff.branchIds.includes(branch)) return false;
     const record = useAttendanceStore.getState().records.find(r => r.staffId === staff.id && r.date === date);

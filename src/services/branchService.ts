@@ -1,3 +1,6 @@
+import {holdService} from './holdService';
+import {usePosStore} from '../store/usePosStore';
+import {toast} from './toastService';
 import {useBranchesStore} from '../store/useBranchesStore';
 import {useStockStore} from '../store/useStockStore';
 import {useOrderStore} from '../store/useOrderStore';
@@ -13,9 +16,11 @@ import {activityService} from './activityService';
 import {localTransaction} from './localTransaction';
 import {PermissionError} from '../utils/permissions';
 export const branchService={
+ switchTo:(id:string,confirmed=false)=>{branchService.assertAccess(id);if(id===branchService.activeId())return;const cart=usePosStore.getState().cart;if(cart.length&&!confirmed)throw new Error('Confirm branch switch to hold the current cart.');localTransaction(()=>{if(cart.length)holdService.hold('Auto-held on branch switch');useBranchStore.setState({activeBranchId:id});});},
+ ensureActive:()=>{const allowed=branchService.allowed();if(!allowed.length)return;if(!allowed.some(b=>b.id===branchService.activeId())){branchService.switchTo(allowed[0].id,true);toast.info('Active location changed to '+allowed[0].name);}},
  list:()=>structuredClone(useBranchesStore.getState().branches),
  get:(id:string)=>structuredClone(useBranchesStore.getState().branches.find(b=>b.id===id)),
- activeId:()=>useBranchStore.getState().branch,
+ activeId:()=>useBranchStore.getState().activeBranchId,
  allowed:()=>{const user=authService.getCurrentUser();return branchService.list().filter(b=>b.status==='active'&&!!user&&(user.role==='admin'||user.branchIds.includes(b.id)));},
  assertAccess:(id:string)=>{if(!branchService.allowed().some(b=>b.id===id))throw new PermissionError('branch:access');},
  assertSell:(id:string)=>{branchService.assertAccess(id);if(!branchService.get(id)?.canSell)throw new Error('This location cannot sell. Switch to a selling branch.');},

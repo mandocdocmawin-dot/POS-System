@@ -19,7 +19,7 @@ import {usePosStore} from '../store/usePosStore';
 import {orderSchema,type Order} from '../types/pos';
 import {formatOrderNo} from '../utils/orderNo';
 export const orderService={
- list:(options:{today?:boolean;search?:string;branchId?:string}={})=>structuredClone(useOrderStore.getState().orders.filter(o=>(options.branchId==='all'||o.branchId===(options.branchId??useBranchStore.getState().branch))&&(!options.today||new Date(o.createdAt).toDateString()===new Date().toDateString())&&(!options.search||o.orderNo.toLowerCase().includes(options.search.toLowerCase()))).toSorted((a,b)=>b.createdAt.localeCompare(a.createdAt))),
+ list:(options:{today?:boolean;search?:string;branchId?:string}={})=>structuredClone(useOrderStore.getState().orders.filter(o=>(options.branchId==='all'||o.branchId===(options.branchId??useBranchStore.getState().activeBranchId))&&(!options.today||new Date(o.createdAt).toDateString()===new Date().toDateString())&&(!options.search||o.orderNo.toLowerCase().includes(options.search.toLowerCase()))).toSorted((a,b)=>b.createdAt.localeCompare(a.createdAt))),
  get:(id:string)=>structuredClone(useOrderStore.getState().orders.find(o=>o.id===id)),
  payments:(customerId?:string)=>structuredClone(useWalletStore.getState().customerPayments.filter(x=>!customerId||x.customerId===customerId)),
  cancel:(id:string,reason:string)=>{requirePermission('orders:cancel');

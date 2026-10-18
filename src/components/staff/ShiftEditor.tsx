@@ -1,9 +1,10 @@
+import {branchService} from '../../services/branchService';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { shiftSchema, type Shift } from '../../types/staff';
 import { shiftTemplates } from '../../data/seed/shifts';
-import { branches } from '../../store/useBranchStore';
+
 import { useStaffStore } from '../../store/useStaffStore';
 import { useShiftStore } from '../../store/useShiftStore';
 import { useHolidayStore } from '../../store/useHolidayStore';
@@ -82,7 +83,7 @@ export function ShiftEditor({ shift, onClose }: { shift: Shift; onClose: () => v
         <label className="block text-sm">
           Branch
           <select className="mt-1 w-full" {...register('branchId')}>
-            {branches.map(branch => <option key={branch}>{branch}</option>)}
+            {branchService.list().map(b=>b.id).map(branch => <option key={branch}>{branch}</option>)}
           </select>
         </label>
         <label className="block text-sm">Note<textarea className="mt-1 w-full" rows={3} {...register('note')} /></label>

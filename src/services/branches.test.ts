@@ -1,3 +1,9 @@
+import {useBranchStore} from '../store/useBranchStore';
+import {usePosStore} from '../store/usePosStore';
+import {useHeldOrderStore} from '../store/useHeldOrderStore';
+import {useCustomerStore} from '../store/useCustomerStore';
+import {createPosSeed} from '../data/seed/pos';
+import {holdService} from './holdService';
 import {beforeEach,it,expect,vi} from 'vitest';
 vi.hoisted(()=>{const values=new Map<string,string>();const storage={getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v);},removeItem:(k:string)=>{values.delete(k);}};Object.defineProperty(globalThis,'localStorage',{value:storage,configurable:true});Object.defineProperty(globalThis,'window',{value:{localStorage:storage},configurable:true});});
 import {defaultBranches,migrateBranchData} from '../utils/branchMigration';
@@ -27,3 +33,5 @@ it('records partial receipts as final shortage writeoffs',()=>{const t=transfers
 it('returns stock when an in-transit transfer is cancelled',()=>{const t=transfers.save(input(),true);transfers.cancel(t.id);expect(stockService.getStock('prod-1',undefined,'Main Branch')).toBe(20);expect(stockService.getStock('prod-1',undefined,'Branch 2')).toBe(0);});
 it('validates source, destination, quantity and branch access atomically',()=>{expect(()=>transfers.save({...input(),toBranchId:'Main Branch'})).toThrow();expect(()=>transfers.save({...input(),items:[{productId:'prod-1',quantity:21}]},true)).toThrow();expect(transfers.list()).toHaveLength(0);expect(stockService.getStock('prod-1',undefined,'Main Branch')).toBe(20);expect(()=>branchService.assertSell('Head Office')).toThrow('cannot sell');useAuthStore.setState({currentUserId:'staff-cashier'});expect(branchService.allowed().every(b=>branchService.staff(b.id).some(s=>s.id==='staff-cashier'))).toBe(true);expect(()=>transfers.save(input())).toThrow();});
 it('protects last active selling branch and branches with records',()=>{const branches=defaultBranches().map(b=>({...b,canSell:b.id==='Main Branch'}));useBranchesStore.setState({branches});expect(()=>branchService.save({...branches[0],status:'inactive'},true)).toThrow('At least one');const b={...branches[1],id:'temp',code:'TEMP'};branchService.save(b);useStockStore.setState(s=>({movements:[...s.movements,{...s.movements[0],id:'other',branchId:'temp'}]}));expect(()=>branchService.remove('temp')).toThrow('records');});
+
+it('auto-holds on confirmed branch switch and isolates held carts',()=>{const seed=createPosSeed();useBranchStore.setState({activeBranchId:'Main Branch'});useCustomerStore.setState({customers:seed.customers});useHeldOrderStore.setState({heldOrders:[]});usePosStore.setState({cart:seed.orders[0].items,customerId:seed.customers[0].id,orderDiscount:{type:'fixed',value:0},note:''});expect(()=>branchService.switchTo('Branch 2')).toThrow('Confirm');branchService.switchTo('Branch 2',true);expect(usePosStore.getState().cart).toHaveLength(0);expect(holdService.list()).toHaveLength(0);branchService.switchTo('Main Branch');expect(holdService.list()[0]).toMatchObject({branchId:'Main Branch',label:'Auto-held on branch switch'});});

@@ -56,13 +56,13 @@ import { navigationService } from './navigationService';
 import { useBranchStore } from '../store/useBranchStore';
 describe('staff status sidebar badge', () => {
  it('waits for shift grace time and scopes attention counts to the current branch', () => {
-  useBranchStore.getState().setBranch('Main Branch');
+  useBranchStore.setState({activeBranchId:'Main Branch'});
   expect(navigationService.badge('/staff/staff-list',new Date('2026-10-16T01:05:00Z'))).toBe(0);
   expect(navigationService.badge('/staff/staff-list',new Date('2026-10-16T01:11:00Z'))).toBe(4);
-  useBranchStore.getState().setBranch('Branch 2');
+  useBranchStore.setState({activeBranchId:'Branch 2'});
   expect(navigationService.badge('/staff/staff-list',new Date('2026-10-16T01:11:00Z'))).toBe(3);
   expect(navigationService.badge('/staff/staff-list',new Date('2026-12-25T10:00:00Z'))).toBe(0);
-  useBranchStore.getState().setBranch('Main Branch');
+  useBranchStore.setState({activeBranchId:'Main Branch'});
  });
 });
 

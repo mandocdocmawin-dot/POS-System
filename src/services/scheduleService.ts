@@ -1,14 +1,15 @@
+import {branchService} from './branchService';
 import {shiftSchema,type Shift} from '../types/staff';
 import {useShiftStore} from '../store/useShiftStore';
 import {useStaffStore} from '../store/useStaffStore';
 import {useAttendanceStore} from '../store/useAttendanceStore';
 import {useHolidayStore} from '../store/useHolidayStore';
-import {branches} from '../store/useBranchStore';
+
 import {validateShift,addDays} from '../utils/schedule';
 import {requirePermission,authService} from './authService';
 import {activityService} from './activityService';
 import {localTransaction} from './localTransaction';
-function validate(shift:Shift,shifts:Shift[]){validateShift(shift,shifts);if(!useStaffStore.getState().staff.some(s=>s.id===shift.staffId))throw new Error('Staff not found.');if(!branches.some(b=>b===shift.branchId))throw new Error('Branch not found.');}
+function validate(shift:Shift,shifts:Shift[]){validateShift(shift,shifts);if(!useStaffStore.getState().staff.some(s=>s.id===shift.staffId))throw new Error('Staff not found.');if(!branchService.list().map(b=>b.id).some(b=>b===shift.branchId))throw new Error('Branch not found.');}
 export const scheduleService={
  save:(input:Shift)=>{requirePermission('schedule:manage');const shift=shiftSchema.parse(input),shifts=useShiftStore.getState().shifts;validate(shift,shifts);return localTransaction(()=>{useShiftStore.setState({shifts:shifts.some(s=>s.id===shift.id)?shifts.map(s=>s.id===shift.id?shift:s):[...shifts,shift]});activityService.log('shift',shift.id,'save',`Shift for ${shift.date}`,authService.getCurrentUser()!.name);return shift;});},
  warnings:(shift:Shift)=>[...(useHolidayStore.getState().holidays.some(h=>h.date===shift.date)?['This shift is on a holiday.']:[]),...(useAttendanceStore.getState().records.some(r=>r.staffId===shift.staffId&&r.date===shift.date&&r.status==='leave')?['This staff member is on leave.']:[])],

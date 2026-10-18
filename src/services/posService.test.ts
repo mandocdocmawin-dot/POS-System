@@ -95,10 +95,10 @@ describe('Phase 3 data and Dashboard',()=>{
   await dataService.import(JSON.stringify(legacy));expect(orderService.list()).toHaveLength(0);expect(customerService.list()).toHaveLength(6);expect(orderService.nextOrderNo()).toBe('TP-000001');
  });
  it('computes branch-filtered revenue, cost snapshots and net recorded payment shares',()=>{
-  useBranchStore.getState().setBranch('Main Branch');posService.add('prod-1');const order=posService.complete([{...cash(20),method:'gcash'},cash(100)]);
+  useBranchStore.setState({activeBranchId:'Main Branch'});posService.add('prod-1');const order=posService.complete([{...cash(20),method:'gcash'},cash(100)]);
   expect(order.change).toBe(52);expect(recordedPayments().reduce((n,p)=>n+p.cents,0)).toBe(6800);expect(paymentShares().reduce((n,p)=>n+p.percent,0)).toBe(100);expect(salesMetrics()).toMatchObject({todaySales:68,totalOrders:1,netProfit:10,salesReturn:0});
   useProductStore.setState(s=>({products:s.products.map(p=>p.id==='prod-1'?{...p,costPrice:999}:p)}));expect(salesMetrics().netProfit).toBe(10);
-  useBranchStore.getState().setBranch('Branch 2');expect(salesMetrics().totalOrders).toBe(0);expect(paymentShares().every(p=>p.percent===0)).toBe(true);useBranchStore.getState().setBranch('Main Branch');
+  useBranchStore.setState({activeBranchId:'Branch 2'});expect(salesMetrics().totalOrders).toBe(0);expect(paymentShares().every(p=>p.percent===0)).toBe(true);useBranchStore.setState({activeBranchId:'Main Branch'});
  });
  it('previews a draft without allocating a number or changing stock',()=>{
   posService.add('prod-1');const before=stockService.getStock('prod-1',undefined,branchService.activeId()),number=orderService.nextOrderNo();const draft=receiptService.draft();expect(draft.draft).toBe(true);expect(draft.orderNo).toBeUndefined();expect(stockService.getStock('prod-1',undefined,branchService.activeId())).toBe(before);expect(orderService.nextOrderNo()).toBe(number);expect(posService.state().cart).toHaveLength(1);

@@ -19,7 +19,7 @@ export const walletService={
   const delta=Math.sign(input.amount)*c(Math.abs(input.amount)),balance=c(customer.walletBalance)+delta;
   if(!delta)throw new Error('Amount must be at least one centavo.');
   if(balance<0)throw new Error('Insufficient wallet balance. Wallet cannot become negative.');
-  const tx=walletTransactionSchema.parse({...input,branchId:input.branchId??useBranchStore.getState().branch,amount:p(delta),id:crypto.randomUUID(),createdAt:new Date().toISOString(),balanceAfter:p(balance)});
+  const tx=walletTransactionSchema.parse({...input,branchId:input.branchId??useBranchStore.getState().activeBranchId,amount:p(delta),id:crypto.randomUUID(),createdAt:new Date().toISOString(),balanceAfter:p(balance)});
   return localTransaction(()=>{useCustomerStore.setState(s=>({customers:s.customers.map(x=>x.id===customer.id?{...x,walletBalance:tx.balanceAfter}:x)}));useWalletStore.setState(s=>({transactions:[...s.transactions,tx]}));activityService.log('wallet',customer.id,input.type,`${input.type}: ${tx.amount.toFixed(2)} — ${input.note??''}`);return tx;});
  },
 };

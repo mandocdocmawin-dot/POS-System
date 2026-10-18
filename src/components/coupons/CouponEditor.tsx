@@ -1,10 +1,11 @@
+import {branchService} from '../../services/branchService';
 import {useState} from 'react';
 import {Modal} from '../common/Modal';
 import {SettingText,SettingNumber,SettingSelect,SettingToggle} from '../settings/SettingFields';
 import {couponService} from '../../services/couponService';
 import {productService} from '../../services/productService';
 import {categoryService} from '../../services/categoryService';
-import {branches} from '../../store/useBranchStore';
+
 import type {Coupon} from '../../types/settings';
 import {formatMoney} from '../../utils/formatters';
 import {errorMessage} from '../../services/toastService';
@@ -16,7 +17,7 @@ export function CouponEditor({initial,onClose}:{initial:Coupon;onClose:()=>void}
  <div className="grid gap-4 sm:grid-cols-2"><SettingText label="Name" value={s.name} onChange={v=>change({...s,name:v})}/><SettingText label="Description" value={s.description??''} onChange={v=>change({...s,description:v})}/><SettingSelect label="Type" value={s.type} options={['percent','fixed']} onChange={v=>change({...s,type:v})}/><SettingNumber label={s.type==='percent'?'Percent':'Fixed discount (centavos)'} value={s.value} onChange={v=>change({...s,value:v})}/><SettingNumber label="Minimum spend (centavos)" value={s.minSubtotal} onChange={v=>change({...s,minSubtotal:v})}/>{s.type==='percent'&&<SettingNumber label="Maximum discount (centavos; 0 = none)" value={s.maxDiscount??0} onChange={v=>change({...s,maxDiscount:v||undefined})}/>}{(['usageLimit','perCustomerLimit'] as const).map(k=><SettingNumber key={k} label={`${k} (0 = none)`} value={s[k]??0} step="1" onChange={v=>change({...s,[k]:v||undefined})}/>)}{(['startsAt','endsAt'] as const).map(k=><SettingText key={k} label={`${k} (local time)`} type="datetime-local" value={s[k]?new Date(new Date(s[k]).getTime()-new Date(s[k]).getTimezoneOffset()*60000).toISOString().slice(0,16):''} onChange={v=>change({...s,[k]:v?new Date(v).toISOString():undefined})}/>)}<SettingSelect label="Status" value={s.status} options={['active','inactive']} onChange={v=>change({...s,status:v})}/></div>
  <SettingToggle label="Exclude already discounted items" value={s.excludeDiscountedItems} onChange={v=>change({...s,excludeDiscountedItems:v})}/>
  {list('Eligible tiers',['Regular','Silver','Gold','Platinum'].map(id=>({id,name:id})),s.eligibleTiers??[],v=>change({...s,eligibleTiers:v as NonNullable<Coupon['eligibleTiers']>}))}
- {list('Categories',categoryService.list(),s.categoryIds??[],v=>change({...s,categoryIds:v}))}{list('Products',productService.list(),s.productIds??[],v=>change({...s,productIds:v}))}{list('Branches',branches.map(id=>({id,name:id})),s.branchIds??[],v=>change({...s,branchIds:v}))}
+ {list('Categories',categoryService.list(),s.categoryIds??[],v=>change({...s,categoryIds:v}))}{list('Products',productService.list(),s.productIds??[],v=>change({...s,productIds:v}))}{list('Branches',branchService.list().map(b=>b.id).map(id=>({id,name:id})),s.branchIds??[],v=>change({...s,branchIds:v}))}
  <p className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">On a ₱1,000 eligible cart this gives {formatMoney(Math.min(100000,s.type==='fixed'?s.value:Math.round(1000*s.value),s.maxDiscount??Number.MAX_SAFE_INTEGER))} off (before validity checks).</p>
  {error&&<p role="alert" className="text-red-500">{error}</p>}<button className="btn-primary">Save coupon</button></form></Modal>;
 }

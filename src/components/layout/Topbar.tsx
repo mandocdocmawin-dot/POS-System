@@ -41,27 +41,7 @@ export function Topbar() {
         >
           <PanelLeft size={18} />
         </button>
-        <div className="hidden sm:block">
-          <Popover
-            label="Language"
-            className="icon-btn border-slate-900 bg-slate-900 text-white dark:bg-slate-800"
-            trigger={<Globe size={18} />}
-            align="left"
-          >
-            <div className="w-36">
-              {["English", "Filipino"].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLanguage(l)}
-                  className="flex w-full items-center justify-between rounded-lg p-3 text-xs hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  {l}
-                  {language === l && <Check size={14} />}
-                </button>
-              ))}
-            </div>
-          </Popover>
-        </div>
+        <Link to="/landing" aria-label="Live Preview" title="Live Preview" className="icon-btn border-indigo-800 bg-indigo-900 text-white hover:bg-indigo-800 dark:bg-indigo-800"><Globe size={18}/></Link>
         <Can permission="pos:use"><Link to="/pos" className="btn-primary">
           <ShoppingCart size={16} />
           POS

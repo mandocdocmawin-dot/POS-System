@@ -1,3 +1,6 @@
+import {couponService} from './couponService';
+import {couponReasons,type CouponContext} from '../utils/coupons';
+import {toast} from './toastService';
 import {productTax} from '../utils/tax';
 import {cashRounding} from '../utils/cashRounding';
 import {settingsService} from './settingsService';
@@ -31,7 +34,12 @@ function validateCart(cart:CartItem[]) {
  }
  calculateTotals(cart,undefined,settingsService.get().tax);
 }
+function couponContext():Omit<CouponContext,'orders'> {const s=usePosStore.getState(),totals=calculateTotals(s.cart,undefined,settingsService.get().tax);return {lines:totals.items.map(l=>({id:l.id,productId:l.productId,categoryId:productService.get(l.productId)?.categoryId,base:toCentavos(l.lineSubtotal)-toCentavos(l.lineDiscount),discounted:l.lineDiscount>0})),subtotal:toCentavos(totals.subtotal)-toCentavos(totals.itemDiscountTotal),branchId:posService.branch(),customer:customerService.get(s.customerId),manualDiscount:s.orderDiscount.value>0,stacking:settingsService.get().pos.couponStacking};}
 export const posService={
+ couponResult:()=>{const code=usePosStore.getState().couponCode;return code?couponService.validate(code,couponContext()):undefined;},
+ applyCoupon:(code:string,replace=false)=>{requirePermission('pos:coupon');if(usePosStore.getState().orderDiscount.value>0&&!replace)throw new Error('Confirm replacement of the manual order discount.');const context={...couponContext(),manualDiscount:false};const result=couponService.validate(code,context);if(!result.ok)throw new Error(couponReasons[result.reason]);usePosStore.setState({couponCode:code.trim().toUpperCase(),orderDiscount:{type:'fixed',value:0},discountApproval:undefined});},
+ removeCoupon:()=>usePosStore.setState({couponCode:undefined}),
+ revalidateCoupon:()=>{const result=posService.couponResult();if(result&&!result.ok){usePosStore.setState({couponCode:undefined});toast.info('Coupon removed: '+couponReasons[result.reason]);}},
  state:()=>structuredClone(usePosStore.getState()),
  totals:()=>{const s=usePosStore.getState();return calculateTotals(s.cart,s.orderDiscount,settingsService.get().tax);},
  branch:()=>useBranchStore.getState().branch,
@@ -45,11 +53,11 @@ export const posService={
  quantity:(id:string,quantity:number)=>{requirePermission("pos:use");const cart=posService.state().cart.map(l=>l.id===id?{...l,quantity}:l);validateCart(cart);usePosStore.setState({cart});},
  remove:(id:string)=>{requirePermission("pos:use");usePosStore.setState(s=>({cart:s.cart.filter(l=>l.id!==id)}));},
  lineDiscount:(id:string,input:Discount,approverId?:string)=>{const discount=discountSchema.parse(input),state=posService.state();const cart=state.cart.map(l=>l.id===id?{...l,discountType:discount.type,discountValue:discount.value}:l);calculateTotals(cart,state.orderDiscount);localTransaction(()=>{const discountApproval=discountApprovalService.ensure(cart,state.orderDiscount,approverId);usePosStore.setState({cart,discountApproval});});},
- discount:(input:Discount,approverId?:string)=>{const discount=discountSchema.parse(input);calculateTotals(posService.state().cart,discount);localTransaction(()=>{const discountApproval=discountApprovalService.ensure(posService.state().cart,discount,approverId);usePosStore.setState({orderDiscount:discount,discountApproval});});},
+ discount:(input:Discount,approverId?:string)=>{const discount=discountSchema.parse(input);calculateTotals(posService.state().cart,discount);localTransaction(()=>{const discountApproval=discountApprovalService.ensure(posService.state().cart,discount,approverId);usePosStore.setState({orderDiscount:discount,couponCode:undefined,discountApproval});});},
  customer:(id:string)=>{if(!customerService.get(id))throw new Error('Customer not found.');usePosStore.setState({customerId:id});},
  note:(note:string)=>{if(note.length>2000)throw new Error('Note must be at most 2000 characters.');usePosStore.setState({note});},
- clear:()=>usePosStore.setState({discountApproval:undefined,cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:orderService.nextOrderNo()}),
- restore:(data:Pick<PosState,'cart'|'customerId'|'note'|'orderDiscount'>)=>{validateCart(data.cart);if(!customerService.get(data.customerId))throw new Error('Customer no longer exists.');usePosStore.setState({...data,discountApproval:undefined,activeOrderNo:orderService.nextOrderNo()});},
+ clear:()=>usePosStore.setState({couponCode:undefined,discountApproval:undefined,cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:orderService.nextOrderNo()}),
+ restore:(data:Pick<PosState,'cart'|'customerId'|'note'|'orderDiscount'>)=>{validateCart(data.cart);if(!customerService.get(data.customerId))throw new Error('Customer no longer exists.');usePosStore.setState({...data,couponCode:undefined,discountApproval:undefined,activeOrderNo:orderService.nextOrderNo()});},
  complete:(payments:Payment[],options:{payLater?:boolean;dueDate?:string}={}):Order=>{requirePermission('pos:use');
  for(const p of payments)if(p.amount>0){const method=settingsService.get().payment.methods.find(m=>m.id===p.method);if(!method?.enabled)throw new Error('Payment method is disabled.');if(method.requireReference&&!p.reference?.trim())throw new Error(`${method.label} requires a reference.`);const amount=toCentavos(p.amount);if(amount<(method.minAmount??0)||amount>(method.maxAmount??Number.MAX_SAFE_INTEGER))throw new Error(`${method.label}: amount is outside configured limits.`);validatePaymentAccount(p.method);}const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
  const c=customerService.get(s.customerId);if(settingsService.get().pos.requireCustomer&&c?.isWalkIn)throw new Error('Choose a named customer before selling.');if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
@@ -70,3 +78,5 @@ export const posService={
  }
 };
 
+
+usePosStore.subscribe((state,previous)=>{if(state.cart!==previous.cart||state.customerId!==previous.customerId)posService.revalidateCoupon();});

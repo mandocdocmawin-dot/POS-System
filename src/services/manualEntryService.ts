@@ -1,0 +1,11 @@
+import { manualEntrySchema, type ManualEntry } from '../types/accounts';
+import { useAccountStore } from '../store/useAccountStore';
+import { branches } from '../store/useBranchStore';
+import { authService, requirePermission } from './authService';
+import { activeAccount, financeData, validateBalances, validateFinanceDate } from './financeData';
+import { localTransaction } from './localTransaction';
+export const manualEntryService={
+ get:(id:string)=>{requirePermission('accounts:view');return structuredClone(useAccountStore.getState().manualEntries.find(e=>e.id===id));},
+ save:(input:ManualEntry)=>{requirePermission('accounts:manage');const state=useAccountStore.getState(),old=state.manualEntries.find(e=>e.id===input.id);const entry=manualEntrySchema.parse({...input,createdBy:old?.createdBy??authService.getCurrentUser()!.name,createdAt:old?.createdAt??new Date().toISOString(),updatedAt:new Date().toISOString()});validateFinanceDate(entry.date);activeAccount(entry.accountId,entry.date);const cat=state.categories.find(c=>c.id===entry.categoryId);if(!cat||cat.status!=='active'||cat.type!==entry.type)throw new Error('Choose an active category matching the entry type.');if(!branches.some(b=>b===entry.branchId))throw new Error('Choose a valid branch.');const manualEntries=old?state.manualEntries.map(e=>e.id===entry.id?entry:e):[...state.manualEntries,entry];validateBalances(financeData({manualEntries}),[entry.accountId,...(old?[old.accountId]:[])]);return localTransaction(()=>{useAccountStore.setState({manualEntries});return entry;});},
+ remove:(id:string)=>{requirePermission('accounts:manage');const s=useAccountStore.getState(),old=s.manualEntries.find(e=>e.id===id);if(!old)throw new Error('Automatic entries cannot be edited or deleted here.');const manualEntries=s.manualEntries.filter(e=>e.id!==id);validateBalances(financeData({manualEntries}),[old.accountId]);localTransaction(()=>useAccountStore.setState({manualEntries}));},
+};

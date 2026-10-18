@@ -1,3 +1,4 @@
+import {useSettingsStore} from '../store/useSettingsStore';
 import {useAuthStore} from '../store/useAuthStore';
 import {useStaffStore} from '../store/useStaffStore';
 import {useRoleStore} from '../store/useRoleStore';
@@ -27,6 +28,7 @@ const changed = () => {
   revision++;
   listeners.forEach((fn) => fn());
 };
+useSettingsStore.subscribe(changed);
 useCatalogStore.subscribe(changed);
 useAccountStore.subscribe(changed);
 useReportFilterStore.subscribe(changed);

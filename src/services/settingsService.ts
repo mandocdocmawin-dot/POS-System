@@ -1,3 +1,4 @@
+import {useAccountStore} from '../store/useAccountStore';
 import {useProductStore} from '../store/useProductStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useOrderStore } from '../store/useOrderStore';
@@ -16,6 +17,7 @@ export function settingsDiff(before: unknown, after: unknown, path = ''): string
  return [`${label.charAt(0).toUpperCase()}${label.slice(1)}: ${typeof before === 'object' ? JSON.stringify(before) : String(before ?? 'none')} → ${typeof after === 'object' ? JSON.stringify(after) : String(after ?? 'none')}`];
 }
 export const settingsService = {
+ accounts: () => {requirePermission('settings:view');return structuredClone(useAccountStore.getState().accounts);},
  get: (): Settings => structuredClone(useSettingsStore.getState().settings),
  metadata: () => { const { updatedAt, updatedBy } = useSettingsStore.getState(); return { updatedAt, updatedBy }; },
  preview: <K extends SettingsSection>(section: K, value: Settings[K]) => settingsDiff(settingsService.get()[section], value),

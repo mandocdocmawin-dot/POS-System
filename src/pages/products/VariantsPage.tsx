@@ -1,3 +1,5 @@
+import {ProductWorkspace} from '../../components/products/ProductWorkspace';
+import {ProductImage} from '../../components/common/ProductImage';
 import {branchService} from '../../services/branchService';
 import {Can} from '../../components/auth/Can';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -122,7 +124,7 @@ export function Component() {
   const [remove, setRemove] = useState<Variant>();
   const products = productService.list();
   return (
-    <>
+    <ProductWorkspace title="Variants">
       <PageActions title="Variants">
         <Can permission="products:create"><button className="btn-primary" onClick={() => setEdit("new")}>
           Add Variant
@@ -140,7 +142,7 @@ export function Component() {
             {
               id: "product",
               header: "Product",
-              cell: (v) => products.find((p) => p.id === v.productId)?.name,
+              cell: (v) => {const p=products.find(p=>p.id===v.productId);return <div className="flex items-center gap-3"><ProductImage name={p?.name??v.name} imageId={p?.imageId}/>{p?.name??v.name}</div>;},
               sortValue: (v) =>
                 products.find((p) => p.id === v.productId)?.name ?? "",
             },
@@ -212,6 +214,6 @@ export function Component() {
           }}
         />
       )}
-    </>
+    </ProductWorkspace>
   );
 }

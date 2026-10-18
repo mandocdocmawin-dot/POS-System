@@ -1,3 +1,6 @@
+import {ProductWorkspace,CatalogStatus} from '../../components/products/ProductWorkspace';
+import {Popover} from '../../components/common/Popover';
+import {MoreVertical,Eye,Pencil,Trash2,Plus,Download,Package,CheckCircle2,TriangleAlert,Archive} from 'lucide-react';
 import {branchService} from '../../services/branchService';
 import {Can} from '../../components/auth/Can';
 import { stockStatus } from "../../utils/stock";
@@ -44,7 +47,8 @@ export function Component() {
           stockStatus(stockService.getStock(p.id,undefined,branchService.activeId()), p.reorderLevel) === stock),
     );
   return (
-    <>
+    <ProductWorkspace title="All Products">
+      <div className="product-metrics">{[[Package,productService.list().length,"All products"],[CheckCircle2,productService.list().filter(p=>p.status==='active').length,"Active products"],[TriangleAlert,productService.list().filter(p=>stockService.getStock(p.id,undefined,branchService.activeId())<=p.reorderLevel).length,"Low or empty stock"],[Archive,productService.list().filter(p=>p.status==='inactive').length,"Inactive products"]].map(([Icon,value,label])=>{const Mark=Icon as typeof Package;return <div className="product-metric" key={String(label)}><span className="rounded-lg bg-indigo-50 p-3 text-indigo-600 dark:bg-indigo-500/15"><Mark size={22}/></span><div><strong>{String(value)}</strong><span>{String(label)}</span></div></div>;})}</div>
       <PageActions title="All Products">
         <button
           className="btn"
@@ -61,13 +65,13 @@ export function Component() {
             ])
           }
         >
-          Export CSV
+          <Download size={15}/> Export CSV
         </button>
         <Can permission="products:create"><Link className="btn-primary" to="/products/add">
-          Add Product
+          <Plus size={16}/> Add Product
         </Link></Can>
       </PageActions>
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="product-filters">
         <Select
           label="Category"
           value={category}
@@ -130,6 +134,9 @@ export function Component() {
           onSelectionChange={setSelected}
           columns={[
             {
+              id: "sku", header:"Product ID", cell:p=><span className="text-slate-500">{p.sku}</span>, sortValue:p=>p.sku,
+            },
+            {
               id: "product",
               header: "Product",
               sortValue: (p) => p.name,
@@ -171,7 +178,7 @@ export function Component() {
             {
               id: "price",
               header: "Price",
-              cell: (p) => formatPHP(p.sellingPrice),
+              cell: (p) => <div>{!!p.discountPercent&&<del className="mr-2 text-xs text-slate-400">{formatPHP(p.sellingPrice)}</del>}<span className={p.discountPercent?"font-semibold text-rose-500":"font-medium"}>{formatPHP(p.sellingPrice*(1-(p.discountPercent??0)/100))}</span></div>,
               sortValue: (p) => p.sellingPrice,
             },
             {
@@ -191,34 +198,34 @@ export function Component() {
             {
               id: "status",
               header: "Status",
-              cell: (p) => p.status,
+              cell: (p) => <CatalogStatus status={p.status}/>,
               sortValue: (p) => p.status,
             },
           ]}
           actions={(p) => (
-            <div className="flex gap-3">
-              <button
-                className="text-indigo-500"
+            <Popover label={`Actions for ${p.name}`} trigger={<MoreVertical size={16}/>} className="icon-btn border-transparent">
+              <div className="flex min-w-40 flex-col gap-1 p-2"><button
+                className="flex items-center gap-3 rounded p-2 text-left hover:bg-indigo-50 dark:hover:bg-slate-800"
                 onClick={() => setView(p.id)}
                 aria-label={`View ${p.name}`}
               >
-                View
+                <Eye size={16}/> Overview
               </button>
               <Can permission="products:edit"><Link
-                className="text-indigo-500"
+                className="flex items-center gap-3 rounded p-2 text-left hover:bg-indigo-50 dark:hover:bg-slate-800"
                 to={`/products/${p.id}/edit`}
                 aria-label={`Edit ${p.name}`}
               >
-                Edit
+                <Pencil size={16}/> Edit
               </Link></Can>
               <Can permission="products:delete"><button
-                className="text-red-500"
+                className="flex items-center gap-3 rounded p-2 text-left text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 onClick={() => setDeleting([p.id])}
                 aria-label={`Delete ${p.name}`}
               >
-                Delete
+                <Trash2 size={16}/> Delete
               </button></Can>
-            </div>
+            </div></Popover>
           )}
         />
       </section>
@@ -236,6 +243,6 @@ export function Component() {
           }}
         />
       )}
-    </>
+    </ProductWorkspace>
   );
 }

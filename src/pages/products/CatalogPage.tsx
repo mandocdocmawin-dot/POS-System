@@ -1,3 +1,8 @@
+import {ProductWorkspace,CatalogStatus} from '../../components/products/ProductWorkspace';
+import {ProductImage} from '../../components/common/ProductImage';
+import {Popover} from '../../components/common/Popover';
+import {productService} from '../../services/productService';
+import {Layers,CheckCircle2,XCircle,Package,MoreVertical,Pencil,Trash2,Plus} from 'lucide-react';
 import {Can} from '../../components/auth/Can';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -136,15 +141,22 @@ export function CatalogPage({ config }: { config: CatalogConfig }) {
   const [edit, setEdit] = useState<CatalogRow | "new">();
   const [remove, setRemove] = useState<CatalogRow>();
   const [parent, setParent] = useState("");
-  const rows = config.list().filter((r) => !parent || r.categoryId === parent);
+  const [status,setStatus]=useState('');
+  const allRows=config.list();
+  const products=productService.list();
+  const [selected,setSelected]=useState<string[]>([]);
+  const rows = allRows.filter((r) => (!parent || r.categoryId === parent)&&(!status||r.status===status));
+  const example=(id:string)=>products.find(p=>config.title==='Brands'?p.brandId===id:config.title==='Subcategories'?p.subcategoryId===id:p.categoryId===id);
+
   return (
-    <>
+    <ProductWorkspace title={config.title}>
+      <div className="product-metrics">{[[Layers,allRows.length,`All ${config.title.toLowerCase()}`],[CheckCircle2,allRows.filter(r=>r.status==='active').length,'Active'],[XCircle,allRows.filter(r=>r.status==='inactive').length,'Inactive'],[Package,products.length,'Catalog products']].map(([Icon,value,label])=>{const Mark=Icon as typeof Layers;return <div className="product-metric" key={String(label)}><span className="rounded-lg bg-indigo-50 p-3 text-indigo-600 dark:bg-indigo-500/15"><Mark size={22}/></span><div><strong>{String(value)}</strong><span>{String(label)}</span></div></div>;})}</div>
       <PageActions title={config.title}>
         <Can permission="products:create"><button className="btn-primary" onClick={() => setEdit("new")}>
-          Add {config.singular}
+          <Plus size={16}/> Add {config.singular}
         </button></Can>
       </PageActions>
-      {config.parents && (
+      <div className="product-filters"><Select label="Status" value={status} onChange={e=>setStatus(e.target.value)}><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></Select>{config.parents && (
         <div className="mb-4 max-w-xs">
           <Select
             label="Filter by category"
@@ -160,54 +172,46 @@ export function CatalogPage({ config }: { config: CatalogConfig }) {
           </Select>
         </div>
       )}
-      <section className="card p-0">
+      </div><section className="card p-0">
         <DataTable
           caption={config.title}
           rows={rows}
+          selection={selected}
+          onSelectionChange={setSelected}
           rowKey={(r) => r.id}
           searchText={(r) => `${r.name} ${r.shortName ?? ""}`}
           columns={[
             {
               id: "name",
               header: "Name",
-              cell: (r) => r.name,
+              cell: (r) => {const p=example(r.id);return <div className="flex items-center gap-3">{p?<ProductImage imageId={p.imageId} name={p.name}/>:<span className="flex h-10 w-10 items-center justify-center rounded border border-slate-200 bg-slate-50 text-indigo-500 dark:border-slate-700 dark:bg-slate-800"><Layers size={18}/></span>}<strong className="font-semibold">{r.name}</strong></div>;},
               sortValue: (r) => r.name,
             },
             ...(config.columns ?? []),
             {
               id: "status",
               header: "Status",
-              cell: (r) => (
-                <span
-                  className={
-                    r.status === "active"
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-slate-400"
-                  }
-                >
-                  {r.status}
-                </span>
-              ),
+              cell: (r) => <CatalogStatus status={r.status}/>,
               sortValue: (r) => r.status,
             },
           ]}
           actions={(r) => (
-            <div className="flex gap-3">
+            <Popover label={`Actions for ${r.name}`} trigger={<MoreVertical size={16}/>} className="icon-btn border-transparent"><div className="flex min-w-40 flex-col gap-1 p-2">
               <Can permission="products:edit"><button
-                className="text-indigo-500"
+                className="flex items-center gap-3 rounded p-2 text-left hover:bg-indigo-50 dark:hover:bg-slate-800"
                 onClick={() => setEdit(r)}
                 aria-label={`Edit ${r.name}`}
               >
-                Edit
+                <Pencil size={16}/> Edit
               </button></Can>
               <Can permission="products:delete"><button
-                className="text-red-500"
+                className="flex items-center gap-3 rounded p-2 text-left text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 onClick={() => setRemove(r)}
                 aria-label={`Delete ${r.name}`}
               >
-                Delete
+                <Trash2 size={16}/> Delete
               </button></Can>
-            </div>
+            </div></Popover>
           )}
         />
       </section>
@@ -236,6 +240,6 @@ export function CatalogPage({ config }: { config: CatalogConfig }) {
           }}
         />
       )}
-    </>
+    </ProductWorkspace>
   );
 }

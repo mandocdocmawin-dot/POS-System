@@ -561,3 +561,6 @@ for(const path of phase7Paths)featureStatus[path]={status:'done',description:'Wo
 // Phase 8 completes application pages while the optional inventory and UI demos stay placeholders.
 export const phase8Paths=Object.entries(implementedPages).filter(([,id])=>id.endsWith('8')).map(([path])=>path);
 for(const path of phase8Paths)featureStatus[path]={status:'done',description:'Working local Phase 8 page. Communication, support and billing are explicitly simulated.',plannedFeatures:[]};
+
+for(const path of ['/products/bulk-import','/products/bulk-export','/products/print-barcode'])featureStatus[path]={status:'done',description:'Working local product tool with validated CSV import, filtered file export, or generated barcode labels.',plannedFeatures:[]};
+for(const path of ['/products/reviews','/products/warranty'])featureStatus[path]={status:'in-progress',description:'Interactive design demo using catalog images. Sample edits last while the page is open; verified reviews and warranty records are not connected.',plannedFeatures:['Persistent review or warranty records','Verified purchase and coverage integration']};

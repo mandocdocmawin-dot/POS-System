@@ -18,6 +18,7 @@ export function DataTable<T>({
   onSelectionChange,
   actions,
   onRowClick,
+  showPagination = false,
 }: {
   columns: Column<T>[];
   rows: T[];
@@ -30,6 +31,7 @@ export function DataTable<T>({
   onSelectionChange?: (ids: string[]) => void;
   actions?: (row: T) => ReactNode;
   onRowClick?: (row:T)=>void;
+  showPagination?: boolean;
 }) {
   const id = useId();
   const [searchParams,setSearchParams]=useSearchParams();
@@ -194,7 +196,7 @@ export function DataTable<T>({
       {!loading && !visible.length && (
         <p className="p-10 text-center text-slate-500">No matching items.</p>
       )}
-      {(searchText || onSelectionChange) && (
+      {(searchText || onSelectionChange || showPagination) && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 p-3 text-xs dark:border-slate-800">
           <span>
             {filtered.length} items{" "}

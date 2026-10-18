@@ -1,3 +1,4 @@
+import {ProductWorkspace} from '../../components/products/ProductWorkspace';
 import {useSettings} from '../../hooks/useSettings';
 import {
   productFormSchema,
@@ -23,7 +24,6 @@ import {
 } from "../../components/forms/Fields";
 import { ImageUpload } from "../../components/forms/ImageUpload";
 import { ProductImage } from "../../components/common/ProductImage";
-import { PageActions } from "../../components/common/PageActions";
 import { ConfirmDialog } from "../../components/common/ConfirmDialog";
 import { productService } from "../../services/productService";
 import {
@@ -161,10 +161,9 @@ function ProductForm({ id }: { id?: string }) {
       </section>
     );
   return (
-    <>
-      <PageActions title={id ? "Edit Product" : "Add Product"} />
+    <ProductWorkspace title={id ? "Edit Product" : "Add Product"}>
       <form
-        className="space-y-5"
+        className="product-form"
         onSubmit={(event) => {
           void handleSubmit((v, e) =>
             save(
@@ -176,14 +175,15 @@ function ProductForm({ id }: { id?: string }) {
           )(event);
         }}
       >
-        <section className="card space-y-4">
-          <h2 className="text-base font-semibold">Basic info</h2>
+        <div className="product-form-main"><section className="card space-y-4">
+          <h2 className="text-base font-semibold">Product Information</h2>
           <TextInput
             label="Product name"
             {...register("name")}
             error={errors.name?.message}
           />
-          <div className="flex items-end gap-3">
+          <Textarea label="Description" rows={3} {...register("description")} />
+          <div className="grid gap-4 sm:grid-cols-2"><div className="flex items-end gap-3">
             <div className="flex-1">
               <TextInput
                 label="SKU"
@@ -208,10 +208,7 @@ function ProductForm({ id }: { id?: string }) {
             label="Barcode"
             {...register("barcode")}
             error={errors.barcode?.message}
-          />
-        </section>
-        <section className="card space-y-4">
-          <h2 className="text-base font-semibold">Classification</h2>
+          /></div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Select
               label="Category"
@@ -272,7 +269,7 @@ function ProductForm({ id }: { id?: string }) {
           </div>
         </section>
         <section className="card space-y-4">
-          <h2 className="text-base font-semibold">Pricing</h2>
+          <h2 className="text-base font-semibold">Pricing &amp; Tax</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <NumberInput
               label="Cost price (PHP)"
@@ -341,24 +338,7 @@ function ProductForm({ id }: { id?: string }) {
           />
         )}
         <section className="card space-y-4">
-          <h2 className="text-base font-semibold">Image</h2>
-          {current?.imageId && !blob && (
-            <div className="max-w-32">
-              <ProductImage
-                imageId={current.imageId}
-                name={current.name}
-                large
-              />
-            </div>
-          )}
-          <ImageUpload
-            key={imageKey}
-            onChange={setBlob}
-            onBusyChange={setImageBusy}
-          />
-        </section>
-        <section className="card space-y-4">
-          <Textarea label="Description" rows={4} {...register("description")} />
+          <h2 className="text-base font-semibold">Product Availability</h2>
           <Switch
             label="Active product"
             checked={values.status === "active"}
@@ -369,6 +349,26 @@ function ProductForm({ id }: { id?: string }) {
             }
           />
         </section>
+        </div>
+        <section className="card space-y-4 product-form-media">
+          <h2 className="text-base font-semibold">Product Images &amp; Media</h2>
+          {current && !blob && (
+            <div className="max-w-32">
+              <ProductImage
+                imageId={current.imageId}
+                name={current.name}
+                large
+              />
+            </div>
+          )}
+          <p className="text-xs text-slate-500">Upload a cover image for this product. JPEG, PNG and WebP are supported.</p>
+          <ImageUpload
+            visual
+            key={imageKey}
+            onChange={setBlob}
+            onBusyChange={setImageBusy}
+          />
+        </section>
         {error && (
           <p
             role="alert"
@@ -377,7 +377,7 @@ function ProductForm({ id }: { id?: string }) {
             {error}
           </p>
         )}
-        <div className="flex flex-wrap justify-end gap-3">
+        <div className="product-form-footer flex flex-wrap justify-end gap-3">
           <button
             className="btn"
             type="button"
@@ -408,6 +408,6 @@ function ProductForm({ id }: { id?: string }) {
           onConfirm={() => blocker.proceed()}
         />
       )}
-    </>
+    </ProductWorkspace>
   );
 }

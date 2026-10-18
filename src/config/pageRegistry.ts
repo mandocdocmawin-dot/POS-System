@@ -78,6 +78,9 @@ export const pageLoaders = {
   subcategories: () => import("../pages/products/SubcategoriesPage"),
   brands: () => import("../pages/products/BrandsPage"),
   units: () => import("../pages/products/UnitsPage"),
+  productRecords:()=>import('../pages/products/ProductRecordsPage'),
+  productBulk:()=>import('../pages/products/ProductBulkPage'),
+  productBarcode:()=>import('../pages/products/BarcodePage'),
   products: () => import("../pages/products/ProductsPage"),
   productForm: () => import("../pages/products/ProductFormPage"),
   variants: () => import("../pages/products/VariantsPage"),
@@ -94,6 +97,9 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/products/reviews':'productRecords','/products/warranty':'productRecords',
+ '/products/bulk-import':'productBulk','/products/bulk-export':'productBulk',
+ '/products/print-barcode':'productBarcode',
  '/blank':'blank8',
  '/activity-history':'activity8',
  '/landing':'landing8',

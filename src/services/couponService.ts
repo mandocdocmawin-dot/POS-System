@@ -1,3 +1,4 @@
+import {sumCentavos,toCentavos,fromCentavos} from '../utils/pos';
 import {useCouponStore} from '../store/useCouponStore';
 import {useOrderStore} from '../store/useOrderStore';
 import {couponSchema,type Coupon} from '../types/settings';
@@ -6,7 +7,7 @@ import {requirePermission} from './authService';
 import {activityService} from './activityService';
 import {localTransaction} from './localTransaction';
 export const couponService={
- list:()=>{const orders=useOrderStore.getState().orders;return structuredClone(useCouponStore.getState().coupons.map(c=>({...c,usedCount:couponUsage(c.id,orders),effectiveStatus:effectiveCouponStatus(c,orders),totalDiscount:orders.filter(o=>o.orderStatus!=='cancelled'&&o.coupon?.couponId===c.id).reduce((n,o)=>n+(o.coupon?.amount??0),0)})));},
+ list:()=>{const orders=useOrderStore.getState().orders;return structuredClone(useCouponStore.getState().coupons.map(c=>({...c,usedCount:couponUsage(c.id,orders),effectiveStatus:effectiveCouponStatus(c,orders),expiringSoon:!!c.endsAt&&Date.parse(c.endsAt)>Date.now()&&Date.parse(c.endsAt)<Date.now()+7*86400000,totalDiscount:fromCentavos(sumCentavos(orders.filter(o=>o.orderStatus!=='cancelled'&&o.coupon?.couponId===c.id).map(o=>toCentavos(o.coupon?.amount??0))))})));},
  get:(id:string)=>structuredClone(useCouponStore.getState().coupons.find(c=>c.id===id)),
  find:(code:string)=>structuredClone(useCouponStore.getState().coupons.find(c=>c.code===code.trim().toUpperCase())),
  validate:(code:string,ctx:Omit<CouponContext,'orders'>)=>validateCoupon(couponService.find(code),{...ctx,orders:useOrderStore.getState().orders}),

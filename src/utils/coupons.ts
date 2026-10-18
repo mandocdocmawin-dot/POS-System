@@ -1,6 +1,6 @@
 import type { Coupon } from '../types/settings';
 import type { Customer, Order } from '../types/pos';
-import { multiplyCentavos } from './pos';
+import { percentCentavos } from './pos';
 export type CouponFailure='not_found'|'inactive'|'not_started'|'expired'|'used_up'|'customer_limit'|'min_subtotal'|'tier_not_eligible'|'branch_not_allowed'|'no_eligible_items'|'conflicts_with_manual_discount'|'customer_required';
 export interface CouponContext { lines:{id:string;productId:string;categoryId?:string;base:number;discounted:boolean}[]; subtotal:number; branchId:string; customer?:Pick<Customer,'id'|'tier'|'isWalkIn'>; orders:Pick<Order,'orderStatus'|'customerId'|'coupon'>[]; now?:string; manualDiscount?:boolean; stacking?:'none'|'with_item_discounts' }
 export function couponUsage(couponId:string, orders:CouponContext['orders'],customerId?:string) {return orders.filter(o=>o.orderStatus!=='cancelled'&&o.coupon?.couponId===couponId&&(!customerId||o.customerId===customerId)).length;}
@@ -25,7 +25,7 @@ export function validateCoupon(coupon:Coupon|undefined,ctx:CouponContext):{ok:tr
  if(coupon.branchIds?.length&&!coupon.branchIds.includes(ctx.branchId))return fail('branch_not_allowed');if(ctx.manualDiscount)return fail('conflicts_with_manual_discount');
  const bases=ctx.lines.map(l=>(coupon.productIds?.length&&!coupon.productIds.includes(l.productId))||(coupon.categoryIds?.length&&(!l.categoryId||!coupon.categoryIds.includes(l.categoryId)))||((coupon.excludeDiscountedItems||ctx.stacking==='none')&&l.discounted)?0:l.base);
  const eligible=bases.reduce((a,b)=>a+b,0);if(!eligible)return fail('no_eligible_items');
- const amount=Math.min(eligible,coupon.type==='fixed'?coupon.value:multiplyCentavos(eligible,coupon.value/100),coupon.type==='percent'?(coupon.maxDiscount??Number.MAX_SAFE_INTEGER):Number.MAX_SAFE_INTEGER);
+ const amount=Math.min(eligible,coupon.type==='fixed'?coupon.value:percentCentavos(eligible,coupon.value),coupon.type==='percent'?(coupon.maxDiscount??Number.MAX_SAFE_INTEGER):Number.MAX_SAFE_INTEGER);
  return {ok:true,discount:amount,perLine:distributeDiscount(amount,bases)};
 }
 export const couponReasons:Record<CouponFailure,string>={not_found:'Coupon not found.',inactive:'Coupon is inactive.',not_started:'Coupon has not started.',expired:'Coupon has expired.',used_up:'Coupon usage limit reached.',customer_limit:'Customer usage limit reached.',min_subtotal:'Cart does not meet the minimum spend.',tier_not_eligible:'Customer tier is not eligible.',branch_not_allowed:'Coupon is not available at this branch.',no_eligible_items:'No eligible items in the cart.',conflicts_with_manual_discount:'Replace the manual order discount before using a coupon.',customer_required:'Choose a named customer for this coupon.'};

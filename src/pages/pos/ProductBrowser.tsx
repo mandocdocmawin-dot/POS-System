@@ -20,7 +20,7 @@ export function ProductBrowser() {
     [search, setSearch] = useState("");
   const [brandModal,setBrandModal]=useState(false),[filterModal,setFilterModal]=useState(false),[stockOnly,setStockOnly]=useState(false);
   const [variantProduct,setVariantProduct]=useState<Product|null>(null);
-  const add=(p:Product,variantId?:string)=>{if(p.hasVariants&&!variantId){setVariantProduct(p);return;}try{posService.add(p.id,variantId);setVariantProduct(null);autoFocus&&requestAnimationFrame(()=>document.getElementById('pos-search')?.focus());}catch(e){toast.error(errorMessage(e));}};
+  const add=(p:Product,variantId?:string)=>{if(p.hasVariants&&!variantId){setVariantProduct(p);return;}try{posService.add(p.id,variantId);setVariantProduct(null);if(autoFocus)requestAnimationFrame(()=>document.getElementById('pos-search')?.focus());}catch(e){toast.error(errorMessage(e));}};
   const focusSearch=()=>requestAnimationFrame(()=>{if(!document.querySelector('dialog[open]'))document.getElementById('pos-search')?.focus();});
   const scan=()=>{const query=search.trim().toLowerCase();if(!query)return;for(const p of productService.list().filter(p=>p.status==='active')){const v=productService.variants(p.id).find(v=>v.sku.toLowerCase()===query||v.barcode?.toLowerCase()===query);if(v||p.sku.toLowerCase()===query||p.barcode?.toLowerCase()===query){add(p,v?.id);setSearch('');focusSearch();return;}}toast.error('No exact barcode or SKU match.');};
   const categories = categoryService

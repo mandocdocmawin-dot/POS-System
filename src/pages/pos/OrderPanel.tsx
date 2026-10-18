@@ -3,7 +3,7 @@ import {usePermission} from '../../hooks/usePermission';
 import {Can} from '../../components/auth/Can';
 import {useState,type RefObject} from 'react';
 import {ShoppingBag,Trash2,MoreHorizontal,Pencil,Pause,CreditCard,Receipt,Clock3,History,X} from 'lucide-react';
-import type {Payment} from '../../types/pos';
+import type {Payment,Discount} from '../../types/pos';
 import {useLocalData} from '../../services/useLocalData';
 import {posService} from '../../services/posService';
 import {orderService} from '../../services/orderService';
@@ -29,6 +29,7 @@ import {ConfirmDialog} from '../../components/common/ConfirmDialog';
 export function OrderPanel({isPhone=false,mobileOpen=false,onClose,panelRef}:{isPhone?:boolean;mobileOpen?:boolean;onClose?:()=>void;panelRef?:RefObject<HTMLElement|null>}) {
  const {can}=usePermission();
  useLocalData();const s=posService.state(),totals=posService.totals();
+ const [replaceCoupon,setReplaceCoupon]=useState<{discount:Discount;approver?:string}>();
  const [discountOpen,setDiscountOpen]=useState(false),[selected,setSelected]=useState(''),[clear,setClear]=useState(false);
  const [customerOpen,setCustomerOpen]=useState(false),[holding,setHolding]=useState(false),[heldOpen,setHeldOpen]=useState(false),[noteOpen,setNoteOpen]=useState(false);
  const [paymentOpen,setPaymentOpen]=useState(false),[payLaterOpen,setPayLaterOpen]=useState(false),[historyOpen,setHistoryOpen]=useState(false);
@@ -41,7 +42,7 @@ export function OrderPanel({isPhone=false,mobileOpen=false,onClose,panelRef}:{is
   <CustomerCard customer={customerService.get(s.customerId)} onSelect={()=>setCustomerOpen(true)}/>
   <div className="my-3 flex items-center justify-between"><h3 className="text-sm font-semibold">Order Detail (Items: {s.cart.length})</h3><button className="text-xs text-red-500" onClick={()=>setClear(true)}>Clear All</button></div>
   {s.cart.length?totals.items.map(l=><CartLine key={`${l.id}-${l.quantity}`} line={l} selected={selected===l.id} onSelect={()=>setSelected(l.id)}/>):<div className="flex flex-1 flex-col items-center justify-center gap-3 py-12 text-slate-400"><ShoppingBag size={65} strokeWidth={1}/><p>Your cart is empty</p><p className="text-xs">Select products to start a sale.</p></div>}
-  <Can permission="pos:coupon"><CouponControl/></Can><CartSummary totals={totals} onDiscount={()=>setDiscountOpen(v=>!v)}/>{discountOpen&&<DiscountEditor value={s.orderDiscount} onSave={(v,approver)=>{posService.discount(v,approver);}} onClose={()=>setDiscountOpen(false)}/>}
+  <Can permission="pos:coupon"><CouponControl/></Can><CartSummary totals={totals} onDiscount={()=>setDiscountOpen(v=>!v)}/>{discountOpen&&<DiscountEditor value={s.orderDiscount} onSave={(v,approver)=>{if(s.couponCode&&v.value>0)setReplaceCoupon({discount:v,approver});else posService.discount(v,approver);}} onClose={()=>setDiscountOpen(false)}/>}
   {s.note&&<p className="mt-3 break-words text-xs text-slate-500">Note: {s.note}</p>}
   <button className="btn-primary mt-4 w-full disabled:opacity-40" disabled={!s.cart.length} onClick={()=>setPaymentOpen(true)}>Process to Payment →</button>
   <div className="mt-4 grid grid-cols-5 gap-1">{actions.map(a=><button key={a.label} disabled={a.disabled||!can(a.permission)} title={!can(a.permission)?"Your role can't do this":undefined} className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg border border-slate-200 px-1 py-2 text-[10px] hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:hover:bg-slate-800" onClick={a.click}><a.icon size={16}/><span>{a.label}{a.label==='Hold'?` (${holdService.list().length})`:''}</span></button>)}</div>
@@ -53,6 +54,7 @@ export function OrderPanel({isPhone=false,mobileOpen=false,onClose,panelRef}:{is
   {payLaterOpen&&<PayLaterModal onClose={()=>setPayLaterOpen(false)} onSelectCustomer={()=>{setPayLaterOpen(false);setCustomerOpen(true);toast.info('Select a customer, then choose Pay Later again.');}} onComplete={order=>{setPayLaterOpen(false);setReceipt(order);toast.success('Credit sale saved: '+order.orderNo);}}/>}
   <PosHistoryDrawer open={historyOpen} onClose={()=>setHistoryOpen(false)}/><HeldOrdersDrawer open={heldOpen} onClose={()=>setHeldOpen(false)}/>
   <ReceiptDialog receipt={receipt} onClose={()=>setReceipt(null)}/>
+  <ConfirmDialog open={!!replaceCoupon} title="Replace coupon with order discount?" message="A coupon and manual order discount cannot be combined." onClose={()=>setReplaceCoupon(undefined)} onConfirm={()=>{if(replaceCoupon)posService.discount(replaceCoupon.discount,replaceCoupon.approver,true);}}/>
   <ConfirmDialog open={clear} title="Clear current cart?" message="All current items, discounts, customer and notes will be cleared." onClose={()=>setClear(false)} onConfirm={()=>{posService.clear();}}/>
  </aside>;
 }

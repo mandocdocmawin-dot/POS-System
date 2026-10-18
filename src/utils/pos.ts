@@ -15,8 +15,10 @@ function rounded(n: bigint, d: bigint): number {
   if (result > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error('Amount exceeds the supported money range.');
   return Number(result);
 }
+export function percentCentavos(cents:number,percent:number):number{const [n,d]=fraction(percent);return rounded(BigInt(cents)*n,d*100n);}
 export function toCentavos(value: number): number { const [n,d] = fraction(value); return rounded(n * 100n,d); }
 export function fromCentavos(value: number): number { if (!Number.isSafeInteger(value)) throw new Error('Centavos must be safe integers.'); return value / 100; }
+export function divideCentavos(cents:number,divisor:number):number{const [n,d]=fraction(divisor);return rounded(BigInt(cents)*d,n);}
 export function multiplyCentavos(cents: number, quantity: number): number { const [n,d] = fraction(quantity); return rounded(BigInt(cents) * n,d); }
 export function ratioCentavos(cents: number, numerator: number, denominator: number): number { return rounded(BigInt(cents) * BigInt(numerator),BigInt(denominator)); }
 export function sumCentavos(values: number[]): number { const sum=values.reduce((a,b)=>a+BigInt(b),0n);return rounded(sum,1n); }

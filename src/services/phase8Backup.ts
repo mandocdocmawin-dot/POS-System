@@ -1,3 +1,4 @@
+import {version} from '../../package.json';
 import {useCalendarStore} from '../store/useCalendarStore';
 import {useNotificationStore} from '../store/useNotificationStore';
 import {useChatStore} from '../store/useChatStore';
@@ -20,5 +21,5 @@ useEmailStore.setState({emails:d.emails,templates:d.templates},true);
 useTicketStore.setState({tickets:d.tickets,ticketCounters:d.ticketCounters},true);
 useContentStore.setState({faqs:d.faqs,plans:d.plans,subscription:d.subscription,invoices:d.invoices,votes:d.votes,recentSearches:d.recentSearches},true);
 useDocumentStore.setState({documents:d.documents},true);useNoteStore.setState({notes:d.notes},true);useGuideStore.setState(d.guide,true);useErrorLogStore.setState({errors:d.errors},true);
-if(d.meta)useMetaStore.setState(d.meta,true);else useMetaStore.setState({lastBackupAt:undefined});
+if(d.meta)useMetaStore.setState({...d.meta,appVersion:version,schemaVersion:8},true);else useMetaStore.setState({lastBackupAt:undefined});
 }

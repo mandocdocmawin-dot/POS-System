@@ -65,6 +65,7 @@ export const backupSchema = z
 export type Backup = z.infer<typeof backupSchema>;
 export function validateBackup(input: unknown): Backup {
   const d = backupSchema.parse(input);
+  if((d.phase8.meta?.schemaVersion??0)>8)throw new Error('Invalid backup: saved by a newer app schema.');
   const migrated=migrateBranchData({branches:d.phase7.branches,movements:d.movements,orders:d.orders,heldOrders:d.heldOrders,purchases:d.purchases,accounts:d.phase6.accounts,attendance:d.phase5.records});
   d.movements=migrated.movements;d.orders=migrated.orders;d.heldOrders=migrated.heldOrders;d.purchases=migrated.purchases;d.phase6.accounts=migrated.accounts;d.phase5.records=migrated.attendance;
   const branchIds=d.phase7.branches.map(b=>b.id);

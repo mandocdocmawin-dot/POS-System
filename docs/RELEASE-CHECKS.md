@@ -5,7 +5,7 @@ Checked locally on 2026-10-18. No push or deployment was performed.
 ## Automated and browser evidence
 
 - TypeScript and ESLint (including jsx-a11y) pass without errors or warnings.
-- Vitest: 385 tests in 29 files pass, including earlier-phase financial consistency and new landing contact validation/ownership checks.
+- Vitest: 386 tests in 29 files pass, including earlier-phase financial consistency and new landing contact validation/ownership checks.
 - Production builds generate the manifest, icons, local fonts, service worker and SPA fallback. WebP landing assets are precached.
 - Initial JavaScript is approximately 216 KiB gzip against the 250 KiB budget. The modular chart chunk remains under 200 KiB; all other route chunks remain under 120 KiB.
 - Analyze writes the ignored .phase-tools/bundle.html report.

@@ -1,0 +1,2164 @@
+{
+  "date": "2026-10-18",
+  "tool": "Codex in-app browser",
+  "scope": "Route loading, headings and document overflow for 89 distinct non-record screens; aliases and record-specific flows are in the manual checklist. Contrast scan uses computed DOM text/background colors, not axe certification.",
+  "layoutCases": [
+    {
+      "heading": "My account",
+      "path": "/account/account",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Billing & plans",
+      "path": "/account/billing-plans",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "My activity logs",
+      "path": "/account/logs",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Notification preferences",
+      "path": "/account/notification",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Security",
+      "path": "/account/security",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "My monthly statement",
+      "path": "/account/statements",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Activity history",
+      "path": "/activity-history",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Blank starter page",
+      "path": "/blank",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/day-view",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/default",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/list-view",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/timeline",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/week-view",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/default",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/group",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Coming soon",
+      "path": "/coming-soon",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Contact Us",
+      "path": "/contact-us",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Email",
+      "path": "/email/mailbox",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Email templates",
+      "path": "/email/templates",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Frequently asked questions",
+      "path": "/faq-s",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Help Center",
+      "path": "/help-center",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Licenses",
+      "path": "/licenses",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Manage plans",
+      "path": "/pricing/admin",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Find your plan",
+      "path": "/pricing/user",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Privacy policy",
+      "path": "/privacy-policy",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/activity",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/documents",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/notes",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/overview",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Dashboard",
+      "path": "/",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Bank accounts",
+      "path": "/accounts/bank-accounts",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Expenses",
+      "path": "/accounts/expenses",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Income",
+      "path": "/accounts/income",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Money transfer",
+      "path": "/accounts/money-transfer",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Customer Activity Log",
+      "path": "/customers/activity-log",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Add Customer",
+      "path": "/customers/add-customer",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Customers",
+      "path": "/customers/customer-list",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Wallet Balance",
+      "path": "/customers/wallet-balance",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Stock Adjustment",
+      "path": "/inventory/stock-adjustment",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Stock In",
+      "path": "/inventory/stock-in",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Stock List",
+      "path": "/inventory/stock-list",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Stock Out",
+      "path": "/inventory/stock-out",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Stock transfers",
+      "path": "/inventory/stock-transfer",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Add store",
+      "path": "/multi-store/add-store",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Stores",
+      "path": "/multi-store/store-list",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "All Orders",
+      "path": "/orders/all-orders",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Invoices",
+      "path": "/orders/invoices",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Refunded",
+      "path": "/orders/refunded",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "All Products",
+      "path": "/pos",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Add Product",
+      "path": "/products/add-product",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "All Products",
+      "path": "/products/all-products",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Brands",
+      "path": "/products/brands",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Categories",
+      "path": "/products/categories",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Subcategories",
+      "path": "/products/subcategories",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Units",
+      "path": "/products/units",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Variants",
+      "path": "/products/variants",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Add Purchase",
+      "path": "/purchases/add-purchase",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Purchase Payments",
+      "path": "/purchases/payments",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Purchases",
+      "path": "/purchases/purchase",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Purchase Returns",
+      "path": "/purchases/returns",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Expense report",
+      "path": "/reports/expense",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Finance report",
+      "path": "/reports/finance",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Product report",
+      "path": "/reports/product",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Purchases report",
+      "path": "/reports/purchases",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Sales report",
+      "path": "/reports/sales",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Supplier report",
+      "path": "/reports/supplier",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Coupons",
+      "path": "/settings/coupons",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Currencies",
+      "path": "/settings/currencies",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "General",
+      "path": "/settings/general",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Invoices",
+      "path": "/settings/invoices",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Manager approvals",
+      "path": "/settings/manager",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Payment Gateway",
+      "path": "/settings/payment-gateway",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "POS",
+      "path": "/settings/pos",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Tax",
+      "path": "/settings/tax",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Add staff",
+      "path": "/staff/add-staff",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Attendance",
+      "path": "/staff/attendance",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Holidays",
+      "path": "/staff/holidays",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Payroll",
+      "path": "/staff/payroll",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Role permissions",
+      "path": "/staff/role-permission",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Staff schedule",
+      "path": "/staff/schedule",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Staff",
+      "path": "/staff/staff-list",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Add Supplier",
+      "path": "/suppliers/add-supplier",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Supplier Balance Report",
+      "path": "/suppliers/balance-report",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Supplier Payments",
+      "path": "/suppliers/payments",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "Suppliers",
+      "path": "/suppliers/supplier-list",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Your shop.Your browser.",
+      "path": "/landing",
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "heading": "A little care for your store",
+      "path": "/maintenance",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "This page wandered off",
+      "path": "/errors/404",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "Something went wrong",
+      "path": "/errors/500",
+      "scroll": 360,
+      "width": 360
+    },
+    {
+      "heading": "My account",
+      "path": "/account/account",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Billing & plans",
+      "path": "/account/billing-plans",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "My activity logs",
+      "path": "/account/logs",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Notification preferences",
+      "path": "/account/notification",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Security",
+      "path": "/account/security",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "My monthly statement",
+      "path": "/account/statements",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Activity history",
+      "path": "/activity-history",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Blank starter page",
+      "path": "/blank",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/day-view",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/default",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/list-view",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/timeline",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/week-view",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/default",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/group",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Coming soon",
+      "path": "/coming-soon",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Contact Us",
+      "path": "/contact-us",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Email",
+      "path": "/email/mailbox",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Email templates",
+      "path": "/email/templates",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Frequently asked questions",
+      "path": "/faq-s",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Help Center",
+      "path": "/help-center",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Licenses",
+      "path": "/licenses",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Manage plans",
+      "path": "/pricing/admin",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Find your plan",
+      "path": "/pricing/user",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Privacy policy",
+      "path": "/privacy-policy",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/activity",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/documents",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/notes",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/overview",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Dashboard",
+      "path": "/",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Bank accounts",
+      "path": "/accounts/bank-accounts",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Expenses",
+      "path": "/accounts/expenses",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Income",
+      "path": "/accounts/income",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Money transfer",
+      "path": "/accounts/money-transfer",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Customer Activity Log",
+      "path": "/customers/activity-log",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Add Customer",
+      "path": "/customers/add-customer",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Customers",
+      "path": "/customers/customer-list",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Wallet Balance",
+      "path": "/customers/wallet-balance",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Stock Adjustment",
+      "path": "/inventory/stock-adjustment",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Stock In",
+      "path": "/inventory/stock-in",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Stock List",
+      "path": "/inventory/stock-list",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Stock Out",
+      "path": "/inventory/stock-out",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Stock transfers",
+      "path": "/inventory/stock-transfer",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Add store",
+      "path": "/multi-store/add-store",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Stores",
+      "path": "/multi-store/store-list",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "All Orders",
+      "path": "/orders/all-orders",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Invoices",
+      "path": "/orders/invoices",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Refunded",
+      "path": "/orders/refunded",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "All Products",
+      "path": "/pos",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Add Product",
+      "path": "/products/add-product",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "All Products",
+      "path": "/products/all-products",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Brands",
+      "path": "/products/brands",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Categories",
+      "path": "/products/categories",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Subcategories",
+      "path": "/products/subcategories",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Units",
+      "path": "/products/units",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Variants",
+      "path": "/products/variants",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Add Purchase",
+      "path": "/purchases/add-purchase",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Purchase Payments",
+      "path": "/purchases/payments",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Purchases",
+      "path": "/purchases/purchase",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Purchase Returns",
+      "path": "/purchases/returns",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Expense report",
+      "path": "/reports/expense",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Finance report",
+      "path": "/reports/finance",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Product report",
+      "path": "/reports/product",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Purchases report",
+      "path": "/reports/purchases",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Sales report",
+      "path": "/reports/sales",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Supplier report",
+      "path": "/reports/supplier",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Coupons",
+      "path": "/settings/coupons",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Currencies",
+      "path": "/settings/currencies",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "General",
+      "path": "/settings/general",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Invoices",
+      "path": "/settings/invoices",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Manager approvals",
+      "path": "/settings/manager",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Payment Gateway",
+      "path": "/settings/payment-gateway",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "POS",
+      "path": "/settings/pos",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Tax",
+      "path": "/settings/tax",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Add staff",
+      "path": "/staff/add-staff",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Attendance",
+      "path": "/staff/attendance",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Holidays",
+      "path": "/staff/holidays",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Payroll",
+      "path": "/staff/payroll",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Role permissions",
+      "path": "/staff/role-permission",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Staff schedule",
+      "path": "/staff/schedule",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Staff",
+      "path": "/staff/staff-list",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Add Supplier",
+      "path": "/suppliers/add-supplier",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Supplier Balance Report",
+      "path": "/suppliers/balance-report",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Supplier Payments",
+      "path": "/suppliers/payments",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "Suppliers",
+      "path": "/suppliers/supplier-list",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Your shop.Your browser.",
+      "path": "/landing",
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "heading": "A little care for your store",
+      "path": "/maintenance",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "This page wandered off",
+      "path": "/errors/404",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "Something went wrong",
+      "path": "/errors/500",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "heading": "My account",
+      "path": "/account/account",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Billing & plans",
+      "path": "/account/billing-plans",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "My activity logs",
+      "path": "/account/logs",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Notification preferences",
+      "path": "/account/notification",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Security",
+      "path": "/account/security",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "My monthly statement",
+      "path": "/account/statements",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Activity history",
+      "path": "/activity-history",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Blank starter page",
+      "path": "/blank",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/day-view",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/default",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/list-view",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/timeline",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/week-view",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/default",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/group",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Coming soon",
+      "path": "/coming-soon",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Contact Us",
+      "path": "/contact-us",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Email",
+      "path": "/email/mailbox",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Email templates",
+      "path": "/email/templates",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Frequently asked questions",
+      "path": "/faq-s",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Help Center",
+      "path": "/help-center",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Licenses",
+      "path": "/licenses",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Manage plans",
+      "path": "/pricing/admin",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Find your plan",
+      "path": "/pricing/user",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Privacy policy",
+      "path": "/privacy-policy",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/activity",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/documents",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/notes",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/overview",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Dashboard",
+      "path": "/",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Bank accounts",
+      "path": "/accounts/bank-accounts",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Expenses",
+      "path": "/accounts/expenses",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Income",
+      "path": "/accounts/income",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Money transfer",
+      "path": "/accounts/money-transfer",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Customer Activity Log",
+      "path": "/customers/activity-log",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Add Customer",
+      "path": "/customers/add-customer",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Customers",
+      "path": "/customers/customer-list",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Wallet Balance",
+      "path": "/customers/wallet-balance",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Stock Adjustment",
+      "path": "/inventory/stock-adjustment",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Stock In",
+      "path": "/inventory/stock-in",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Stock List",
+      "path": "/inventory/stock-list",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Stock Out",
+      "path": "/inventory/stock-out",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Stock transfers",
+      "path": "/inventory/stock-transfer",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Add store",
+      "path": "/multi-store/add-store",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Stores",
+      "path": "/multi-store/store-list",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "All Orders",
+      "path": "/orders/all-orders",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Invoices",
+      "path": "/orders/invoices",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Refunded",
+      "path": "/orders/refunded",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "All Products",
+      "path": "/pos",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Add Product",
+      "path": "/products/add-product",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "All Products",
+      "path": "/products/all-products",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Brands",
+      "path": "/products/brands",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Categories",
+      "path": "/products/categories",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Subcategories",
+      "path": "/products/subcategories",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Units",
+      "path": "/products/units",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Variants",
+      "path": "/products/variants",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Add Purchase",
+      "path": "/purchases/add-purchase",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Purchase Payments",
+      "path": "/purchases/payments",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Purchases",
+      "path": "/purchases/purchase",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Purchase Returns",
+      "path": "/purchases/returns",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "path": "/reports/expense",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "path": "/reports/finance",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "path": "/reports/product",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "path": "/reports/purchases",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "path": "/reports/sales",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "path": "/reports/supplier",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Coupons",
+      "path": "/settings/coupons",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Currencies",
+      "path": "/settings/currencies",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "General",
+      "path": "/settings/general",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Invoices",
+      "path": "/settings/invoices",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Manager approvals",
+      "path": "/settings/manager",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Payment Gateway",
+      "path": "/settings/payment-gateway",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "POS",
+      "path": "/settings/pos",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Tax",
+      "path": "/settings/tax",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Add staff",
+      "path": "/staff/add-staff",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Attendance",
+      "path": "/staff/attendance",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Holidays",
+      "path": "/staff/holidays",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Payroll",
+      "path": "/staff/payroll",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Role permissions",
+      "path": "/staff/role-permission",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Staff schedule",
+      "path": "/staff/schedule",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Staff",
+      "path": "/staff/staff-list",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Add Supplier",
+      "path": "/suppliers/add-supplier",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Supplier Balance Report",
+      "path": "/suppliers/balance-report",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Supplier Payments",
+      "path": "/suppliers/payments",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "Suppliers",
+      "path": "/suppliers/supplier-list",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Your shop.Your browser.",
+      "path": "/landing",
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "heading": "A little care for your store",
+      "path": "/maintenance",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "This page wandered off",
+      "path": "/errors/404",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "Something went wrong",
+      "path": "/errors/500",
+      "scroll": 1024,
+      "width": 1024
+    },
+    {
+      "heading": "My account",
+      "path": "/account/account",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Billing & plans",
+      "path": "/account/billing-plans",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "My activity logs",
+      "path": "/account/logs",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Notification preferences",
+      "path": "/account/notification",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Security",
+      "path": "/account/security",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "My monthly statement",
+      "path": "/account/statements",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Activity history",
+      "path": "/activity-history",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Blank starter page",
+      "path": "/blank",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/day-view",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/default",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/list-view",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/timeline",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Calendar",
+      "path": "/calendar/week-view",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/default",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Chat",
+      "path": "/chat/group",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Coming soon",
+      "path": "/coming-soon",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Contact Us",
+      "path": "/contact-us",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Email",
+      "path": "/email/mailbox",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Email templates",
+      "path": "/email/templates",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Frequently asked questions",
+      "path": "/faq-s",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Help Center",
+      "path": "/help-center",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Licenses",
+      "path": "/licenses",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Manage plans",
+      "path": "/pricing/admin",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Find your plan",
+      "path": "/pricing/user",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Privacy policy",
+      "path": "/privacy-policy",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/activity",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/documents",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/notes",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Demo Admin",
+      "path": "/profile/overview",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Dashboard",
+      "path": "/",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Bank accounts",
+      "path": "/accounts/bank-accounts",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Expenses",
+      "path": "/accounts/expenses",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Income",
+      "path": "/accounts/income",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Money transfer",
+      "path": "/accounts/money-transfer",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Customer Activity Log",
+      "path": "/customers/activity-log",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Add Customer",
+      "path": "/customers/add-customer",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Customers",
+      "path": "/customers/customer-list",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Wallet Balance",
+      "path": "/customers/wallet-balance",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Stock Adjustment",
+      "path": "/inventory/stock-adjustment",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Stock In",
+      "path": "/inventory/stock-in",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Stock List",
+      "path": "/inventory/stock-list",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Stock Out",
+      "path": "/inventory/stock-out",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Stock transfers",
+      "path": "/inventory/stock-transfer",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Add store",
+      "path": "/multi-store/add-store",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Stores",
+      "path": "/multi-store/store-list",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "All Orders",
+      "path": "/orders/all-orders",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Invoices",
+      "path": "/orders/invoices",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Refunded",
+      "path": "/orders/refunded",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "All Products",
+      "path": "/pos",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Add Product",
+      "path": "/products/add-product",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "All Products",
+      "path": "/products/all-products",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Brands",
+      "path": "/products/brands",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Categories",
+      "path": "/products/categories",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Subcategories",
+      "path": "/products/subcategories",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Units",
+      "path": "/products/units",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Variants",
+      "path": "/products/variants",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Add Purchase",
+      "path": "/purchases/add-purchase",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Purchase Payments",
+      "path": "/purchases/payments",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Purchases",
+      "path": "/purchases/purchase",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Purchase Returns",
+      "path": "/purchases/returns",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "path": "/reports/expense",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "path": "/reports/finance",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "path": "/reports/product",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "path": "/reports/purchases",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "path": "/reports/sales",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "path": "/reports/supplier",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Coupons",
+      "path": "/settings/coupons",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Currencies",
+      "path": "/settings/currencies",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "General",
+      "path": "/settings/general",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Invoices",
+      "path": "/settings/invoices",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Manager approvals",
+      "path": "/settings/manager",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Payment Gateway",
+      "path": "/settings/payment-gateway",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "POS",
+      "path": "/settings/pos",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Tax",
+      "path": "/settings/tax",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Add staff",
+      "path": "/staff/add-staff",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Attendance",
+      "path": "/staff/attendance",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Holidays",
+      "path": "/staff/holidays",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Payroll",
+      "path": "/staff/payroll",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Role permissions",
+      "path": "/staff/role-permission",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Staff schedule",
+      "path": "/staff/schedule",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Staff",
+      "path": "/staff/staff-list",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Add Supplier",
+      "path": "/suppliers/add-supplier",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Supplier Balance Report",
+      "path": "/suppliers/balance-report",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Supplier Payments",
+      "path": "/suppliers/payments",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "Suppliers",
+      "path": "/suppliers/supplier-list",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Your shop.Your browser.",
+      "path": "/landing",
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "heading": "A little care for your store",
+      "path": "/maintenance",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "This page wandered off",
+      "path": "/errors/404",
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "heading": "Something went wrong",
+      "path": "/errors/500",
+      "scroll": 1440,
+      "width": 1440
+    }
+  ],
+  "newLandingBreakpoints": [
+    {
+      "scroll": 350,
+      "width": 360
+    },
+    {
+      "scroll": 758,
+      "width": 768
+    },
+    {
+      "scroll": 1014,
+      "width": 1024
+    },
+    {
+      "scroll": 1430,
+      "width": 1440
+    }
+  ],
+  "newLandingVerified": [
+    "Live Preview globe opens /landing",
+    "Yearly pricing updates",
+    "FAQ accordion toggles",
+    "Testimonial controls advance",
+    "Mobile navigation opens and links work",
+    "Contact mailto:mandocdocmawin@gmail.com",
+    "Light and dark text-contrast scan after fixes"
+  ],
+  "manualOnly": [
+    "Browser install prompt",
+    "DevTools offline mode and waiting-worker update",
+    "Physical print output",
+    "Real-host CSP response headers"
+  ]
+}

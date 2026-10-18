@@ -13,7 +13,7 @@ describe('role permissions', () => {
   it('grants Manager everything except staff management, payroll and settings', () => {
     for (const key of permissionKeys) {
       expect(hasPermission({ role: 'manager' }, key), key).toBe(
-        !['staff:manage', 'payroll:view', 'settings:manage', 'accounts:manage', 'reports:finance'].includes(key),
+        !['staff:manage', 'payroll:view', 'settings:manage', 'accounts:manage', 'reports:finance', 'stores:manage'].includes(key),
       );
     }
     expect(hasPermission({ role: 'manager' }, 'future:manage')).toBe(false);
@@ -21,7 +21,7 @@ describe('role permissions', () => {
 
   it('limits Cashier to sales, read access, customer creation and own attendance/schedule', () => {
     const allowed = ['dashboard:view', 'pos:use', 'pos:hold', 'orders:view', 'customers:view', 'customers:edit',
-      'products:view', 'attendance:view', 'schedule:view'];
+      'products:view', 'attendance:view', 'schedule:view', 'pos:coupon'];
     for (const key of permissionKeys) {
       expect(hasPermission({ role: 'cashier' }, key), key).toBe(allowed.includes(key));
     }
@@ -98,7 +98,7 @@ describe('route permission mapping', () => {
     ['/staff/schedule', 'schedule:view', true, true, true],
     ['/staff/holidays', 'holidays:view', true, true, false],
     ['/staff/payroll', 'payroll:view', true, false, false],
-    ['/settings/general', 'settings:manage', true, false, false],
+    ['/settings/general', 'settings:view', true, true, false],
     ['/reports/sales', 'reports:view', true, true, false],
     ['/accounts/income', 'accounts:view', true, true, false],
     ['/profile/overview', 'pages:view', true, true, false],

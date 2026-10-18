@@ -940,6 +940,8 @@ export const routes = entries.filter(
 );
 export function resolveMenuPath(path: string): string {
   const aliases: Record<string, string> = {
+    '/accounts/bank':'/accounts/bank-accounts',
+    '/accounts/transfer':'/accounts/money-transfer',
     "/staff":"/staff/staff-list",
     "/staff/add":"/staff/add-staff",
     "/staff/roles":"/staff/role-permission",

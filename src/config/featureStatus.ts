@@ -577,4 +577,6 @@ for (const path of phase5Paths) featureStatus[path] = {
   description: path.includes('staff') ? 'Working browser-persisted staff, permissions, attendance, shifts, holidays and demo payroll.' : 'Working demo authentication flow with persisted sessions and role-based access.',
   plannedFeatures: [],
 };
-featureStatus['/'].description = 'Live branch-filtered sales, order history, payments and staff performance by cashier. Other analytics remain demo placeholders.';
+featureStatus['/'].description = 'Live branch-filtered cash sales, finance formulas, charts, customers, products, payments, inventory and staff performance.';
+export const phase6Paths=Object.keys(implementedPages).filter(path=>path.startsWith('/accounts/')||path.startsWith('/reports/'));
+for(const path of phase6Paths)featureStatus[path]={status:'done',description:'Working local cash-basis accounts and reports with derived ledgers, comparisons, charts, CSV export and print.',plannedFeatures:[]};

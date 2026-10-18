@@ -1,4 +1,5 @@
 import {Link} from 'react-router-dom';
+import {usePermission} from '../../hooks/usePermission';
 import {useState} from 'react';
 import {Eye,Pencil,Trash2} from 'lucide-react';
 import {DataTable} from '../../components/common/DataTable';
@@ -8,6 +9,7 @@ import {receiptService,type ReceiptDocument} from '../../services/receiptService
 import {dashboardService} from '../../services/dashboardService';
 import {formatPHP} from '../../utils/money';
 export function RecentOrders() {
+ const {can}=usePermission();
  const orders=dashboardService.getRecentOrders();
  const [page,setPage]=useState(1),[receipt,setReceipt]=useState<ReceiptDocument|null>(null);
  const pages=Math.max(1,Math.ceil(orders.length/7)),current=Math.min(page,pages);
@@ -21,7 +23,7 @@ export function RecentOrders() {
   {id:'total',header:'Total',cell:o=>formatPHP(o.grandTotal)},
   {id:'payment',header:'Payment Status',cell:o=><StatusBadge>{o.paymentStatus}</StatusBadge>},
   {id:'status',header:'Order Status',cell:o=><StatusBadge>{o.orderStatus}</StatusBadge>},
-  {id:'actions',header:'Actions',cell:o=><div className="flex gap-2"><Link className="btn" aria-label={`View order ${o.orderNo}`} to={`/orders/${o.id}`}><Eye size={14}/></Link><Link className="btn" aria-label={`Manage order ${o.orderNo}`} to={`/orders/${o.id}`}><Pencil size={14}/></Link>{o.orderStatus==='pending'&&!o.refundedTotal&&<Link className="btn text-red-500" aria-label={`Cancel order ${o.orderNo}`} to={`/orders/${o.id}?action=cancel`}><Trash2 size={14}/></Link>}</div>},
+  {id:'actions',header:'Actions',cell:o=><div className="flex gap-2"><Link className="btn" aria-label={`View order ${o.orderNo}`} to={`/orders/${o.id}`}><Eye size={14}/></Link><Link className="btn" aria-label={`Manage order ${o.orderNo}`} to={`/orders/${o.id}`}><Pencil size={14}/></Link>{can('orders:cancel')&&o.orderStatus==='pending'&&!o.refundedTotal&&<Link className="btn text-red-500" aria-label={`Cancel order ${o.orderNo}`} to={`/orders/${o.id}?action=cancel`}><Trash2 size={14}/></Link>}</div>},
   {id:'view',header:'Receipt',cell:o=><button className="btn" aria-label={`View ${o.orderNo}`} onClick={()=>setReceipt(receiptService.get(o.id))}><Eye size={14}/></button>},
  ]}/>
  <nav aria-label="Recent orders pages" className="flex items-center justify-end gap-3 p-4"><button className="btn disabled:opacity-40" disabled={current===1} onClick={()=>setPage(current-1)}>Previous</button><span className="text-xs">{current} / {pages}</span><button className="btn disabled:opacity-40" disabled={current===pages} onClick={()=>setPage(current+1)}>Next</button></nav><ReceiptDialog receipt={receipt} reprint onClose={()=>setReceipt(null)}/></section>;

@@ -37,6 +37,20 @@ function enqueue(key: string, write: () => Promise<void>) {
   queue = queue.then(write).catch(error => { reportStorageError(key, 'write', error); });
   return track(queue);
 }
+const batches: Map<string, string | null>[] = [];
+export function beginStorageBatch() { batches.push(new Map()); }
+export function abortStorageBatch() { batches.pop(); }
+export function commitStorageBatch() {
+  const batch = batches.pop(); if (!batch?.size) return;
+  const parent = batches.at(-1);
+  if (parent) { batch.forEach((value, key) => parent.set(key, value)); return; }
+  void enqueue([...batch.keys()].join(', '), async () => { await rawDatabase.batch([...batch]); batch.forEach((_value, key) => storageChanges.publish(key)); });
+}
+function persistValue(key: string, value: string | null) {
+  const batch = batches.at(-1);
+  if (batch) { batch.set(key, value); return Promise.resolve(); }
+  return enqueue(key, async () => { if (value === null) await rawDatabase.remove(key); else await rawDatabase.set(key, value); storageChanges.publish(key); });
+}
 export const idbStorage: StateStorage = {
   async getItem(key) {
     try {
@@ -51,6 +65,6 @@ export const idbStorage: StateStorage = {
       return raw;
     } catch (error) { reportStorageError(key, 'read', error); return null; }
   },
-  setItem: (key, value) => enqueue(key, async () => { await rawDatabase.set(key, value); storageChanges.publish(key); }),
-  removeItem: key => enqueue(key, async () => { await rawDatabase.remove(key); storageChanges.publish(key); }),
+  setItem: (key, value) => persistValue(key, value),
+  removeItem: key => persistValue(key, null),
 };

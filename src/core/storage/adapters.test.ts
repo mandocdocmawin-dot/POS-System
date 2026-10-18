@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { idbStorage, safeLocalStorage } from './index';
+import { idbStorage, safeLocalStorage, beginStorageBatch, commitStorageBatch, abortStorageBatch, flushStorage } from './index';
 import { rawDatabase } from './database';
 import { storageEvents } from './events';
 
@@ -11,6 +11,22 @@ beforeEach(async () => {
   vi.stubGlobal('localStorage', { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value); }, removeItem: (key: string) => { values.delete(key); } });
 });
 describe('safe storage adapters', () => {
+  it('commits nested multi-store writes together and discards aborted batches', async () => {
+    const raw = '{"state":{"value":1},"version":1}';
+    beginStorageBatch();
+    await idbStorage.setItem('tindapos:orders', raw);
+    beginStorageBatch(); await idbStorage.setItem('tindapos:stock', raw); commitStorageBatch();
+    expect(await rawDatabase.get('tindapos:orders')).toBeUndefined();
+    commitStorageBatch(); await flushStorage();
+    expect(await rawDatabase.get('tindapos:orders')).toBe(raw);
+    expect(await rawDatabase.get('tindapos:stock')).toBe(raw);
+    beginStorageBatch(); await idbStorage.removeItem('tindapos:orders'); abortStorageBatch(); await flushStorage();
+    expect(await rawDatabase.get('tindapos:orders')).toBe(raw);
+    const write = vi.spyOn(rawDatabase, 'batch').mockRejectedValueOnce(new Error('Full'));
+    beginStorageBatch(); await idbStorage.removeItem('tindapos:orders'); await idbStorage.removeItem('tindapos:stock'); commitStorageBatch(); await flushStorage();
+    expect(await rawDatabase.get('tindapos:orders')).toBe(raw); expect(await rawDatabase.get('tindapos:stock')).toBe(raw);
+    expect(storageEvents.get().some(p => p.kind === 'write')).toBe(true); write.mockRestore();
+  });
   it('roundtrips and removes IndexedDB state', async () => {
     const value = JSON.stringify({ state: { orders: [1] }, version: 1 });
     await idbStorage.setItem('tindapos:orders', value);

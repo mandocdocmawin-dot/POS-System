@@ -1,3 +1,4 @@
+import { beginStorageBatch, commitStorageBatch, abortStorageBatch } from '../core/storage';
 import {useThemeStore} from '../store/useThemeStore';
 import {useBranchStore} from '../store/useBranchStore';
 import {useTransferStore} from '../store/useTransferStore';
@@ -36,8 +37,11 @@ export function localTransaction<T>(write: () => T): T {
   const customer = useCustomerStore.getState();
   const accounts=useAccountStore.getState(), reportFilters=useReportFilterStore.getState();
   const restores = [(()=>{const snapshot=useThemeStore.getState();return ()=>useThemeStore.setState(snapshot,true);})(),(()=>{const snapshot=useBranchStore.getState();return ()=>useBranchStore.setState(snapshot,true);})(),(()=>{const snapshot=useTransferStore.getState();return ()=>useTransferStore.setState(snapshot,true);})(),(()=>{const snapshot=useBranchesStore.getState();return ()=>useBranchesStore.setState(snapshot,true);})(),(()=>{const snapshot=useCouponStore.getState();return ()=>useCouponStore.setState(snapshot,true);})(),(()=>{const snapshot=useSettingsStore.getState();return ()=>useSettingsStore.setState(snapshot,true);})(),(()=>{const snapshot=useAuthStore.getState();return ()=>useAuthStore.setState(snapshot,true);})(),(()=>{const snapshot=useStaffStore.getState();return ()=>useStaffStore.setState(snapshot,true);})(),(()=>{const snapshot=useRoleStore.getState();return ()=>useRoleStore.setState(snapshot,true);})(),(()=>{const snapshot=useAttendanceStore.getState();return ()=>useAttendanceStore.setState(snapshot,true);})(),(()=>{const snapshot=useHolidayStore.getState();return ()=>useHolidayStore.setState(snapshot,true);})(),(()=>{const snapshot=useShiftStore.getState();return ()=>useShiftStore.setState(snapshot,true);})(),(()=>{const snapshot=usePayrollStore.getState();return ()=>usePayrollStore.setState(snapshot,true);})(),(()=>{const snapshot=useRefundStore.getState();return ()=>useRefundStore.setState(snapshot,true);})(),(()=>{const snapshot=useSupplierStore.getState();return ()=>useSupplierStore.setState(snapshot,true);})(),(()=>{const snapshot=usePurchaseStore.getState();return ()=>usePurchaseStore.setState(snapshot,true);})(),(()=>{const snapshot=useWalletStore.getState();return ()=>useWalletStore.setState(snapshot,true);})(),(()=>{const snapshot=useActivityStore.getState();return ()=>useActivityStore.setState(snapshot,true);})()];
+  beginStorageBatch();
   try {
-    return write();
+    const result = write();
+    commitStorageBatch();
+    return result;
   } catch (cause) {
     for (const restore of [
       ...restores,
@@ -57,6 +61,7 @@ export function localTransaction<T>(write: () => T): T {
         /* Zustand restores memory before attempting the storage write. */
       }
     }
+    abortStorageBatch();
     if (cause instanceof Error && ['PermissionError', 'ManagerApprovalRequired'].includes(cause.name)) throw cause;
     throw new Error(
       `Unable to save data in this browser. ${cause instanceof Error ? cause.message : "Check available browser storage and try again."}`,

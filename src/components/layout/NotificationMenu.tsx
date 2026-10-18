@@ -1,57 +1,7 @@
-import { Bell, ShoppingBag, Package, BadgeCheck } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Popover } from "../common/Popover";
-export function NotificationMenu() {
-  return (
-    <Popover
-      label="Notifications"
-      trigger={
-        <span className="relative">
-          <Bell size={17} />
-          <span className="absolute -right-0.5 -top-1 h-1.5 w-1.5 rounded-full bg-emerald-500" />
-        </span>
-      }
-    >
-      <div className="w-72">
-        <h3 className="p-3 font-semibold">
-          Notifications{" "}
-          <span className="ml-2 rounded bg-indigo-50 px-1.5 text-xs text-indigo-600">
-            3
-          </span>
-        </h3>
-        {[
-          {
-            icon: ShoppingBag,
-            title: "New order received",
-            text: "Order #TP1001 · 2 min ago",
-            path: "/orders/all-orders",
-          },
-          {
-            icon: Package,
-            title: "Stock is running low",
-            text: "3 products need your attention",
-            path: "/inventory/alerts",
-          },
-          {
-            icon: BadgeCheck,
-            title: "Daily summary is ready",
-            text: "See how your store performed",
-            path: "/reports/sales",
-          },
-        ].map(({ icon: Icon, title, text, path }) => (
-          <Link
-            className="flex gap-3 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-slate-800"
-            to={path}
-            key={title}
-          >
-            <Icon size={18} className="mt-1 shrink-0 text-indigo-500" />
-            <div>
-              <p className="text-xs font-medium">{title}</p>
-              <p className="muted mt-1">{text}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </Popover>
-  );
-}
+import { Bell, AlertTriangle, Info, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Popover } from '../common/Popover';
+import { notificationService } from '../../services/notificationService';
+import { useLocalData } from '../../services/useLocalData';
+export function NotificationMenu(){useLocalData();const [now,setNow]=useState(()=>new Date());useEffect(()=>{const timer=setInterval(()=>setNow(new Date()),60000);return ()=>clearInterval(timer);},[]);const items=notificationService.list(now),unread=items.filter(n=>!n.readAt).length;return <Popover label={'Notifications, '+unread+' unread'} trigger={<span className="relative"><Bell size={17}/>{unread>0&&<span className="absolute -right-2 -top-2 rounded-full bg-orange-600 px-1 text-[10px] text-white">{unread}</span>}</span>}><section className="w-[min(22rem,85vw)]"><header className="flex items-center justify-between p-3"><h2 className="font-semibold">Notifications <span className="text-xs">Demo</span></h2><button className="text-xs underline" onClick={()=>notificationService.markAll()}>Mark all as read</button></header><div aria-live="polite" className="max-h-[60vh] overflow-auto">{!items.length&&<p className="p-4">You are all caught up.</p>}{['Today','Earlier'].map(group=>{const list=items.filter(n=>(new Date(n.createdAt).toDateString()===now.toDateString())===(group==='Today'));return list.length?<div key={group}><h3 className="px-3 py-2 text-xs font-semibold text-slate-500">{group}</h3>{list.map(n=><article className={'flex items-start gap-2 border-t p-3 dark:border-slate-700 '+(!n.readAt?'bg-orange-50 dark:bg-orange-950/30':'')} key={n.key}>{n.severity==='info'?<Info size={18}/>:<AlertTriangle size={18} className={n.severity==='critical'?'text-red-500':'text-amber-600'}/>}<Link className="min-w-0 flex-1" to={n.link} onClick={()=>notificationService.mark(n.key)}><p className="text-sm font-medium">{n.title}</p><p className="mt-1 text-xs">{n.body}</p></Link><div><button className="text-xs underline" disabled={!!n.readAt} onClick={()=>notificationService.mark(n.key)}>Read</button><button className="icon-btn" aria-label={'Dismiss '+n.title} onClick={()=>notificationService.mark(n.key,true)}><X size={14}/></button></div></article>)}</div>:null;})}</div><Link className="block border-t p-3 text-sm dark:border-slate-700" to="/account/notification">Notification preferences →</Link></section></Popover>;}

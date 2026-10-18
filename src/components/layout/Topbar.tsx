@@ -1,4 +1,4 @@
-import {usePermission} from '../../hooks/usePermission';
+import {CommandPalette} from '../search/CommandPalette';
 import {Can} from '../auth/Can';
 import { LanguageFlag } from "./LanguageFlag";
 import { AddNewMenu } from "./AddNewMenu";
@@ -7,34 +7,24 @@ import {
   Globe,
   PanelLeft,
   ShoppingCart,
-  Search,
   LayoutGrid,
   Store,
   Check,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
-import { routes } from "../../config/menu";
+
 import { useUiStore } from "../../store/useUiStore";
 import { Popover } from "../common/Popover";
 import { NotificationMenu } from "./NotificationMenu";
 import { UserMenu } from "./UserMenu";
 import { FullscreenButton } from "./FullscreenButton";
 export function Topbar() {
- const {canPath}=usePermission();
+
   const ui = useUiStore();
-  const [search, setSearch] = useState("");
+
   const [language, setLanguage] = useState("English");
-  const navigate = useNavigate();
-  const results = search.trim()
-    ? routes.filter(r=>r.layout!=="auth"&&canPath(r.path))
-        .filter((r) =>
-          (r.breadcrumb.join(" ") + r.title)
-            .toLowerCase()
-            .includes(search.toLowerCase()),
-        )
-        .slice(0, 7)
-    : [];
+
   return (
     <header className="sticky top-0 z-30 flex min-h-16 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-3 py-3 md:px-5 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -78,54 +68,7 @@ export function Topbar() {
         <BranchSwitcher />
       </div>
       <div className="flex items-center gap-2">
-        <div className="relative hidden xl:block">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (results[0]) {
-                navigate(results[0].path);
-                setSearch("");
-              }
-            }}
-          >
-            <Search
-              className="absolute left-3 top-3 text-slate-400"
-              size={16}
-            />
-            <input
-              aria-label="Search TindaPOS pages"
-              placeholder="Search for TindaPOS"
-              className="w-48 pl-9 2xl:w-[280px]"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") setSearch("");
-              }}
-            />
-          </form>
-          {search && (
-            <div
-              className="card absolute right-0 top-12 w-72 p-2"
-              role="region"
-              aria-label="Search results"
-            >
-              {results.length ? (
-                results.map((r) => (
-                  <Link
-                    className="block rounded p-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800"
-                    key={r.path}
-                    to={r.path}
-                    onClick={() => setSearch("")}
-                  >
-                    {r.breadcrumb.join(" / ")}
-                  </Link>
-                ))
-              ) : (
-                <p className="p-2 text-xs">No matching pages.</p>
-              )}
-            </div>
-          )}
-        </div>
+        <CommandPalette />
         <button
           className="icon-btn hidden md:flex"
           aria-label="Toggle compact layout"

@@ -1,3 +1,4 @@
+import {usePageTitle} from '../hooks/usePageTitle';
 import { Outlet } from "react-router-dom";
 import { IconRail } from "../components/layout/IconRail";
 import { Sidebar } from "../components/layout/Sidebar";
@@ -6,6 +7,7 @@ import { Footer } from "../components/layout/Footer";
 import { MobileNavigation } from "../components/layout/MobileNavigation";
 import { useUiStore } from "../store/useUiStore";
 export function MainLayout() {
+ usePageTitle();
   const { sidebarOpen, mobileOpen, compact } = useUiStore();
   return (
     <div className="flex min-h-dvh">

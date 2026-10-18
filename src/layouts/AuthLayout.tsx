@@ -1,6 +1,8 @@
+import {usePageTitle} from '../hooks/usePageTitle';
 import { Outlet, Link } from "react-router-dom";
 import { Brand } from "../components/layout/Brand";
 export function AuthLayout() {
+ usePageTitle();
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-slate-50 to-teal-50 px-4 py-12 dark:from-indigo-950 dark:via-slate-950 dark:to-slate-900">
       <div className="mb-8">

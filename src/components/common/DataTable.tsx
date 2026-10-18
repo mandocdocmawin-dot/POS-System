@@ -1,3 +1,4 @@
+import {useSearchParams} from 'react-router-dom';
 import { useId, useState, type ReactNode } from "react";
 export interface Column<T> {
   id: string;
@@ -31,7 +32,9 @@ export function DataTable<T>({
   onRowClick?: (row:T)=>void;
 }) {
   const id = useId();
-  const [query, setQuery] = useState("");
+  const [searchParams,setSearchParams]=useSearchParams();
+  const query=searchParams.get('q')??'';
+  const setQuery=(value:string)=>{setSearchParams(params=>{if(value)params.set('q',value);else params.delete('q');return params;},{replace:true});};
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
   const [sort, setSort] = useState<{ id: string; direction: number }>({

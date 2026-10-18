@@ -1,3 +1,4 @@
+import { PwaUpdate } from '../components/pwa/PwaUpdate';
 import { Toast } from "../components/common/Toast";
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
@@ -11,7 +12,7 @@ export function Providers() {
   }, [theme]);
   return (
     <>
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded focus:bg-white focus:p-3 focus:text-slate-900">Skip to main content</a><Toast />
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded focus:bg-white focus:p-3 focus:text-slate-900">Skip to main content</a><Toast /><PwaUpdate />
       <RouterProvider
         future={{ v7_startTransition: true }}
         router={router}

@@ -1,3 +1,4 @@
+import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
 import {requirePermission} from './authService';
 import {POS_CONFIG} from '../config/pos';
@@ -34,7 +35,7 @@ export const orderService={
   });
  },
  collect:(id:string,input:Pick<CustomerPayment,'amount'|'method'|'reference'|'note'>)=>{requirePermission('customers:manage');
-  const o=orderService.get(id);if(!o||o.orderStatus==='cancelled'||!o.balanceDue)throw new Error('Order has no collectible balance.');
+  validatePaymentAccount(input.method);const o=orderService.get(id);if(!o||o.orderStatus==='cancelled'||!o.balanceDue)throw new Error('Order has no collectible balance.');
   const payment=customerPaymentSchema.parse({...input,id:crypto.randomUUID(),customerId:o.customerId,orderId:id,createdAt:new Date().toISOString()});
   if(c(payment.amount)<=0||c(payment.amount)>c(o.balanceDue))throw new Error('Payment must be positive and no greater than the balance.');
   if(payment.method==='wallet'&&c(useCustomerStore.getState().customers.find(x=>x.id===o.customerId)?.walletBalance??0)<c(payment.amount))throw new Error('Insufficient wallet balance.');
@@ -57,3 +58,4 @@ export const orderService={
 };
 
 export function tierFor(points:number):Customer['tier']{return ([...Object.entries(POS_CONFIG.tiers)] as [Customer['tier'],number][]).reverse().find(([,n])=>points>=n)![0];}
+

@@ -1,3 +1,4 @@
+import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
 import {discountApprovalService} from './discountApprovalService';
 import {requirePermission} from './authService';
@@ -47,7 +48,7 @@ export const posService={
  clear:()=>usePosStore.setState({discountApproval:undefined,cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:orderService.nextOrderNo()}),
  restore:(data:Pick<PosState,'cart'|'customerId'|'note'|'orderDiscount'>)=>{validateCart(data.cart);if(!customerService.get(data.customerId))throw new Error('Customer no longer exists.');usePosStore.setState({...data,discountApproval:undefined,activeOrderNo:orderService.nextOrderNo()});},
  complete:(payments:Payment[],options:{payLater?:boolean;dueDate?:string}={}):Order=>{requirePermission('pos:use');
- const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
+ for(const p of payments)if(p.amount>0)validatePaymentAccount(p.method);const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
  const c=customerService.get(s.customerId);if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
  discountApprovalService.ensure(s.cart,s.orderDiscount);const totals=calculateTotals(s.cart,s.orderDiscount);const paid=calculatePayments(totals.grandTotal,payments);
  if(!options.payLater&&paid.balanceDue>0)throw new Error('Payment does not cover the total.');
@@ -65,3 +66,4 @@ export const posService={
  });
  }
 };
+

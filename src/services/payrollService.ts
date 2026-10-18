@@ -1,3 +1,4 @@
+import {validatePaymentAccount} from './financeData';
 import { z } from 'zod';
 import { payrollRunSchema, type PayrollLine, type PayrollRun } from '../types/staff';
 import { usePayrollStore } from '../store/usePayrollStore';
@@ -73,7 +74,7 @@ export const payrollService = {
     requirePermission('payroll:view');
     const runs = usePayrollStore.getState().runs, run = runs.find(r => r.id === id);
     if (!run || (status === 'finalized' ? run.status !== 'draft' : run.status !== 'finalized')) throw new Error('Invalid payroll status transition.');
-    validatePeriod(run.periodStart, run.periodEnd, runs, id);
+    validatePeriod(run.periodStart, run.periodEnd, runs, id);if(status==='paid')validatePaymentAccount('bank');
     const next = payrollRunSchema.parse({ ...run, status, ...(status==='paid'?{paidAt:new Date().toISOString(),paymentAccountId:'account-bank',lines:run.lines.map(line=>({...line,branchId:useStaffStore.getState().staff.find(s=>s.id===line.staffId)?.branchIds[0]??'Main Branch'}))}:{}) });
     return localTransaction(() => {
       usePayrollStore.setState({ runs: runs.map(r => r.id === id ? next : r) });
@@ -82,4 +83,5 @@ export const payrollService = {
     });
   },
 };
+
 

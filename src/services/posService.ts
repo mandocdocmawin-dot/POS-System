@@ -1,3 +1,4 @@
+import {settingsService} from './settingsService';
 import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
 import {discountApprovalService} from './discountApprovalService';
@@ -26,11 +27,11 @@ function validateCart(cart:CartItem[]) {
  const key=line.variantId??line.productId;const qty=(quantities.get(key)??0)+line.quantity;quantities.set(key,qty);
  const available=stockService.getStock(line.productId,line.variantId);if(qty>available+1e-8)throw new Error(`${line.name}: only ${available} in stock.`);
  }
- calculateTotals(cart);
+ calculateTotals(cart,undefined,settingsService.get().tax);
 }
 export const posService={
  state:()=>structuredClone(usePosStore.getState()),
- totals:()=>{const s=usePosStore.getState();return calculateTotals(s.cart,s.orderDiscount);},
+ totals:()=>{const s=usePosStore.getState();return calculateTotals(s.cart,s.orderDiscount,settingsService.get().tax);},
  branch:()=>useBranchStore.getState().branch,
  add:(productId:string,variantId?:string)=>{requirePermission('pos:use');
  const p=productService.get(productId);if(!p)throw new Error('Product not found.');
@@ -50,7 +51,7 @@ export const posService={
  complete:(payments:Payment[],options:{payLater?:boolean;dueDate?:string}={}):Order=>{requirePermission('pos:use');
  for(const p of payments)if(p.amount>0)validatePaymentAccount(p.method);const s=posService.state();if(!s.cart.length)throw new Error('Add products before completing a sale.');validateCart(s.cart);
  const c=customerService.get(s.customerId);if(!c)throw new Error('Choose a customer.');if(options.payLater&&c.isWalkIn)throw new Error('Pay Later requires a named customer.');
- discountApprovalService.ensure(s.cart,s.orderDiscount);const totals=calculateTotals(s.cart,s.orderDiscount);const paid=calculatePayments(totals.grandTotal,payments);
+ discountApprovalService.ensure(s.cart,s.orderDiscount);const totals=calculateTotals(s.cart,s.orderDiscount,settingsService.get().tax);const paid=calculatePayments(totals.grandTotal,payments);
  if(!options.payLater&&paid.balanceDue>0)throw new Error('Payment does not cover the total.');
  const wallet=sumCentavos(payments.filter(p=>p.method==='wallet').map(p=>toCentavos(p.amount)));
  if(wallet&&(c.isWalkIn||c.status!=='active'||wallet>toCentavos(c.walletBalance)))throw new Error('Insufficient customer wallet balance.');
@@ -61,7 +62,7 @@ export const posService={
  for(const line of s.cart)stockService.record({productId:line.productId,variantId:line.variantId,type:'out',quantity:line.quantity,reason:'Sale',reference:orderNo,createdAt});
  if(wallet)walletService.change({customerId:c.id,type:"spend",amount:-fromCentavos(wallet),orderId});
  const pointsEarned=customerService.recordSale(c.id,paid.amountPaid,paid.balanceDue);
- const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:authService.getCurrentUser()?.name??'System',cashierId:authService.getCurrentUser()?.id,createdAt,refundedTotal:0,pointsEarned});
+ const order=orderService.save({id:orderId,orderNo,branchId:posService.branch(),customerId:c.id,customerName:c.name,...totals,...settingsService.snapshot(),payments:structuredClone(payments),...paid,orderStatus:paid.balanceDue>0?'pending':'completed',note:s.note,dueDate:options.dueDate,cashier:authService.getCurrentUser()?.name??'System',cashierId:authService.getCurrentUser()?.id,createdAt,refundedTotal:0,pointsEarned});
  posService.clear();return order;
  });
  }

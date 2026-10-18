@@ -1,3 +1,4 @@
+import {settingsService} from './settingsService';
 import {validatePaymentAccount} from './financeData';
 import { z } from 'zod';
 import { payrollRunSchema, type PayrollLine, type PayrollRun } from '../types/staff';
@@ -20,9 +21,9 @@ function preview(start: string, end: string): PayrollRun {
   const runs = usePayrollStore.getState().runs;
   return payrollRunSchema.parse({
     id: crypto.randomUUID(), runNo: `PR-${start.slice(0, 7)}-${String(runs.length + 1).padStart(3, '0')}`,
-    periodStart: start, periodEnd: end, status: 'draft', createdAt: new Date().toISOString(),
+    settingsSnapshot: settingsService.get().staffDefaults, periodStart: start, periodEnd: end, status: 'draft', createdAt: new Date().toISOString(),
     lines: useStaffStore.getState().staff.filter(s => s.status === 'active').map(s => computePayrollLine(
-      s, useAttendanceStore.getState().records, useHolidayStore.getState().holidays, start, end, useShiftStore.getState().shifts,
+      s, useAttendanceStore.getState().records, useHolidayStore.getState().holidays, start, end, useShiftStore.getState().shifts, settingsService.get().staffDefaults,
     )),
   });
 }

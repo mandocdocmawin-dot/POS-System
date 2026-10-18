@@ -1,5 +1,5 @@
 import type { AttendanceRecord, Holiday, PayrollLine, PayrollRun, Shift, Staff } from '../types/staff';
-import { payrollConfig as config } from '../config/payroll';
+import { defaultSettings } from '../config/defaultSettings';
 import { lateMinutes, workedHours } from './attendance';
 import { addDays } from './schedule';
 import { ratioCentavos, sumCentavos } from './pos';
@@ -10,7 +10,7 @@ export function validatePeriod(start: string, end: string, runs: PayrollRun[], e
 function earningsForTime(rate: number, milliseconds: number, multiplier = 1) {
   return ratioCentavos(rate, milliseconds * Math.round(multiplier * 10000), 3600000 * 10000);
 }
-export function computePayrollLine(staff: Staff, records: AttendanceRecord[], holidays: Holiday[], start: string, end: string, shifts: Shift[] = []): PayrollLine {
+export function computePayrollLine(staff: Staff, records: AttendanceRecord[], holidays: Holiday[], start: string, end: string, shifts: Shift[] = [], config = defaultSettings.staffDefaults): PayrollLine {
   validatePeriod(start, end, []);
   let regularHours = 0, overtimeHours = 0, holidayHours = 0, late = 0, absences = 0;
   const regularPay: number[] = [], overtimePay: number[] = [], holidayPay: number[] = [], unworkedHolidayPay: number[] = [];
@@ -19,7 +19,7 @@ export function computePayrollLine(staff: Staff, records: AttendanceRecord[], ho
     const record = records.find(r => r.staffId === staff.id && r.date === date), holiday = holidays.find(h => h.date === date);
     const hours = record ? workedHours(record) : 0;
     // Integer milliseconds avoid half-cent errors from repeating fractional hours.
-    const workedMs = Math.round(hours * 3600000), regularMs = Math.min(config.dailyHours * 3600000, workedMs), overtimeMs = Math.max(0, workedMs - regularMs);
+    const workedMs = Math.round(hours * 3600000), regularMs = Math.min(config.workHoursPerDay * 3600000, workedMs), overtimeMs = Math.max(0, workedMs - regularMs);
     if (holiday && workedMs > 0) {
       holidayHours += hours;
       const multiplier = holiday.type === 'regular' ? config.regularHolidayMultiplier : holiday.type === 'special' ? config.specialHolidayMultiplier : 1;
@@ -31,16 +31,16 @@ export function computePayrollLine(staff: Staff, records: AttendanceRecord[], ho
       if (!monthly) regularPay.push(earningsForTime(rate, regularMs));
       overtimePay.push(earningsForTime(rate, overtimeMs, config.overtimeMultiplier));
     }
-    if (!monthly && holiday?.paid && !hours) unworkedHolidayPay.push(ratioCentavos(rate, config.dailyHours, 1));
+    if (!monthly && holiday?.paid && !hours) unworkedHolidayPay.push(ratioCentavos(rate, config.workHoursPerDay, 1));
     if (monthly && record && ['absent', 'leave'].includes(record.status) && !holiday?.paid) absences++;
     if (record?.clockIn) {
       const shift = shifts.filter(s => s.staffId === staff.id && s.date === date).toSorted((a, b) => a.startTime.localeCompare(b.startTime))[0];
-      late += lateMinutes(record.clockIn, shift?.startTime);
+      late += lateMinutes(record.clockIn, shift?.startTime, config);
     }
   }
   const earnings: PayrollLine['additions'] = [
     ...(monthly ? [{ label: 'Semi-monthly base after unpaid absences', amount: ratioCentavos(staff.monthlyRate ?? 0, Math.max(0, 13 - absences), 26) }] : [{ label: 'Regular earnings', amount: sumCentavos(regularPay) }]),
-    { label: 'Overtime earnings (1.25x)', amount: sumCentavos(overtimePay) },
+    { label: `Overtime earnings (${config.overtimeMultiplier}x)`, amount: sumCentavos(overtimePay) },
     { label: monthly ? 'Holiday premiums and holiday overtime' : 'Holiday worked earnings', amount: sumCentavos(holidayPay) },
     ...(!monthly ? [{ label: 'Paid holidays not worked', amount: sumCentavos(unworkedHolidayPay) }] : []),
   ];

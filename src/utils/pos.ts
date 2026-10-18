@@ -1,4 +1,5 @@
-import { POS_CONFIG } from '../config/pos';
+import { defaultSettings } from '../config/defaultSettings';
+import type { Settings } from '../types/settings';
 import { cartItemSchema, discountSchema, paymentSchema, type CartItem, type Discount, type Payment, type Totals } from '../types/pos';
 
 function fraction(value: number): [bigint, bigint] {
@@ -26,7 +27,9 @@ function discountCents(base: number, discount?: Discount): number {
   const [n,d]=fraction(Math.min(100,discount.value));
   return Math.min(base,rounded(BigInt(base)*n,d*100n));
 }
-export function calculateTotals(cart: CartItem[], discount?: Discount, taxMode = POS_CONFIG.taxMode): Totals {
+export function calculateTotals(cart: CartItem[], discount?: Discount, options: Settings['tax'] | 'inclusive' | 'exclusive' = defaultSettings.tax): Totals {
+  const taxMode = typeof options === 'string' ? options : options.mode;
+  const registered = typeof options === 'string' || options.vatRegistered;
   const raw = cart.map(input => {
     const item = cartItemSchema.parse(input);
     const subtotal = multiplyCentavos(toCentavos(item.unitPrice),item.quantity);
@@ -46,7 +49,7 @@ export function calculateTotals(cart: CartItem[], discount?: Discount, taxMode =
   const items=raw.map((x,i)=>{
     const distributed=allocation[i].cents;
     const discounted=x.base-distributed;
-    const tax=ratioCentavos(discounted,x.item.taxRate,taxMode==='inclusive' ? 100+x.item.taxRate : 100);
+    const tax=ratioCentavos(discounted,(registered ? x.item.taxRate : 0),taxMode==='inclusive' ? 100+(registered ? x.item.taxRate : 0) : 100);
     return {...x.item,lineSubtotal:fromCentavos(x.subtotal),lineDiscount:fromCentavos(x.itemDiscount),orderDiscountAmount:fromCentavos(distributed),lineTax:fromCentavos(tax),lineTotal:fromCentavos(discounted+(taxMode==='exclusive' ? tax : 0))};
   });
   return {items,subtotal:fromCentavos(sumCentavos(raw.map(x=>x.subtotal))),itemDiscountTotal:fromCentavos(sumCentavos(raw.map(x=>x.itemDiscount))),orderDiscount:{...(discount ?? {type:'fixed',value:0}),amount:fromCentavos(orderDiscount)},taxTotal:fromCentavos(sumCentavos(items.map(x=>toCentavos(x.lineTax)))),grandTotal:fromCentavos(sumCentavos(items.map(x=>toCentavos(x.lineTotal))))};

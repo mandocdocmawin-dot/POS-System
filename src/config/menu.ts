@@ -1,8 +1,66 @@
 import {
+  Activity,
+  ArrowLeftRight,
+  BadgeCheck,
+  BadgeDollarSign,
+  Banknote,
+  Barcode,
+  Bell,
+  Calculator,
+  Calendar,
+  CalendarClock,
+  CalendarHeart,
+  CalendarRange,
+  ChartPie,
+  CircleCheck,
+  CircleHelp,
+  ClipboardCheck,
+  Coins,
+  CreditCard,
+  Download,
+  File,
+  FileQuestion,
+  FileText,
+  Files,
+  FolderTree,
+  GanttChart,
+  Inbox,
+  KeyRound,
+  Landmark,
+  Layers,
+  List,
+  LockKeyhole,
+  LogIn,
+  MessageSquare,
+  NotebookPen,
+  PackageMinus,
+  PackagePlus,
+  PackageSearch,
+  Percent,
+  Plus,
+  Receipt,
+  Rocket,
+  Ruler,
+  Scale,
+  ShieldCheck,
+  SlidersHorizontal,
+  Star,
+  Tags,
+  Ticket,
+  TrendingDown,
+  TrendingUp,
+  TriangleAlert,
+  Undo2,
+  Upload,
+  UserCog,
+  UserPlus,
+  UserRound,
+  UserX,
+  Warehouse,
+  Wrench,
   Boxes,
   CalendarDays,
   ChartNoAxesCombined,
-  Circle,
   ClipboardList,
   Contact,
   Headset,
@@ -93,12 +151,12 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Default",
-                icon: Circle,
+                icon: MessageSquare,
                 path: "/chat/default",
               },
               {
                 label: "Group",
-                icon: Circle,
+                icon: MessagesSquare,
                 path: "/chat/group",
               },
             ],
@@ -110,27 +168,27 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Default",
-                icon: Circle,
+                icon: CalendarDays,
                 path: "/calendar/default",
               },
               {
                 label: "Week View",
-                icon: Circle,
+                icon: CalendarRange,
                 path: "/calendar/week-view",
               },
               {
                 label: "Day View",
-                icon: Circle,
+                icon: Calendar,
                 path: "/calendar/day-view",
               },
               {
                 label: "List View",
-                icon: Circle,
+                icon: List,
                 path: "/calendar/list-view",
               },
               {
                 label: "Timeline",
-                icon: Circle,
+                icon: GanttChart,
                 path: "/calendar/timeline",
               },
             ],
@@ -142,12 +200,12 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Mailbox",
-                icon: Circle,
+                icon: Inbox,
                 path: "/email/mailbox",
               },
               {
                 label: "Templates",
-                icon: Circle,
+                icon: Mail,
                 path: "/email/templates",
               },
             ],
@@ -164,62 +222,62 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "All Products",
-                icon: Circle,
+                icon: Package,
                 path: "/products/all-products",
               },
               {
                 label: "Add Product",
-                icon: Circle,
+                icon: PackagePlus,
                 path: "/products/add-product",
               },
               {
                 label: "Variants",
-                icon: Circle,
+                icon: Layers,
                 path: "/products/variants",
               },
               {
                 label: "Categories",
-                icon: Circle,
+                icon: Tags,
                 path: "/products/categories",
               },
               {
                 label: "Subcategories",
-                icon: Circle,
+                icon: FolderTree,
                 path: "/products/subcategories",
               },
               {
                 label: "Brands",
-                icon: Circle,
+                icon: BadgeCheck,
                 path: "/products/brands",
               },
               {
                 label: "Units",
-                icon: Circle,
+                icon: Ruler,
                 path: "/products/units",
               },
               {
                 label: "Reviews",
-                icon: Circle,
+                icon: Star,
                 path: "/products/reviews",
               },
               {
                 label: "Print Barcode",
-                icon: Circle,
+                icon: Barcode,
                 path: "/products/print-barcode",
               },
               {
                 label: "Bulk Import",
-                icon: Circle,
+                icon: Upload,
                 path: "/products/bulk-import",
               },
               {
                 label: "Bulk Export",
-                icon: Circle,
+                icon: Download,
                 path: "/products/bulk-export",
               },
               {
                 label: "Warranty",
-                icon: Circle,
+                icon: ShieldCheck,
                 path: "/products/warranty",
               },
             ],
@@ -231,52 +289,52 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Stock List",
-                icon: Circle,
+                icon: Boxes,
                 path: "/inventory/stock-list",
               },
               {
                 label: "Stock In",
-                icon: Circle,
+                icon: PackagePlus,
                 path: "/inventory/stock-in",
               },
               {
                 label: "Stock Out",
-                icon: Circle,
+                icon: PackageMinus,
                 path: "/inventory/stock-out",
               },
               {
                 label: "Stock Adjustment",
-                icon: Circle,
+                icon: SlidersHorizontal,
                 path: "/inventory/stock-adjustment",
               },
               {
                 label: "Stock Transfer",
-                icon: Circle,
+                icon: ArrowLeftRight,
                 path: "/inventory/stock-transfer",
               },
               {
                 label: "Batch Management",
-                icon: Circle,
+                icon: Layers,
                 path: "/inventory/batch-management",
               },
               {
                 label: "Lost Items",
-                icon: Circle,
+                icon: PackageSearch,
                 path: "/inventory/lost-items",
               },
               {
                 label: "Alerts",
-                icon: Circle,
+                icon: Bell,
                 path: "/inventory/alerts",
               },
               {
                 label: "Valuation",
-                icon: Circle,
+                icon: Calculator,
                 path: "/inventory/valuation",
               },
               {
                 label: "Warehouse",
-                icon: Circle,
+                icon: Warehouse,
                 path: "/inventory/warehouse",
               },
             ],
@@ -288,17 +346,17 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "All Orders",
-                icon: Circle,
+                icon: ClipboardList,
                 path: "/orders/all-orders",
               },
               {
                 label: "Refunded",
-                icon: Circle,
+                icon: Undo2,
                 path: "/orders/refunded",
               },
               {
                 label: "Invoices",
-                icon: Circle,
+                icon: Receipt,
                 path: "/orders/invoices",
               },
             ],
@@ -310,22 +368,22 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Customer List",
-                icon: Circle,
+                icon: Users,
                 path: "/customers/customer-list",
               },
               {
                 label: "Add Customer",
-                icon: Circle,
+                icon: UserPlus,
                 path: "/customers/add-customer",
               },
               {
                 label: "Wallet Balance",
-                icon: Circle,
+                icon: Wallet,
                 path: "/customers/wallet-balance",
               },
               {
                 label: "Activity Log",
-                icon: Circle,
+                icon: History,
                 path: "/customers/activity-log",
               },
             ],
@@ -337,22 +395,22 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Supplier List",
-                icon: Circle,
+                icon: Truck,
                 path: "/suppliers/supplier-list",
               },
               {
                 label: "Add Supplier",
-                icon: Circle,
+                icon: UserPlus,
                 path: "/suppliers/add-supplier",
               },
               {
                 label: "Payments",
-                icon: Circle,
+                icon: CreditCard,
                 path: "/suppliers/payments",
               },
               {
                 label: "Balance Report",
-                icon: Circle,
+                icon: Scale,
                 path: "/suppliers/balance-report",
               },
             ],
@@ -364,22 +422,22 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Purchase",
-                icon: Circle,
+                icon: ShoppingBag,
                 path: "/purchases/purchase",
               },
               {
                 label: "Add Purchase",
-                icon: Circle,
+                icon: Plus,
                 path: "/purchases/add-purchase",
               },
               {
                 label: "Returns",
-                icon: Circle,
+                icon: Undo2,
                 path: "/purchases/returns",
               },
               {
                 label: "Payments",
-                icon: Circle,
+                icon: CreditCard,
                 path: "/purchases/payments",
               },
             ],
@@ -391,22 +449,22 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Income",
-                icon: Circle,
+                icon: TrendingUp,
                 path: "/accounts/income",
               },
               {
                 label: "Expenses",
-                icon: Circle,
+                icon: TrendingDown,
                 path: "/accounts/expenses",
               },
               {
                 label: "Bank Accounts",
-                icon: Circle,
+                icon: Landmark,
                 path: "/accounts/bank-accounts",
               },
               {
                 label: "Money Transfer",
-                icon: Circle,
+                icon: ArrowLeftRight,
                 path: "/accounts/money-transfer",
               },
             ],
@@ -418,17 +476,17 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Sales",
-                icon: Circle,
+                icon: ChartNoAxesCombined,
                 path: "/reports/sales",
               },
               {
                 label: "Product",
-                icon: Circle,
+                icon: Package,
                 path: "/reports/product",
               },
               {
                 label: "Expense",
-                icon: Circle,
+                icon: Receipt,
                 path: "/reports/expense",
               },
               {
@@ -438,12 +496,12 @@ export const menu: MenuSection[] = [
               },
               {
                 label: "Finance",
-                icon: Circle,
+                icon: ChartPie,
                 path: "/reports/finance",
               },
               {
                 label: "Supplier",
-                icon: Circle,
+                icon: Truck,
                 path: "/reports/supplier",
               },
             ],
@@ -460,37 +518,37 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Staff List",
-                icon: Circle,
+                icon: Contact,
                 path: "/staff/staff-list",
               },
               {
                 label: "Add Staff",
-                icon: Circle,
+                icon: UserPlus,
                 path: "/staff/add-staff",
               },
               {
                 label: "Role Permission",
-                icon: Circle,
+                icon: ShieldUser,
                 path: "/staff/role-permission",
               },
               {
                 label: "Attendance",
-                icon: Circle,
+                icon: ClipboardCheck,
                 path: "/staff/attendance",
               },
               {
                 label: "Payroll",
-                icon: Circle,
+                icon: Banknote,
                 path: "/staff/payroll",
               },
               {
                 label: "Holidays",
-                icon: Circle,
+                icon: CalendarHeart,
                 path: "/staff/holidays",
               },
               {
                 label: "Schedule",
-                icon: Circle,
+                icon: CalendarClock,
                 path: "/staff/schedule",
               },
             ],
@@ -507,12 +565,12 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Store List",
-                icon: Circle,
+                icon: Store,
                 path: "/multi-store/store-list",
               },
               {
                 label: "Add Store",
-                icon: Circle,
+                icon: Plus,
                 path: "/multi-store/add-store",
               },
             ],
@@ -529,17 +587,17 @@ export const menu: MenuSection[] = [
             children: [
               {
                 label: "Tax",
-                icon: Circle,
+                icon: Percent,
                 path: "/settings/tax",
               },
               {
                 label: "Coupons",
-                icon: Circle,
+                icon: Ticket,
                 path: "/settings/coupons",
               },
               {
                 label: "General",
-                icon: Circle,
+                icon: Settings,
                 path: "/settings/general",
               },
               {
@@ -549,22 +607,22 @@ export const menu: MenuSection[] = [
               },
               {
                 label: "Payment Gateway",
-                icon: Circle,
+                icon: CreditCard,
                 path: "/settings/payment-gateway",
               },
               {
                 label: "Currencies",
-                icon: Circle,
+                icon: Coins,
                 path: "/settings/currencies",
               },
               {
                 label: "Invoices",
-                icon: Circle,
+                icon: Receipt,
                 path: "/settings/invoices",
               },
               {
                 label: "Manager",
-                icon: Circle,
+                icon: UserCog,
                 path: "/settings/manager",
               },
             ],
@@ -583,37 +641,37 @@ export const menu: MenuSection[] = [
         items: [
           {
             label: "Sign In",
-            icon: Circle,
+            icon: LogIn,
             path: "/auth/sign-in",
           },
           {
             label: "Sign Up",
-            icon: Circle,
+            icon: UserPlus,
             path: "/auth/sign-up",
           },
           {
             label: "Forgot Password",
-            icon: Circle,
+            icon: KeyRound,
             path: "/auth/forgot-password",
           },
           {
             label: "Two Step Verification",
-            icon: Circle,
+            icon: ShieldCheck,
             path: "/auth/two-step-verification",
           },
           {
             label: "Reset Password",
-            icon: Circle,
+            icon: LockKeyhole,
             path: "/auth/reset-password",
           },
           {
             label: "Successful Password",
-            icon: Circle,
+            icon: CircleCheck,
             path: "/auth/successful-password",
           },
           {
             label: "Account Deactivation",
-            icon: Circle,
+            icon: UserX,
             path: "/auth/account-deactivation",
           },
         ],
@@ -630,138 +688,138 @@ export const menu: MenuSection[] = [
         items: [
           {
             label: "Blank",
-            icon: Circle,
+            icon: File,
             path: "/blank",
           },
           {
             label: "Account",
-            icon: Circle,
+            icon: UserRound,
             path: "/account/account",
             children: [
               {
                 label: "Account",
-                icon: Circle,
+                icon: UserRound,
                 path: "/account/account",
               },
               {
                 label: "Security",
-                icon: Circle,
+                icon: ShieldCheck,
                 path: "/account/security",
               },
               {
                 label: "Billing & Plans",
-                icon: Circle,
+                icon: CreditCard,
                 path: "/account/billing-plans",
               },
               {
                 label: "Notification",
-                icon: Circle,
+                icon: Bell,
                 path: "/account/notification",
               },
               {
                 label: "Statements",
-                icon: Circle,
+                icon: FileText,
                 path: "/account/statements",
               },
               {
                 label: "Logs",
-                icon: Circle,
+                icon: History,
                 path: "/account/logs",
               },
             ],
           },
           {
             label: "User Profile",
-            icon: Circle,
+            icon: UserRound,
             path: "/profile/overview",
             children: [
               {
                 label: "Overview",
-                icon: Circle,
+                icon: UserRound,
                 path: "/profile/overview",
               },
               {
                 label: "Activity",
-                icon: Circle,
+                icon: Activity,
                 path: "/profile/activity",
               },
               {
                 label: "Documents",
-                icon: Circle,
+                icon: Files,
                 path: "/profile/documents",
               },
               {
                 label: "Notes",
-                icon: Circle,
+                icon: NotebookPen,
                 path: "/profile/notes",
               },
             ],
           },
           {
             label: "Pricing",
-            icon: Circle,
+            icon: Tags,
             path: "/pricing/user",
             children: [
               {
                 label: "User",
-                icon: Circle,
+                icon: Tags,
                 path: "/pricing/user",
               },
               {
                 label: "Admin",
-                icon: Circle,
+                icon: BadgeDollarSign,
                 path: "/pricing/admin",
               },
             ],
           },
           {
             label: "Contact Us",
-            icon: Circle,
+            icon: Mail,
             path: "/contact-us",
           },
           {
             label: "FAQ's",
-            icon: Circle,
+            icon: CircleHelp,
             path: "/faq-s",
           },
           {
             label: "Licenses",
-            icon: Circle,
+            icon: ScrollText,
             path: "/licenses",
           },
           {
             label: "Coming Soon",
-            icon: Circle,
+            icon: Rocket,
             path: "/coming-soon",
           },
           {
             label: "Maintenance",
-            icon: Circle,
+            icon: Wrench,
             path: "/maintenance",
           },
           {
             label: "Privacy Policy",
-            icon: Circle,
+            icon: ShieldCheck,
             path: "/privacy-policy",
           },
           {
             label: "Help Center",
-            icon: Circle,
+            icon: Headset,
             path: "/help-center",
           },
           {
             label: "Error Pages",
-            icon: Circle,
+            icon: FileQuestion,
             path: "/errors/404",
             children: [
               {
                 label: "404",
-                icon: Circle,
+                icon: FileQuestion,
                 path: "/errors/404",
               },
               {
                 label: "500",
-                icon: Circle,
+                icon: TriangleAlert,
                 path: "/errors/500",
               },
             ],
@@ -780,7 +838,7 @@ export const menu: MenuSection[] = [
         items: [
           {
             label: "Support",
-            icon: Circle,
+            icon: Headset,
             path: "/help-center",
           },
         ],
@@ -797,7 +855,7 @@ export const menu: MenuSection[] = [
         items: [
           {
             label: "Licenses",
-            icon: Circle,
+            icon: ScrollText,
             path: "/licenses",
           },
         ],
@@ -814,7 +872,7 @@ export const menu: MenuSection[] = [
         items: [
           {
             label: "Activity History",
-            icon: Circle,
+            icon: History,
             path: "/activity-history",
           },
         ],

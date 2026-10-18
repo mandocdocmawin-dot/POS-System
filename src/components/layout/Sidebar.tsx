@@ -61,7 +61,7 @@ export function Sidebar() {
                       }
                       className={`flex h-10 w-full items-center gap-3 rounded-lg border px-3 text-sm ${open === label ? "border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white" : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                     >
-                      <Icon size={17} />
+                      <Icon size={17} className="shrink-0" aria-hidden="true" />
                       <span className="flex-1 text-left">{label}</span>{navigationService.badge(path,now)>0&&<span aria-label={`${navigationService.badge(path,now)} requiring attention`} className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs text-indigo-700 dark:bg-indigo-950 dark:text-indigo-200">{navigationService.badge(path,now)}</span>}
                       {open === label ? (
                         <ChevronUp size={14} />
@@ -83,7 +83,7 @@ export function Sidebar() {
                               `flex min-h-9 items-center gap-3 pl-5 text-sm ${isActive || child.path === canonicalPath ? "font-medium text-indigo-600 dark:text-indigo-300" : "text-slate-500 hover:text-indigo-600"}`
                             }
                           >
-                            <span className="h-1 w-1 rounded-full bg-current" />
+                            <child.icon size={16} className="shrink-0" aria-hidden="true" />
                             {child.label}
                           </NavLink>
                         ))}

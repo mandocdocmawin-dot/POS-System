@@ -1,11 +1,14 @@
-// Add a page loader and its path here when a future feature is implemented.
+import {lazy,Suspense,createElement,type ComponentType} from 'react';
+import {ReportBoundary} from '../components/reports/ReportSection';
+function lazyReport(loader:()=>Promise<{Component:ComponentType}>){const Page=lazy(async()=>({default:(await loader()).Component}));return async()=>({Component:()=>createElement(ReportBoundary,null,createElement(Suspense,{fallback:createElement('div',{role:'status',className:'panel animate-pulse p-10'},'Loading report…')},createElement(Page)))});}
+// All feature pages remain code-split. Reports additionally defer loading until rendered.
 export const pageLoaders = {
- supplierReport:()=>import('../pages/reports/SupplierReportPage'),
- financeReport:()=>import('../pages/reports/FinanceReportPage'),
- purchasesReport:()=>import('../pages/reports/PurchasesReportPage'),
- expenseReport:()=>import('../pages/reports/ExpenseReportPage'),
- productReport:()=>import('../pages/reports/ProductReportPage'),
- salesReport:()=>import('../pages/reports/SalesReportPage'),
+ supplierReport:lazyReport(()=>import('../pages/reports/SupplierReportPage')),
+ financeReport:lazyReport(()=>import('../pages/reports/FinanceReportPage')),
+ purchasesReport:lazyReport(()=>import('../pages/reports/PurchasesReportPage')),
+ expenseReport:lazyReport(()=>import('../pages/reports/ExpenseReportPage')),
+ productReport:lazyReport(()=>import('../pages/reports/ProductReportPage')),
+ salesReport:lazyReport(()=>import('../pages/reports/SalesReportPage')),
  transfers:()=>import('../pages/accounts/TransfersPage'),
  income:()=>import('../pages/accounts/IncomePage'),
  expenses:()=>import('../pages/accounts/ExpensesPage'),

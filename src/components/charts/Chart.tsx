@@ -1,5 +1,5 @@
-import { useSyncExternalStore, useMemo } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import { useSyncExternalStore, useMemo, lazy, Suspense } from 'react';
+const ReactApexChart=lazy(()=>import('react-apexcharts'));
 import type { ApexOptions } from 'apexcharts';
 import { chartColors, subscribeTheme, darkTheme } from './theme';
 import { fromCentavos } from '../../utils/pos';
@@ -11,5 +11,5 @@ export function Chart({labels,series,summary,loading=false,height=280,horizontal
  if(loading)return <div role="status" aria-label="Loading chart" className="animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" style={{height}}/>;
  if(!series.some(s=>s.data.some(v=>v!==0)))return <div role="status" className="flex items-center justify-center text-sm text-slate-500" style={{height}}>No data for this period</div>;
  const scaled=series.map(s=>({...s,data:s.data.map(v=>count||s.count?v:fromCentavos(v))}));
- return <figure role="img" aria-label={summary} className="min-w-0"><figcaption className="sr-only">{summary}</figcaption><ReactApexChart type={type} height={height} width="100%" options={options} series={type==='donut'?scaled[0]?.data:scaled}/></figure>;
+ return <figure role="img" aria-label={summary} className="min-w-0"><figcaption className="sr-only">{summary}</figcaption><Suspense fallback={<div role="status" aria-label="Loading chart" className="animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" style={{height}}/>}><ReactApexChart type={type} height={height} width="100%" options={options} series={type==='donut'?scaled[0]?.data:scaled}/></Suspense></figure>;
 }

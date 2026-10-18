@@ -12,7 +12,7 @@ import {createPhase5Seed} from '../data/seed/phase5';
 import {refundSchema,supplierSchema,purchaseSchema,purchaseReturnSchema,supplierPaymentSchema,walletTransactionSchema,customerPaymentSchema,activitySchema} from '../types/phase4';
 import {purchaseBalance} from '../utils/supplierBalance';
 import {purchaseTotals} from './purchaseService';
-import {refundLine} from '../utils/refund';
+import {refundOrderLine} from '../utils/refund';
 import {multiplyCentavos} from '../utils/pos';
 import {customerSchema,orderSchema,heldOrderSchema,cartItemSchema,discountSchema,discountApprovalSchema} from '../types/pos';
 import {WALK_IN_ID} from '../config/pos';
@@ -160,7 +160,7 @@ export function validateBackup(input: unknown): Backup {
    const numbers=rows.map(r=>('refundNo' in r?r.refundNo:'purchaseNo' in r?r.purchaseNo:r.returnNo));
    if(new Set(numbers).size!==numbers.length||numbers.some(n=>Number(n.match(/(\d+)$/)?.[1])>counter))fail(`${prefix} counter or duplicate number.`);
   }
-  for(const o of d.orders){const refunds=d.refunds.filter(r=>r.orderId===o.id);const refunded=refunds.reduce((n,r)=>n+cent(r.refundAmount),0);if(refunded!==cent(o.refundedTotal)||refunded>cent(o.amountPaid))fail('refund total is inconsistent.');const history:typeof refunds[number]['items']=[];for(const r of refunds){if(r.refundMethod==='wallet'&&o.customerId===WALK_IN_ID)fail('Walk-in wallet refund.');if(new Set(r.items.map(l=>l.orderLineId)).size!==r.items.length)fail('duplicate refund line.');for(const l of r.items){const line=o.items.find(x=>x.id===l.orderLineId);if(!line||line.productId!==l.productId||line.variantId!==l.variantId)fail('refund line reference.');const expected=refundLine(line!,l.quantity,history);if(cent(expected.lineRefund)!==cent(l.lineRefund))fail('refund line allocation.');history.push(l);}if(r.items.length&&r.items.reduce((n,l)=>n+cent(l.lineRefund),0)!==cent(r.refundAmount))fail('refund amount.');if(!r.items.length&&o.orderStatus!=='cancelled')fail('empty refund requires cancellation.');}}
+  for(const o of d.orders){const refunds=d.refunds.filter(r=>r.orderId===o.id);const refunded=refunds.reduce((n,r)=>n+cent(r.refundAmount),0);if(refunded!==cent(o.refundedTotal)||refunded>cent(o.amountPaid))fail('refund total is inconsistent.');const history:typeof refunds[number]['items']=[];for(const r of refunds){if(r.refundMethod==='wallet'&&o.customerId===WALK_IN_ID)fail('Walk-in wallet refund.');if(new Set(r.items.map(l=>l.orderLineId)).size!==r.items.length)fail('duplicate refund line.');for(const l of r.items){const line=o.items.find(x=>x.id===l.orderLineId);if(!line||line.productId!==l.productId||line.variantId!==l.variantId)fail('refund line reference.');const expected=refundOrderLine(o,line!,l.quantity,history);if(cent(expected.lineRefund)!==cent(l.lineRefund))fail('refund line allocation.');history.push(l);}if(r.items.length&&r.items.reduce((n,l)=>n+cent(l.lineRefund),0)!==cent(r.refundAmount))fail('refund amount.');if(!r.items.length&&o.orderStatus!=='cancelled')fail('empty refund requires cancellation.');}}
   if(d.refunds.some(r=>!d.orders.some(o=>o.id===r.orderId)))fail('refund order is missing.');
   for(const payment of d.customerPayments){const o=d.orders.find(o=>o.id===payment.orderId);if(!o||o.customerId!==payment.customerId||!o.payments.some(p=>p.id===payment.id&&cent(p.amount)===cent(payment.amount)&&p.method===payment.method))fail('customer payment reference.');}
   const walletBalances=new Map<string,number>();

@@ -1,3 +1,6 @@
+import {settingsService} from './settingsService';
+import {documentNumber} from '../utils/numbering';
+import {branchService} from './branchService';
 import {approvalService} from './approvalService';
 import {validatePaymentAccount} from './financeData';
 import {authService} from './authService';
@@ -11,7 +14,7 @@ import {stockService} from './stockService';
 import {walletService} from './walletService';
 import {activityService} from './activityService';
 import {localTransaction} from './localTransaction';
-import {refundLine,reversedPoints} from '../utils/refund';
+import {refundOrderLine,reversedPoints} from '../utils/refund';
 import {toCentavos as c,fromCentavos as p} from '../utils/pos';
 export interface RefundInput {orderId:string;lines:{id:string;quantity:number}[];reason:string;refundMethod:Refund['refundMethod'];restock:boolean;note?:string}
 export const refundService={
@@ -22,11 +25,11 @@ export const refundService={
   if(input.refundMethod==='wallet'&&(!customer||customer.isWalkIn))throw new Error('Wallet refund requires a named customer.');
   if(!input.lines.length||new Set(input.lines.map(l=>l.id)).size!==input.lines.length)throw new Error('Choose distinct order lines.');
   const history=refundService.list(o.id).flatMap(x=>x.items);
-  const items=input.lines.map(selection=>{const l=o.items.find(x=>x.id===selection.id);if(!l)throw new Error('Order line not found.');return refundLine(l,selection.quantity,history);});
+  const items=input.lines.map(selection=>{const l=o.items.find(x=>x.id===selection.id);if(!l)throw new Error('Order line not found.');return refundOrderLine(o,l,selection.quantity,history);});
   const total=items.reduce((n,l)=>n+c(l.lineRefund),0);
   if(!total||total+c(o.refundedTotal)>c(o.amountPaid))throw new Error('Refund cannot exceed the amount paid. Collect the balance or select fewer items.');
   if(input.restock)for(const l of items)if(!stockService.items(o.branchId).some(x=>x.product.id===l.productId&&x.variant?.id===l.variantId))throw new Error('Restore the original product before restocking.');
-  return refundSchema.parse({id:crypto.randomUUID(),refundNo:`RF-${String(useRefundStore.getState().counter+1).padStart(6,'0')}`,orderId:o.id,items,reason:input.reason,refundAmount:p(total),refundMethod:input.refundMethod,restock:input.restock,note:input.note,createdAt:new Date().toISOString(),createdBy:authService.getCurrentUser()?.name??'System'});
+  return refundSchema.parse({id:crypto.randomUUID(),refundNo:documentNumber(useRefundStore.getState().counter+1,settingsService.get().invoice,branchService.get(o.branchId)?.code,settingsService.get().invoice.refundPrefix),orderId:o.id,items,reason:input.reason,refundAmount:p(total),refundMethod:input.refundMethod,restock:input.restock,note:input.note,createdAt:new Date().toISOString(),createdBy:authService.getCurrentUser()?.name??'System'});
  },
  create:(input:RefundInput,recordedAt?:string)=>{requirePermission('orders:refund');
   if(recordedAt){requirePermission("settings:manage");refundSchema.shape.createdAt.parse(recordedAt);}const r={...refundService.preview(input),...(recordedAt?{createdAt:recordedAt}:{})},o=orderService.get(r.orderId)!;

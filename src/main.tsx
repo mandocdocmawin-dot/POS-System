@@ -1,3 +1,4 @@
+import {AppErrorBoundary} from './core/errors/AppErrorBoundary';
 import { HydrationGate } from './core/hydration/HydrationGate';
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -9,6 +10,6 @@ import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <HydrationGate><App /></HydrationGate>
+    <AppErrorBoundary><HydrationGate><App /></HydrationGate></AppErrorBoundary>
   </StrictMode>,
 );

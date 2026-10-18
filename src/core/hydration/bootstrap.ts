@@ -1,3 +1,4 @@
+import {installGlobalErrorHandlers} from '../errors/globalErrors';
 import {startStorageMonitoring} from '../../services/storageUsageService';
 import { persistedStores } from './registry';
 import { localKeys, flushStorage } from '../storage';
@@ -36,6 +37,7 @@ export function hydrateApplication() {
     await flushStorage();
     startCrossTabSync(persistedStores);
     startStorageMonitoring();
+    installGlobalErrorHandlers();
   })();
   return boot;
 }

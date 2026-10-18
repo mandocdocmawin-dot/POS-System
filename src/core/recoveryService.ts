@@ -1,12 +1,13 @@
 import { rawDatabase } from './storage/database';
-import { listSnapshots, readAllData, restoreSnapshot, type Snapshot } from './snapshots';
+import { listSnapshots, restoreSnapshot, type Snapshot } from './snapshots';
 import { persistedStores } from './hydration/registry';
 import { localKeys } from './storage';
 export const recoveryService = {
   listSnapshots,
   restore: async (snapshot: Snapshot) => { await restoreSnapshot(snapshot); location.reload(); },
   download: async () => {
-    const raw = { state: await readAllData(), indexedDB: Object.fromEntries(await rawDatabase.entries()), localStorage: Object.fromEntries(Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)).filter((key): key is string => !!key && key.startsWith('tindapos')).map(key => [key, localStorage.getItem(key)])) };
+    const indexed = await rawDatabase.entries().catch(()=>[] as [string,unknown][]);
+    const raw = { indexedDB: Object.fromEntries(indexed), localStorage: Object.fromEntries(Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)).filter((key): key is string => !!key && key.startsWith('tindapos')).map(key => [key, localStorage.getItem(key)])) };
     const url = URL.createObjectURL(new Blob([JSON.stringify(raw, null, 2)], { type: 'application/json' }));
     const a = document.createElement('a'); a.href = url; a.download = `tindapos-raw-${Date.now()}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   },

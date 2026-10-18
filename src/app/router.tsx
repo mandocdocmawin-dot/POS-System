@@ -1,3 +1,4 @@
+import {RouteErrorPage} from '../core/errors/RouteErrorPage';
 import {createElement} from 'react';
 import {RouteGuard} from '../components/auth/RouteGuard';
 import {ForbiddenPage} from '../components/auth/ForbiddenPage';
@@ -8,7 +9,7 @@ import { MainLayout } from "../layouts/MainLayout";
 import { PosLayout } from "../layouts/PosLayout";
 import { AuthLayout } from "../layouts/AuthLayout";
 const layouts = { main: MainLayout, pos: PosLayout, auth: AuthLayout };
-export const router = createBrowserRouter([
+export const router = createBrowserRouter([{errorElement:createElement(RouteErrorPage),children:[
   {path:'/403',Component:ForbiddenPage},
   {path:'/landing',lazy:getPageLoader('/landing')},
   {path:'/maintenance',lazy:getPageLoader('/maintenance')},
@@ -36,4 +37,4 @@ export const router = createBrowserRouter([
     Component: () => createElement(RouteGuard,null,createElement(MainLayout)),
     children: [{ path: "*", lazy: getPageLoader("*") }],
   },
-]);
+ ]}]);

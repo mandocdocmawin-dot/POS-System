@@ -1,3 +1,5 @@
+import {StoreSummary} from './StoreSummary';
+import {ShortcutsDialog} from './ShortcutsDialog';
 import {CommandPalette} from '../search/CommandPalette';
 import {Can} from '../auth/Can';
 import { LanguageFlag } from "./LanguageFlag";
@@ -8,7 +10,6 @@ import {
   PanelLeft,
   ShoppingCart,
   LayoutGrid,
-  Store,
   Check,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -80,14 +81,7 @@ export function Topbar() {
         <div className="hidden md:block">
           <FullscreenButton />
         </div>
-        <Can permission="pos:use"><Link
-          aria-label="Open store POS"
-          to="/pos"
-          className="icon-btn relative hidden sm:flex"
-        >
-          <Store size={17} />
-          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-red-500" />
-        </Link></Can>
+        <Can permission="pos:use"><StoreSummary /></Can><ShortcutsDialog/>
         <NotificationMenu />
         <Popover
           label="Select language"

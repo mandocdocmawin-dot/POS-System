@@ -3,6 +3,7 @@ import {ReportBoundary} from '../components/reports/ReportSection';
 function lazyReport(loader:()=>Promise<{Component:ComponentType}>){const Page=lazy(async()=>({default:(await loader()).Component}));return async()=>({Component:()=>createElement(ReportBoundary,null,createElement(Suspense,{fallback:createElement('div',{role:'status',className:'panel animate-pulse p-10'},'Loading report…')},createElement(Page)))});}
 // All feature pages remain code-split. Reports additionally defer loading until rendered.
 export const pageLoaders = {
+ calendar8:()=>import('../pages/calendar/CalendarPage'),
  notes8:()=>import('../pages/profile/NotesPage'),
  documents8:()=>import('../pages/profile/DocumentsPage'),
  profile8:()=>import('../pages/profile/OverviewPage'),
@@ -80,6 +81,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/calendar/default':'calendar8',
  '/profile/notes':'notes8','/profile/:staffId/notes':'notes8',
  '/profile/documents':'documents8','/profile/:staffId/documents':'documents8',
  '/profile':'profile8','/profile/overview':'profile8','/profile/activity':'profile8','/profile/:staffId':'profile8','/profile/:staffId/overview':'profile8','/profile/:staffId/activity':'profile8',

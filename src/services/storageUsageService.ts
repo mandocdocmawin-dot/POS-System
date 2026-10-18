@@ -24,6 +24,12 @@ export const storageUsageService = {
   removeLegacy: () => { currentUser('settings:manage'); const keys: string[] = []; for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i)!; if (key.startsWith('tindapos-legacy:')) keys.push(key); } keys.forEach(key => localStorage.removeItem(key)); },
   markBackup: async () => { useMetaStore.setState({ lastBackupAt: new Date().toISOString() }); await storageUsageService.requestPersistence(); },
 };
+async function sampleUsage(){
+ try {const estimate=await navigator.storage?.estimate?.()??{};let bytes=0;for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i)!;bytes+=(key.length+(localStorage.getItem(key)?.length??0))*2;}notificationService.setUsage(estimate.quota?(estimate.usage??0)/estimate.quota:0,bytes);}catch{/* Quota estimates are optional; storage write notices remain available. */}
+}
 export function startStorageMonitoring() {
-  return useOrderStore.subscribe((state, previous) => { if (state.orders.length > previous.orders.length) void storageUsageService.requestPersistence(); });
+  void sampleUsage();const timer=setInterval(()=>void sampleUsage(),30000);
+  const unsubscribe=
+  useOrderStore.subscribe((state, previous) => { if (state.orders.length > previous.orders.length) void storageUsageService.requestPersistence(); });
+  return ()=>{unsubscribe();clearInterval(timer);};
 }

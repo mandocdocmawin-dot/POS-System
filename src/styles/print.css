@@ -1,4 +1,19 @@
 .receipt { width: var(--receipt-width, 80mm); }
+.print-header,.print-table { display:none; }
+@media print {
+ body:has(.report-document) > #root { display:block !important; }
+ body:has(.report-document) #root * { visibility:hidden !important; }
+ body:has(.report-document) .report-document,body:has(.report-document) .report-document * { visibility:visible !important; }
+ .report-document { position:absolute; top:0; left:0; width:100%; padding:0; color:black !important; background:white !important; }
+ .report-document .report-controls,.report-document .screen-table,.report-document button { display:none !important; }
+ .report-document .print-header { display:block; margin-bottom:8mm; }
+ .report-document .print-table { display:table; }
+ .report-document .panel { border:0; box-shadow:none; break-inside:avoid; background:white !important; color:black !important; }
+ .report-document .overflow-x-auto { overflow:visible !important; }
+ .report-document tr { break-inside:avoid; }
+ .report-document th,.report-document td { padding:2mm; border-bottom:1px solid #ddd; }
+ .report-document thead { display:table-header-group; }
+}
 .receipt-bars {
  background: repeating-linear-gradient(90deg,#000 0 1px,transparent 1px 3px,#000 3px 6px,transparent 6px 7px,#000 7px 9px,transparent 9px 13px);
  print-color-adjust: exact;

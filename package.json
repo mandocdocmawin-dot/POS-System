@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test:phase2": "node scripts/test-phase2.mjs",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "prebuild": "node scripts/generate-licenses.mjs",
+    "predev": "node scripts/generate-licenses.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

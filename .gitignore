@@ -27,3 +27,7 @@ dist-ssr
 .env.*
 .phase-tools/
 .npm-cache/
+
+src/data/generated/licenses.json
+
+.taste-skill/

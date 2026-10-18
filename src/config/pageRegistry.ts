@@ -3,6 +3,7 @@ import {ReportBoundary} from '../components/reports/ReportSection';
 function lazyReport(loader:()=>Promise<{Component:ComponentType}>){const Page=lazy(async()=>({default:(await loader()).Component}));return async()=>({Component:()=>createElement(ReportBoundary,null,createElement(Suspense,{fallback:createElement('div',{role:'status',className:'panel animate-pulse p-10'},'Loading report…')},createElement(Page)))});}
 // All feature pages remain code-split. Reports additionally defer loading until rendered.
 export const pageLoaders = {
+ stores:()=>import('../pages/stores/StoresPage'),
  coupons:()=>import('../pages/settings/CouponsPage'),
  managerSettings:()=>import('../pages/settings/ManagerPage'),
  paymentSettings:()=>import('../pages/settings/PaymentGatewayPage'),
@@ -66,6 +67,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/stores':'stores','/stores/store-list':'stores',
  '/settings/coupons':'coupons',
  '/settings/manager':'managerSettings',
  '/settings/payment-gateway':'paymentSettings',

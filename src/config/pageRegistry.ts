@@ -81,6 +81,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/calendar/week-view':'calendar8','/calendar/day-view':'calendar8',
  '/calendar/default':'calendar8',
  '/profile/notes':'notes8','/profile/:staffId/notes':'notes8',
  '/profile/documents':'documents8','/profile/:staffId/documents':'documents8',

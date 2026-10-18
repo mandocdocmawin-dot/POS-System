@@ -49,7 +49,7 @@ export function CustomersRow() {
             </h3>
             <p className="mt-1 text-xs text-slate-400">
               <span className="text-emerald-500">↗ {customers.trend}</span> vs
-              last month
+              last week
             </p>
           </div>
           <div className="flex -space-x-2">
@@ -109,4 +109,5 @@ export function CustomersRow() {
     </div>
   );
 }
+
 

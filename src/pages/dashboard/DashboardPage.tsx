@@ -9,11 +9,11 @@ import { ProductsRow } from "./ProductsRow";
 import { PerformanceRow } from "./PerformanceRow";
 import { Store } from "lucide-react";
 import { PageHeader } from "../../components/layout/PageHeader";
-import { useBranchStore } from "../../store/useBranchStore";
+import {reportService} from "../../services/reportService";
 import { SummaryRow } from "./SummaryRow";
 export function Component() {
   useLocalData();const {can}=usePermission();
-  const branch = useBranchStore((s) => s.branch);
+  const branch = reportService.activeBranch();
   const route = findRoute("/");
   const overview = dashboardService.getOverview();
   return (
@@ -46,4 +46,5 @@ export function Component() {
     </>
   );
 }
+
 

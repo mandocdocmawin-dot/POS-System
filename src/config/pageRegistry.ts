@@ -73,7 +73,7 @@ export const implementedPages: Record<string, PageId> = {
  '/inventory/transfer':'stockTransfers','/inventory/stock-transfer':'stockTransfers',
  '/stores/:id':'storeProfile',
  '/stores/add':'storeForm','/stores/add-store':'storeForm','/stores/:id/edit':'storeForm',
- '/stores':'stores','/stores/store-list':'stores',
+ '/stores':'stores','/stores/store-list':'stores','/multi-store/store-list':'stores','/multi-store/add-store':'storeForm',
  '/settings/coupons':'coupons',
  '/settings/manager':'managerSettings',
  '/settings/payment-gateway':'paymentSettings',

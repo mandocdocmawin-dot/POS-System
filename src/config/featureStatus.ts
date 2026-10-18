@@ -553,8 +553,7 @@ for (const path of phase2Paths)
     description: "Working with browser-persisted local data.",
     plannedFeatures: [],
   };
-// General settings are still planned; only its local Data card is implemented.
-featureStatus["/settings/general"].status = "placeholder";
+
 // Phase 3 POS remains complete; Phase 4 management routes are registered below.
 featureStatus['/pos'] = {
   status: 'done',
@@ -580,3 +579,6 @@ for (const path of phase5Paths) featureStatus[path] = {
 featureStatus['/'].description = 'Live branch-filtered cash sales, finance formulas, charts, customers, products, payments, inventory and staff performance.';
 export const phase6Paths=Object.keys(implementedPages).filter(path=>path.startsWith('/accounts/')||path.startsWith('/reports/'));
 for(const path of phase6Paths)featureStatus[path]={status:'done',description:'Working local cash-basis accounts and reports with derived ledgers, comparisons, charts, CSV export and print.',plannedFeatures:[]};
+
+export const phase7Paths=Object.keys(implementedPages).filter(path=>path.startsWith('/settings/')||path.startsWith('/stores')||path.startsWith('/multi-store/')||['/inventory/transfer','/inventory/stock-transfer'].includes(path));
+for(const path of phase7Paths)featureStatus[path]={status:'done',description:'Working local settings, coupons, branch profiles and stock transfers with validated browser persistence.',plannedFeatures:[]};

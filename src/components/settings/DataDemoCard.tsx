@@ -1,3 +1,4 @@
+import {backupService} from '../../services/backupService';
 import {demoHistoryService} from '../../services/demoHistoryService';
 import { useState } from "react";
 import { usePermission } from "../../hooks/usePermission";
@@ -31,7 +32,7 @@ export function DataDemoCard() {
               try {
                 downloadFile(
                   "tindapos-backup.json",
-                  await dataService.export(),
+                  await backupService.export(),
                   "application/json",
                 );
                 toast.success("Data exported");

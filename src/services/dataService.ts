@@ -121,7 +121,7 @@ export const dataService = {
     const all = imageRefs.some((p) => p.imageId)
       ? await imageService.export()
       : {};
-    return JSON.stringify(
+    const text = JSON.stringify(
       {
         ...data,
         images: Object.fromEntries(
@@ -133,6 +133,7 @@ export const dataService = {
       null,
       2,
     );
+    return text;
   },
   validate: (text: string) => validateBackup(JSON.parse(text)),
   import: async (text: string) => {

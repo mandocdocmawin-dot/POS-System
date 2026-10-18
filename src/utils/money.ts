@@ -1,8 +1,6 @@
-export const formatPHP = (amount: number) =>
-  new Intl.NumberFormat("en-PH", {
-    style: "currency",
-    currency: "PHP",
-    minimumFractionDigits: 2,
-  }).format(amount);
-
-export const payrollMoney = (centavos: number) => formatPHP(centavos / 100);
+import { settingsService } from '../services/settingsService';
+import { formatMoney as pureFormatMoney } from './formatters';
+import { toCentavos } from './pos';
+export const formatMoney = (centavos: number) => pureFormatMoney(centavos, settingsService.get().currency.base);
+export const formatPHP = (amount: number) => formatMoney(amount < 0 ? -toCentavos(-amount) : toCentavos(amount));
+export const payrollMoney = formatMoney;

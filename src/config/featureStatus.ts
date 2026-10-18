@@ -582,3 +582,7 @@ for(const path of phase6Paths)featureStatus[path]={status:'done',description:'Wo
 
 export const phase7Paths=Object.keys(implementedPages).filter(path=>path.startsWith('/settings/')||path.startsWith('/stores')||path.startsWith('/multi-store/')||['/inventory/transfer','/inventory/stock-transfer'].includes(path));
 for(const path of phase7Paths)featureStatus[path]={status:'done',description:'Working local settings, coupons, branch profiles and stock transfers with validated browser persistence.',plannedFeatures:[]};
+
+// Phase 8 completes application pages while the optional inventory and UI demos stay placeholders.
+export const phase8Paths=Object.entries(implementedPages).filter(([,id])=>id.endsWith('8')).map(([path])=>path);
+for(const path of phase8Paths)featureStatus[path]={status:'done',description:'Working local Phase 8 page. Communication, support and billing are explicitly simulated.',plannedFeatures:[]};

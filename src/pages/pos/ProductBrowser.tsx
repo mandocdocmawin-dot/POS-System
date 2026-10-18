@@ -62,7 +62,7 @@ export function ProductBrowser() {
           );
         })}
       </nav>
-      <main className="min-w-0 flex-1 p-4 md:p-6 md:overflow-y-auto">
+      <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 p-4 md:p-6 md:overflow-y-auto">
         <div className="mb-6 flex flex-wrap gap-3">
           <label className="relative min-w-40 flex-1">
             <span className="sr-only">Search by name, SKU or barcode</span>

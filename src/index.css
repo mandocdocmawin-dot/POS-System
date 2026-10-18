@@ -73,3 +73,31 @@ p, dd, h1, h2, h3 { overflow-wrap: anywhere; }
  .report-document input, .report-document select, .report-document nav { display: none !important; }
  .report-document [role="status"], .report-document [role="alert"] { display: none !important; }
 }
+/* Preserve AA contrast for inherited secondary labels and action links in both themes. */
+@layer utilities {
+ .text-slate-400, .text-slate-500 { color: #475569; }
+ .text-indigo-500 { color: #4f46e5; }
+ .text-red-500 { color: #b91c1c; }
+ .bg-orange-600.text-white { background-color: #c2410c; }
+ .dark .text-slate-400, .dark .text-slate-500, .dark .text-slate-600, .dark .dark\:text-slate-500 { color: #94a3b8; }
+ .dark .text-indigo-500, .dark .text-indigo-600 { color: #a5b4fc; }
+ .dark .text-red-500, .dark .text-red-600 { color: #fca5a5; }
+}
+@layer utilities {
+ .text-emerald-600 { color: #047857; }
+ .text-rose-500 { color: #be123c; }
+ .dark .text-emerald-600 { color: #6ee7b7; }
+ .dark .text-rose-500 { color: #fda4af; }
+}
+@layer utilities {
+ .text-emerald-500 { color: #047857; }
+ .text-orange-600 { color: #c2410c; }
+ .text-red-600 { color: #b91c1c; }
+ .dark .text-emerald-500 { color: #6ee7b7; }
+ .dark .text-orange-600 { color: #fdba74; }
+ .dark .text-red-600 { color: #fca5a5; }
+}
+@layer utilities {
+ .text-red-400 { color: #b91c1c; }
+ .dark .text-red-400 { color: #fca5a5; }
+}

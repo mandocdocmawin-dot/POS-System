@@ -8,7 +8,7 @@ export function AuthLayout() {
       <div className="mb-8">
         <Brand />
       </div>
-      <main className="card w-full max-w-md p-7 sm:p-9">
+      <main id="main-content" tabIndex={-1} className="card w-full max-w-md p-7 sm:p-9">
         <Outlet />
       </main>
       <p className="mt-7 text-center text-xs text-slate-400">

@@ -8,7 +8,7 @@ export function RecoveryScreen() {
   const [error, setError] = useState('');
   const [confirm, setConfirm] = useState<{ title: string; message: string; action: () => Promise<void> }>();
   useEffect(() => { void recoveryService.listSnapshots().then(setSnapshots).catch(e => setError(String(e))); }, []);
-  return <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-5 p-6 text-slate-800 dark:text-slate-100">
+  return <main id="main-content" tabIndex={-1} className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-5 p-6 text-slate-800 dark:text-slate-100">
     <h1 className="text-3xl font-bold">TindaPOS data recovery</h1>
     <p>Your saved data could not be loaded safely. Download your raw data before changing anything.</p>
     {error && <p role="alert" className="text-red-600">{error}</p>}

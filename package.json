@@ -13,7 +13,11 @@
     "typecheck": "tsc -b --noEmit",
     "prebuild": "node scripts/generate-licenses.mjs",
     "predev": "node scripts/generate-licenses.mjs",
-    "analyze": "node scripts/analyze.mjs"
+    "analyze": "node scripts/analyze.mjs",
+    "postbuild": "node scripts/postbuild-spa.mjs",
+    "bundle-size": "node scripts/check-bundle-size.mjs",
+    "external-urls": "node scripts/check-external-urls.mjs",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build && npm run bundle-size && npm run external-urls"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

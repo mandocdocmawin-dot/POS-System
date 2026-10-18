@@ -84,6 +84,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/chat/group':'chat8',
  '/chat/default':'chat8',
  '/email/templates':'templates8',
  '/email/mailbox':'mailbox8',

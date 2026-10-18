@@ -1,3 +1,5 @@
+import {chatService} from './chatService';
+import {canUse} from './phase8Context';
 import { orderService } from './orderService';
 import { customerService } from './customerService';
 import { sidebarBadges } from '../config/sidebarBadges';
@@ -20,6 +22,6 @@ function staffAttention(now: Date) {
   }).length;
 }
 export const navigationService = {
-  counts: (now = new Date()) => ({ pendingOrders: orderService.list().filter(o => o.orderStatus === 'pending').length, customersWithBalance: customerService.list().filter(c => c.creditBalance > 0).length, staffAttention: staffAttention(now) }),
+  counts: (now = new Date()) => ({ unreadChat:canUse('chat:use')?chatService.unread():0, pendingOrders: orderService.list().filter(o => o.orderStatus === 'pending').length, customersWithBalance: customerService.list().filter(c => c.creditBalance > 0).length, staffAttention: staffAttention(now) }),
   badge: (path: string, now = new Date()) => { const key = sidebarBadges[path]; return key ? navigationService.counts(now)[key] : 0; },
 };

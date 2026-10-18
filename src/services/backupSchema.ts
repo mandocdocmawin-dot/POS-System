@@ -1,9 +1,12 @@
+import {phase8Schema} from '../types/phase8';
+import {emptyPhase8} from './phase8Backup';
+import {validatePhase8Backup} from './validatePhase8Backup';
 import {settingsSchema,branchSchema,couponSchema,stockTransferSchema} from '../types/settings';
 import {defaultSettings} from '../config/defaultSettings';
 import {defaultBranches,migrateBranchData} from '../utils/branchMigration';
 import {documentNumber} from '../utils/numbering';
 import {staffBackupSchema,validateStaffBackup} from './staffBackup';
-import {migratePhase7Roles} from '../config/permissions';
+import {migratePhase8Roles} from '../config/permissions';
 import {accountStateSchema} from '../types/accounts';
 import {createAccountSeed} from '../data/seed/accounts';
 import {validateAccountBackup} from './accountBackup';
@@ -31,6 +34,7 @@ import {
 export const backupSchema = z
   .object({
     version: z.literal(1),
+    phase8:phase8Schema.default(emptyPhase8),
     phase7:z.object({settings:settingsSchema,branches:branchSchema.array().min(1),coupons:couponSchema.array(),transfers:stockTransferSchema.array(),activeBranchId:z.string()}).default(()=>({settings:structuredClone(defaultSettings),branches:defaultBranches(),coupons:[],transfers:[],activeBranchId:'Main Branch'})),
     phase6:accountStateSchema.default(createAccountSeed),
     reportFilter:z.object({from:z.iso.date(),to:z.iso.date(),branchId:z.string(),compare:z.boolean()}).refine(r=>r.from<=r.to,'Invalid report period').default(defaultReportFilter),
@@ -65,8 +69,9 @@ export function validateBackup(input: unknown): Backup {
   d.movements=migrated.movements;d.orders=migrated.orders;d.heldOrders=migrated.heldOrders;d.purchases=migrated.purchases;d.phase6.accounts=migrated.accounts;d.phase5.records=migrated.attendance;
   const branchIds=d.phase7.branches.map(b=>b.id);
   validateAccountBackup(d.phase6,branchIds);
-  d.phase5.roles=migratePhase7Roles(d.phase5.roles);
+  d.phase5.roles=migratePhase8Roles(d.phase5.roles);
   validateStaffBackup(d.phase5,branchIds);
+  validatePhase8Backup(d.phase8,d.phase5.staff.map(s=>s.id),branchIds);
   const fail = (message: string): never => {
     throw new Error(`Invalid backup: ${message}`);
   };
@@ -177,3 +182,4 @@ export function validateBackup(input: unknown): Backup {
   for(const t of d.phase7.transfers){if(!branchIds.includes(t.fromBranchId)||!branchIds.includes(t.toBranchId))fail('transfer branch missing.');for(const l of t.items){const product=d.products.find(p=>p.id===l.productId);if(!product||product.hasVariants!==!!l.variantId||l.receivedQty!==undefined&&l.receivedQty>l.quantity)fail('transfer item invalid.');}}
   return d;
 }
+

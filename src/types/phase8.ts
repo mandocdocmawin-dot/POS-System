@@ -38,6 +38,9 @@ export type Note = z.infer<typeof noteSchema>;
 export interface ErrorLogEntry { id: string; message: string; stack?: string; route: string; createdAt: string }
 export interface DemoGuideState { startedAt: string; dismissed: boolean; collapsed: boolean }
 export const phase8Schema = z.object({
+  guide:z.object({startedAt:z.union([z.literal(''),date]),dismissed:z.boolean(),collapsed:z.boolean()}).default({startedAt:'',dismissed:false,collapsed:false}),
+  errors:z.array(z.object({id,message:text,stack:text.optional(),route:text,createdAt:date})).max(50).default([]),
+  meta:z.object({schemaVersion:z.number().int().nonnegative(),appVersion:id,installedAt:date,lastMigrationAt:date.optional(),lastBackupAt:date.optional()}).optional(),
   events: z.array(calendarEventSchema), layers: z.record(id, z.array(z.enum(calendarLayers))),
   notificationStates: z.array(notificationStateSchema), prefs: z.array(notificationPrefsSchema), conversations: z.array(conversationSchema), messages: z.array(chatMessageSchema), emails: z.array(emailSchema), templates: z.array(emailTemplateSchema), tickets: z.array(ticketSchema), ticketCounters: z.record(id, cents), faqs: z.array(faqSchema), plans: z.array(planSchema), subscription: subscriptionSchema.nullable(), invoices: z.array(billingInvoiceSchema), documents: z.array(staffDocumentSchema), notes: z.array(noteSchema), votes: z.record(id, cents), recentSearches: z.record(id, z.array(text).max(8)),
 });

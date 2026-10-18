@@ -1,3 +1,7 @@
+import {verifyPersistedState} from './verifyPersistedState';
+import {emptyPhase8,snapshotPhase8,replacePhase8} from './phase8Backup';
+import {initializePhase8Data} from './initializePhase8Data';
+import {documentService} from './documentService';
 import {useSettingsStore} from '../store/useSettingsStore';
 import {useCouponStore} from '../store/useCouponStore';
 import {useBranchesStore} from '../store/useBranchesStore';
@@ -50,6 +54,7 @@ import { useStockStore } from "../store/useStockStore";
 function snapshot(): Backup {
   return {
     version: 1,
+    phase8:snapshotPhase8(),
     phase7:structuredClone({settings:useSettingsStore.getState().settings,coupons:useCouponStore.getState().coupons,branches:useBranchesStore.getState().branches,transfers:useTransferStore.getState().transfers,activeBranchId:useBranchStore.getState().activeBranchId}),
     phase6:structuredClone(useAccountStore.getState()),
     reportFilter:structuredClone(useReportFilterStore.getState().filter),
@@ -69,6 +74,7 @@ function snapshot(): Backup {
 }
 function replace(data: Backup) {
   localTransaction(() => {
+    replacePhase8(data.phase8);
     useSettingsStore.setState({settings:data.phase7.settings,updatedAt:undefined,updatedBy:undefined});useCouponStore.setState({coupons:data.phase7.coupons});useBranchesStore.setState({branches:data.phase7.branches,migrationVersion:0});useTransferStore.setState({transfers:data.phase7.transfers});useBranchStore.setState({activeBranchId:data.phase7.activeBranchId});
     useAccountStore.setState(data.phase6,true);
     useReportFilterStore.setState({filter:data.reportFilter},true);
@@ -108,7 +114,8 @@ function replace(data: Backup) {
 function resetData() {
     const seed=createPosSeed();
     const phase4=createPhase4Seed(seed.customers,seed.orders);
-    replace(structuredClone({version:1,phase7:{settings:structuredClone(defaultSettings),branches:defaultBranches(),coupons:createCouponSeed(),transfers:[],activeBranchId:'Main Branch'},phase6:createAccountSeed(),reportFilter:{...defaultReportFilter(),branchId:'Main Branch'},phase5:{...createPhase5Seed(),auth:{currentUserId:null}},refunds:phase4.refunds,refundCounter:phase4.refundCounter,suppliers:phase4.suppliers,purchases:phase4.purchases,purchaseReturns:phase4.returns,supplierPayments:phase4.payments,purchaseCounter:phase4.purchaseCounter,returnCounter:phase4.returnCounter,walletTransactions:phase4.transactions,customerPayments:phase4.customerPayments,activityLogs:phase4.logs,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements.map(m=>({...m,branchId:seed.orders.find(o=>o.orderNo===m.reference)?.branchId??'Main Branch'})),...phase4.movements,...createBranchStockSeed()],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
+    replace(structuredClone({version:1,phase8:emptyPhase8(),phase7:{settings:structuredClone(defaultSettings),branches:defaultBranches(),coupons:createCouponSeed(),transfers:[],activeBranchId:'Main Branch'},phase6:createAccountSeed(),reportFilter:{...defaultReportFilter(),branchId:'Main Branch'},phase5:{...createPhase5Seed(),auth:{currentUserId:null}},refunds:phase4.refunds,refundCounter:phase4.refundCounter,suppliers:phase4.suppliers,purchases:phase4.purchases,purchaseReturns:phase4.returns,supplierPayments:phase4.payments,purchaseCounter:phase4.purchaseCounter,returnCounter:phase4.returnCounter,walletTransactions:phase4.transactions,customerPayments:phase4.customerPayments,activityLogs:phase4.logs,categories,subcategories,brands,units,products,variants,movements:[...movements,...seed.movements.map(m=>({...m,branchId:seed.orders.find(o=>o.orderNo===m.reference)?.branchId??'Main Branch'})),...phase4.movements,...createBranchStockSeed()],customers:seed.customers,orders:seed.orders,counter:seed.counter,heldOrders:[],pos:{cart:[],customerId:WALK_IN_ID,orderDiscount:{type:'fixed',value:0},note:'',activeOrderNo:formatOrderNo(seed.counter+1)}}));
+    initializePhase8Data();
     const product=products.find(p=>!p.hasVariants);if(product){const transfers=createStockTransferSeed(product.id);useTransferStore.setState({transfers});useStockStore.setState(s=>({movements:[...s.movements,...transfers.flatMap(t=>[{id:`${t.id}-out`,branchId:t.fromBranchId,productId:product.id,type:'out' as const,quantity:2,reason:'Transfer out',reference:t.transferNo,createdAt:t.createdAt,createdBy:'System'},...(t.status==='received'?[{id:`${t.id}-in`,branchId:t.toBranchId,productId:product.id,type:'in' as const,quantity:2,reason:'Transfer in',reference:t.transferNo,createdAt:t.createdAt,createdBy:'System'}]:[])])]}));}
 
 }
@@ -139,6 +146,8 @@ export const dataService = {
   import: async (text: string) => {
     requirePermission("settings:manage");
     const data = validateBackup(JSON.parse(text));
+    data.phase8.documents=data.phase8.documents.map(d=>({...d,fileMissing:true}));
+    const previous=snapshot();
     const images: [string, Blob][] = [];
     for (const [id, value] of Object.entries(data.images ?? {})) {
       if (value.length > 3000000)
@@ -166,13 +175,14 @@ export const dataService = {
     if (mapped.length) await imageService.import(mapped);
     try {
       requirePermission("settings:manage");
-      replace(data);
+      replace(data); await verifyPersistedState();
     } catch (e) {
+      replace(previous);
       await Promise.all(mapped.map(([id]) => imageService.remove(id)));
       throw e;
     }
   },
-  reset: () => { requirePermission('settings:manage'); resetData(); },
+  reset: () => { requirePermission('settings:manage'); resetData(); return documentService.clearFiles(); },
   initialize: () => {
     if (
       useCatalogStore.getState().categories.length === 0 &&
@@ -182,4 +192,5 @@ export const dataService = {
       resetData();
   },
 };
+
 

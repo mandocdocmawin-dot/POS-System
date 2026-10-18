@@ -1,4 +1,4 @@
-import { createStore, get, set, del } from 'idb-keyval';
+import { createStore, get, set, del, clear } from 'idb-keyval';
 import { useDocumentStore } from '../store/useDocumentStore';
 import { staffDocumentSchema, type StaffDocument } from '../types/phase8';
 import { currentUser, requireOwn, timestamp } from './phase8Context';
@@ -12,14 +12,15 @@ export function validateDocument(file: { name: string; type: string; size: numbe
   if (file.size <= 0 || file.size > DOCUMENT_MAX_BYTES) throw new Error('Each document must contain data and be at most 5 MB.');
   if (existingSize + file.size > DOCUMENT_STAFF_MAX_BYTES) throw new Error('Document limit is 50 MB per staff member.');
 }
-async function verifyMetadata(id: string, present: boolean) {
+async function verifyMetadata(id: string, present: boolean, fileKey?:string) {
   await flushStorage();
   if (import.meta.env.MODE === 'test' && typeof indexedDB === 'undefined') return;
   const raw = await rawDatabase.get('tindapos:document');
   const docs: StaffDocument[] = typeof raw === 'string' ? JSON.parse(raw).state.documents : [];
-  if (docs.some(d => d.id === id) !== present) throw new Error('Document metadata could not be saved. Export a backup and free browser storage.');
+  if (docs.some(d => d.id === id && (!fileKey || d.fileKey===fileKey)) !== present) throw new Error('Document metadata could not be saved. Export a backup and free browser storage.');
 }
 export const documentService = {
+  clearFiles:()=> typeof indexedDB==='undefined'?Promise.resolve():clear(files),
   list: (staffId: string) => { requireOwn(staffId, 'staff:manage'); return structuredClone(useDocumentStore.getState().documents.filter(d => d.staffId === staffId)); },
   upload: async (staffId: string, file: File, category: StaffDocument['category'], expiresAt?: string, replaceId?: string) => {
     const u = requireOwn(staffId, 'documents:manage');
@@ -30,7 +31,7 @@ export const documentService = {
     await set(key, file, files);
     try {
       useDocumentStore.setState({ documents: existing ? state.documents.map(d => d.id === existing.id ? metadata : d) : [...state.documents, metadata] });
-      await verifyMetadata(metadata.id, true);
+      await verifyMetadata(metadata.id, true, metadata.fileKey);
       if (existing) await del(existing.fileKey, files);
       return metadata;
     } catch (error) { useDocumentStore.setState(state); await del(key, files); throw error; }

@@ -20,7 +20,7 @@ export function DataDemoCard() {
         <p className="text-sm text-slate-500">
           Demo data is stored in this browser. JSON backups include product
           images, staff avatars, roles, attendance, holidays, shifts, payroll, the demo session, customers, orders, held orders and the open cart. Import and reset
-          replace all current local business data.
+          replace all current local business data, including calendar, chat, mail, tickets, plans, notes and preferences. Document files are NOT exported; metadata only. Imported documents require re-upload.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <button

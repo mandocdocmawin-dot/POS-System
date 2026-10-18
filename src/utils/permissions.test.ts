@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultRoles, permissionKeys, routePermission, routePermissions } from '../config/permissions';
+import { defaultRoles, permissionKeys, routePermission, routePermissions, migratePhase8Roles } from '../config/permissions';
 import type { Role } from '../types/staff';
 import { hasPermission, PermissionError } from './permissions';
 
@@ -13,7 +13,7 @@ describe('role permissions', () => {
   it('grants Manager everything except staff management, payroll and settings', () => {
     for (const key of permissionKeys) {
       expect(hasPermission({ role: 'manager' }, key), key).toBe(
-        !['staff:manage', 'payroll:view', 'settings:manage', 'accounts:manage', 'reports:finance', 'stores:manage'].includes(key),
+        !['staff:manage', 'payroll:view', 'settings:manage', 'accounts:manage', 'reports:finance', 'stores:manage', 'help:manage', 'content:manage', 'billing:view', 'documents:manage'].includes(key),
       );
     }
     expect(hasPermission({ role: 'manager' }, 'future:manage')).toBe(false);
@@ -21,7 +21,7 @@ describe('role permissions', () => {
 
   it('limits Cashier to sales, read access, customer creation and own attendance/schedule', () => {
     const allowed = ['dashboard:view', 'pos:use', 'pos:hold', 'orders:view', 'customers:view', 'customers:edit',
-      'products:view', 'attendance:view', 'schedule:view', 'pos:coupon'];
+      'products:view', 'attendance:view', 'schedule:view', 'pos:coupon', 'calendar:view', 'chat:use', 'help:use', 'pages:view'];
     for (const key of permissionKeys) {
       expect(hasPermission({ role: 'cashier' }, key), key).toBe(allowed.includes(key));
     }
@@ -31,6 +31,14 @@ describe('role permissions', () => {
     for (const user of [null, undefined, { role: 'missing' }]) {
       for (const key of permissionKeys) expect(hasPermission(user, key)).toBe(false);
     }
+  });
+  it('migrates system roles idempotently while preserving custom roles', () => {
+    const custom: Role = { id: 'custom', name: 'Custom', description: '', permissions: ['orders:view'], isSystem: false };
+    const migrated = migratePhase8Roles([...defaultRoles, custom]);
+    expect(migratePhase8Roles(migrated)).toEqual(migrated);
+    expect(migrated.find(role => role.id === 'custom')).toEqual(custom);
+    expect(hasPermission({ role: 'cashier' }, 'email:use', migrated)).toBe(false);
+    expect(hasPermission({ role: 'cashier' }, 'calendar:view', migrated)).toBe(true);
   });
 
   it('uses edited and custom role data immediately without mutating defaults', () => {
@@ -101,7 +109,11 @@ describe('route permission mapping', () => {
     ['/settings/general', 'settings:view', true, true, false],
     ['/reports/sales', 'reports:view', true, true, false],
     ['/accounts/income', 'accounts:view', true, true, false],
-    ['/profile/overview', 'pages:view', true, true, false],
+    ['/profile/overview', 'pages:view', true, true, true],
+    ['/activity-history', 'activity:view', true, true, false],
+    ['/email/mailbox', 'email:use', true, true, false],
+    ['/account/billing-plans', 'billing:view', true, false, false],
+    ['/calendar/default', 'calendar:view', true, true, true],
   ];
 
   it.each(cases)('%s requires %s and respects default roles', (path, key, admin, manager, cashier) => {

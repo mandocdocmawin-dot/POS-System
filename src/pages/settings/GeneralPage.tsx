@@ -1,3 +1,4 @@
+import {demoHistoryService} from '../../services/demoHistoryService';
 import { useState } from "react";
 import { Component as GeneralPlaceholder } from "../misc/RoutePage";
 import { ConfirmDialog } from "../../components/common/ConfirmDialog";
@@ -6,14 +7,14 @@ import { toast, errorMessage } from "../../services/toastService";
 import { downloadFile } from "../../utils/csv";
 export function Component() {
   const [pending, setPending] = useState<string>();
-  const [reset, setReset] = useState(false);
+  const [reset, setReset] = useState(false);const [history,setHistory]=useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   return (
     <>
       <GeneralPlaceholder />
       <section className="card mt-6 space-y-4">
-        <h2 className="text-base font-semibold">Data</h2>
+        <h2 className="text-base font-semibold">Data</h2><button className="btn" disabled={busy||demoHistoryService.generated()} onClick={()=>setHistory(true)}>{demoHistoryService.generated()?"Demo history generated":"Generate demo history"}</button>
         <p className="text-sm text-slate-500">
           Demo data is stored in this browser. JSON backups include product
           images, staff avatars, roles, attendance, holidays, shifts, payroll, the demo session, customers, orders, held orders and the open cart. Import and reset
@@ -81,6 +82,7 @@ export function Component() {
           </p>
         )}
       </section>
+      <ConfirmDialog open={history} title="Generate 90 days of demo history?" message="This adds realistic sales, supplier purchases and payments, refunds and manual expenses using the real services. It runs once until data is reset." onClose={()=>setHistory(false)} onConfirm={()=>{const result=demoHistoryService.generate();toast.success(`Generated ${result.orders} orders and ${result.purchases} purchases`);}}/>
       {pending && (
         <ConfirmDialog
           open
@@ -108,3 +110,4 @@ export function Component() {
     </>
   );
 }
+

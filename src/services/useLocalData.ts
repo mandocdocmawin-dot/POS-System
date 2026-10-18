@@ -1,3 +1,14 @@
+import { useCalendarStore } from '../store/useCalendarStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useChatStore } from '../store/useChatStore';
+import { useEmailStore } from '../store/useEmailStore';
+import { useTicketStore } from '../store/useTicketStore';
+import { useContentStore } from '../store/useContentStore';
+import { useDocumentStore } from '../store/useDocumentStore';
+import { useNoteStore } from '../store/useNoteStore';
+import { useGuideStore } from '../store/useGuideStore';
+import { useErrorLogStore } from '../store/useErrorLogStore';
+import { useMetaStore } from '../store/useMetaStore';
 import {useTransferStore} from '../store/useTransferStore';
 import {useBranchesStore} from '../store/useBranchesStore';
 import {useCouponStore} from '../store/useCouponStore';
@@ -59,6 +70,17 @@ usePurchaseStore.subscribe(changed);
 useWalletStore.subscribe(changed);
 useActivityStore.subscribe(changed);
 
+useCalendarStore.subscribe(changed);
+useNotificationStore.subscribe(changed);
+useChatStore.subscribe(changed);
+useEmailStore.subscribe(changed);
+useTicketStore.subscribe(changed);
+useContentStore.subscribe(changed);
+useDocumentStore.subscribe(changed);
+useNoteStore.subscribe(changed);
+useGuideStore.subscribe(changed);
+useErrorLogStore.subscribe(changed);
+useMetaStore.subscribe(changed);
 const subscribe = (fn: () => void) => {
   listeners.add(fn);
   return () => {

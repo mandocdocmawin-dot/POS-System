@@ -12,7 +12,8 @@
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -b --noEmit",
     "prebuild": "node scripts/generate-licenses.mjs",
-    "predev": "node scripts/generate-licenses.mjs"
+    "predev": "node scripts/generate-licenses.mjs",
+    "analyze": "node scripts/analyze.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

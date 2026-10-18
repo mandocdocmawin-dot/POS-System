@@ -1,3 +1,4 @@
+import {branchService} from './branchService';
 import {couponService} from './couponService';
 import {couponReasons,type CouponContext} from '../utils/coupons';
 import {toast} from './toastService';
@@ -23,6 +24,7 @@ import {cartItemSchema,discountSchema,orderSchema,type CartItem,type Discount,ty
 import {calculateTotals,calculatePayments} from '../utils/pos';
 export const decimalUnit=(shortName:string)=>['kg','liter','litre','l'].includes(shortName.toLowerCase());
 function validateCart(cart:CartItem[]) {
+ branchService.assertSell(posService.branch());
  const quantities=new Map<string,number>();
  for(const input of cart){const line=cartItemSchema.parse(input);const p=productService.get(line.productId);if(!p||p.status!=='active')throw new Error(`${line.name} is no longer available.`);
  const unit=unitService.list().find(u=>u.id===p.unitId);

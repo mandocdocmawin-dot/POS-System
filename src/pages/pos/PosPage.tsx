@@ -1,3 +1,5 @@
+import {branchService} from '../../services/branchService';
+import {BranchSwitcher} from '../../components/layout/BranchSwitcher';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {ShoppingBag} from 'lucide-react';
 import {OrderPanel} from './OrderPanel';
@@ -25,6 +27,7 @@ export function Component() {
   };
   document.addEventListener('keydown',keydown);return ()=>{document.removeEventListener('keydown',keydown);if(previous instanceof HTMLElement)previous.focus();};
  },[isPhone,mobileOpen]);
+ if(!branchService.get(branchService.activeId())?.canSell)return <div className="flex min-h-[70vh] flex-col items-center justify-center gap-5 p-8 text-center"><ShoppingBag size={48}/><h1 className="text-2xl font-semibold">This location cannot sell.</h1><p>Switch to a selling branch.</p><BranchSwitcher/></div>;
  return <div onClick={event=>{const target=event.target;if(target instanceof HTMLElement&&target.closest('button')&&!target.closest('form')&&!isPhone)focusPosSearch();}} className="flex min-h-0 flex-1 overflow-hidden">
   <div inert={isPhone&&mobileOpen} className="flex min-h-0 min-w-0 flex-1 overflow-y-auto pb-24 md:overflow-hidden md:pb-0"><ProductBrowser/></div>
   {isPhone&&mobileOpen&&<button className="fixed inset-0 z-30 bg-slate-950/40" aria-label="Close cart backdrop" onClick={()=>setMobileOpen(false)}/>}

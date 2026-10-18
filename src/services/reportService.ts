@@ -23,6 +23,7 @@ export const reportService={
  setFilters:(filter:ReportFilter)=>{if(!filter.from||!filter.to||filter.from>filter.to)throw new Error('Choose a valid date range.');if(new Date(filter.to).getTime()-new Date(filter.from).getTime()>366*86400000*5)throw new Error('Choose a range of five years or less.');useReportFilterStore.setState({filter});},
  sales:(r:ReportFilter,g:Granularity='day')=>{requirePermission('reports:view');return memo(`sales:${JSON.stringify(r)}:${g}`,d=>salesReport(d,r,g));},
  product:(r:ReportFilter,slowDays=30)=>{requirePermission('reports:view');return memo(`product:${JSON.stringify(r)}:${slowDays}`,d=>productReport(d,r,slowDays));},
+ productSummary:(r:ReportFilter,slowDays=30)=>{const rows=reportService.product(r,slowDays);return {revenue:rows.reduce((n,p)=>n+p.revenue,0),profit:rows.reduce((n,p)=>n+p.profit,0),quantity:rows.reduce((n,p)=>n+p.quantity,0),slow:rows.filter(p=>p.slow).length,topRevenue:[...rows].sort((a,b)=>b.revenue-a.revenue).slice(0,10),categories:groupAmounts(rows.map(p=>({label:p.category,amount:p.revenue})))};},
  expense:(r:ReportFilter)=>{requirePermission('reports:view');return memo(`expense:${JSON.stringify(r)}`,d=>expenseReport(d,r));},
  purchases:(r:ReportFilter)=>{requirePermission('reports:view');return memo(`purchases:${JSON.stringify(r)}`,d=>purchasesReport(d,r));},
  supplier:(r:ReportFilter)=>{requirePermission('reports:view');return memo(`supplier:${JSON.stringify(r)}`,d=>supplierReport(d,r));},

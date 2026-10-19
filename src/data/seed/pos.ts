@@ -8,7 +8,7 @@ import {calculateTotals} from '../../utils/pos';
 import {formatOrderNo} from '../../utils/orderNo';
 export function createPosSeed() {
  const now=new Date();
- const customers:Customer[]=['Walk-in Customer','Maria Santos','Jose Cruz','Ana Reyes','Carlo Garcia','Bea Dela Cruz'].map((name,i)=>({id:i===0?WALK_IN_ID:`customer-${i}`,name,phone:i ? `0917000000${i}`:undefined,points:0,tier:'Regular',creditBalance:0,walletBalance:0,status:"active",createdAt:now.toISOString(),isWalkIn:i===0}));
+ const customers:Customer[]=['Walk-in Customer','Maria Santos','Jose Cruz','Ana Reyes','Carlo Garcia','Bea Dela Cruz'].map((name,i)=>({id:i===0?WALK_IN_ID:`customer-${i}`,name,phone:i ? `0917000000${i}`:undefined,email:i?name.toLowerCase().replaceAll(' ','.')+'@example.com':undefined,address:i?['','Quezon City','Makati','Manila','Pasig','Taguig'][i]:undefined,points:0,tier:'Regular',creditBalance:0,walletBalance:0,status:"active",createdAt:now.toISOString(),isWalkIn:i===0}));
  const orders:Order[]=Array.from({length:12},(_,i)=>{
   const p=products.filter(p=>!p.hasVariants&&openingMovements.some(m=>m.productId===p.id&&m.quantity>=3))[i];
   const date=new Date(now.getTime()-Math.floor(i*7/12)*86400000-3600000-i*60000);

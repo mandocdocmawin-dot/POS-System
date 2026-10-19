@@ -9,7 +9,7 @@ import person11 from '../../assets/avatars/person-11.jpg';
 import person13 from '../../assets/avatars/person-13.jpg';
 import person15 from '../../assets/avatars/person-15.jpg';
 const portraits=[maria,carlo,ana,liza,person8,person11,person13,person15];
-const demoPortraits:Record<string,string>={'demo admin':person11,'demo manager':liza,'demo cashier':person8,'ana santos':maria,'marco reyes':carlo,'liza cruz':ana,'jose garcia':person13,'maria mendoza':liza,'carlo ramos':person8,'elena torres':person15,'walk-in customer':person15};
+const demoPortraits:Record<string,string>={'demo admin':person11,'demo manager':liza,'demo cashier':person8,'ana santos':maria,'marco reyes':carlo,'liza cruz':ana,'jose garcia':person13,'maria mendoza':liza,'carlo ramos':person8,'elena torres':person15,'walk-in customer':person15,'maria santos':maria,'jose cruz':carlo,'ana reyes':ana,'carlo garcia':person8,'bea dela cruz':liza,'manila wholesale':person15,'cebu food supply':liza,'luzon distributors':ana,'metro essentials':carlo,'island beverages':person8,'santos trading':person13};
 export function Avatar({name,size='h-8 w-8',imageId}:{name:string;size?:string;index?:number;imageId?:string}) {
  const [photo,setPhoto]=useState<{id:string;url:string}>();
  useEffect(()=>{let live=true,url='';if(imageId)void imageService.get(imageId).then(blob=>{if(live&&blob){url=URL.createObjectURL(blob);setPhoto({id:imageId,url});}}).catch(()=>{/* Fall back to a local demo portrait. */});return()=>{live=false;if(url)URL.revokeObjectURL(url);};},[imageId]);

@@ -743,6 +743,8 @@ export const menu: MenuSection[] = [
                 icon: Activity,
                 path: "/profile/activity",
               },
+              { label: "Followers", icon: UserRound, path: "/profile/followers" },
+              { label: "Projects", icon: FolderTree, path: "/profile/projects" },
               {
                 label: "Documents",
                 icon: Files,

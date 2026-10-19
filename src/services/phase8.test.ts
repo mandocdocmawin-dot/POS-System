@@ -1,3 +1,4 @@
+import { profileWorkspaceService } from './profileWorkspaceService';
 import {landingService} from './landingService';
 import { beforeEach, expect, it, vi } from 'vitest';
 vi.hoisted(() => { const values = new Map<string, string>(); const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value); }, removeItem: (key: string) => { values.delete(key); } }; Object.defineProperty(globalThis, 'localStorage', { value: storage, configurable: true }); Object.defineProperty(globalThis, 'window', { value: { localStorage: storage }, configurable: true }); });
@@ -91,3 +92,17 @@ it('does not delete direct messages through the group channel action',()=>{const
 
 it('saves a landing inquiry as a local contact ticket with the signed-in author',()=>{const before=useTicketStore.getState().tickets.length,session=useAuthStore.getState().currentUserId;const t=landingService.sendInquiry({name:'Sample Visitor',email:'sample@example.test',phone:'',message:'How do I try the stock workflow?'});expect(t.source).toBe('contact');expect(t.authorId).toBe(session);expect(t.message).toContain('sample@example.test');expect(useTicketStore.getState().tickets).toHaveLength(before+1);expect(useAuthStore.getState().currentUserId).toBe(session);});
 it('does not create public inquiries or consume ticket numbers when validation or login fails',()=>{const before=structuredClone(useTicketStore.getState());expect(()=>landingService.sendInquiry({name:'',email:'invalid',phone:'',message:''})).toThrow();authService.logout();expect(()=>landingService.sendInquiry({name:'Demo Visitor',email:'sample@example.test',phone:'',message:'A sample question'})).toThrow();expect(useTicketStore.getState()).toEqual(before);});
+
+it('persists follows, rejects self-follow, and restricts project edits to their owner', () => {
+  profileWorkspaceService.follow('staff-manager');
+  expect(useContentStore.getState().follows?.['staff-admin']).toContain('staff-manager');
+  expect(() => profileWorkspaceService.follow('staff-admin')).toThrow('another active colleague');
+  profileWorkspaceService.follow('staff-manager');
+  expect(useContentStore.getState().follows?.['staff-admin']).not.toContain('staff-manager');
+  const project = { id: 'profile-project', ownerId: 'staff-admin', title: 'Stock review', description: 'Review reorder levels', status: 'planned' as const, memberIds: ['staff-manager'], createdAt: new Date().toISOString() };
+  profileWorkspaceService.saveProject(project);
+  authService.loginDemo('manager');
+  expect(profileWorkspaceService.projects('staff-manager')).toHaveLength(1);
+  expect(() => profileWorkspaceService.saveProject({...project, ownerId:'staff-manager'})).toThrow('Only the project owner');
+  expect(() => profileWorkspaceService.removeProject(project.id)).toThrow('Only the project owner');
+});

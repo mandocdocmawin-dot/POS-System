@@ -35,9 +35,13 @@ export const staffDocumentSchema = z.object({ id, staffId: id, name: id, categor
 export type StaffDocument = z.infer<typeof staffDocumentSchema>;
 export const noteSchema = z.object({ id, profileStaffId: id, authorId: id, title: id, body: text, color: id, pinned: z.boolean(), tags: z.array(text), visibility: z.enum(['private', 'managers']), createdAt: date, updatedAt: date });
 export type Note = z.infer<typeof noteSchema>;
+export const profileProjectSchema = z.object({id, ownerId:id, title:id, description:text, status:z.enum(['planned','in_progress','completed']), memberIds:z.array(id), createdAt:date});
+export type ProfileProject = z.infer<typeof profileProjectSchema>;
 export interface ErrorLogEntry { id: string; message: string; stack?: string; route: string; createdAt: string }
 export interface DemoGuideState { startedAt: string; dismissed: boolean; collapsed: boolean }
 export const phase8Schema = z.object({
+  privacyChoices:z.record(id,z.enum(['accepted','declined'])).optional(),
+  follows:z.record(id,z.array(id)).optional(), projects:z.array(profileProjectSchema).optional(),
   guide:z.object({startedAt:z.union([z.literal(''),date]),dismissed:z.boolean(),collapsed:z.boolean()}).default({startedAt:'',dismissed:false,collapsed:false}),
   errors:z.array(z.object({id,message:text,stack:text.optional(),route:text,createdAt:date})).max(50).default([]),
   meta:z.object({schemaVersion:z.number().int().nonnegative(),appVersion:id,installedAt:date,lastMigrationAt:date.optional(),lastBackupAt:date.optional()}).optional(),

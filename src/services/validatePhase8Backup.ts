@@ -2,6 +2,9 @@ import type {Phase8Data} from '../types/phase8';
 export function validatePhase8Backup(d:Phase8Data,staffIds:string[],branchIds:string[]){
  const fail=(message:string):never=>{throw new Error(`Invalid backup: ${message}`);};
  const staff=(id:string)=>staffIds.includes(id)||fail('phase 8 staff reference is missing.');
+ Object.keys(d.privacyChoices??{}).forEach(staff);
+ for(const [owner,targets] of Object.entries(d.follows??{})){staff(owner);targets.forEach(staff);if(targets.includes(owner)||new Set(targets).size!==targets.length)fail('invalid profile follows.');}
+ const projects=d.projects??[];if(new Set(projects.map(p=>p.id)).size!==projects.length)fail('duplicate project IDs.');for(const p of projects){staff(p.ownerId);p.memberIds.forEach(staff);}
  for(const rows of [d.events,d.conversations,d.messages,d.emails,d.templates,d.tickets,d.faqs,d.plans,d.invoices,d.documents,d.notes,d.errors])if(new Set(rows.map(r=>r.id)).size!==rows.length)fail('duplicate phase 8 record IDs.');
  for(const event of d.events){staff(event.createdBy);event.attendeeStaffIds.forEach(staff);if(event.branchId&&!branchIds.includes(event.branchId))fail('event branch is missing.');if(event.allDay?event.end.slice(0,10)<event.start.slice(0,10):event.end<=event.start)fail('event end must follow start.');}
  const groupNames=new Set<string>();for(const c of d.conversations){staff(c.createdBy);c.memberIds.forEach(staff);if(new Set(c.memberIds).size!==c.memberIds.length||c.memberIds.length<2)fail('invalid conversation members.');if(c.type==='direct'&&c.memberIds.length!==2)fail('direct chat needs two members.');if(c.type==='group'){const name=c.name?.trim().toLowerCase()??'';if(!name||groupNames.has(name))fail('group names must be unique.');groupNames.add(name);}}
@@ -16,4 +19,3 @@ export function validatePhase8Backup(d:Phase8Data,staffIds:string[],branchIds:st
  for(const n of d.notes){staff(n.profileStaffId);staff(n.authorId);}
  for(const p of d.prefs)staff(p.userId);for(const n of d.notificationStates)staff(n.userId);for(const id of [...Object.keys(d.layers),...Object.keys(d.recentSearches)])staff(id);
 }
-

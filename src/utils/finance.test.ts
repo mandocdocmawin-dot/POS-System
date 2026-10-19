@@ -1,3 +1,4 @@
+import {expenseReport} from './reports/expense';
 import { describe, it, expect } from 'vitest';
 import { financeFixture, fixtureRange } from './reports/fixtures';
 import { deriveLedger, mergeLedger, accountBalance } from './ledger';
@@ -24,3 +25,21 @@ describe('local calendar buckets',()=>{
  it('compares the same number of local days across month boundaries',()=>{expect(period.previous({from:'2026-03-01',to:'2026-03-03'})).toEqual({from:'2026-02-26',to:'2026-02-28'});});
 });
 
+
+describe('reference report data',()=>{
+ it('compares real income and expenses without counting wallet liabilities or other branches',()=>{
+  const data=financeFixture(),order=data.orders[0],day=localDay();
+  data.wallet=[{id:'topup',customerId:order.customerId,type:'topup',amount:100,balanceAfter:100,method:'cash',createdAt:order.createdAt,branchId:'Main Branch'}];
+  const base={date:day,categoryId:'manual',accountId:'account-cash',branchId:'Main Branch',createdBy:'Admin',createdAt:order.createdAt,updatedAt:order.createdAt};
+  data.manualEntries=[{...base,id:'income',type:'income',amount:2500},{...base,id:'other-branch',branchId:'Branch 2',type:'income',amount:99900},{...base,id:'expense',type:'expense',amount:400}];
+  const report=expenseReport(data,{...fixtureRange(),from:day,branchId:'Main Branch'});
+  expect(report.incomeSeries.reduce((n,d)=>n+d.amount,0)).toBe(toCentavos(order.grandTotal)+2500);
+  expect(report.total).toBe(400);
+ });
+ it('reports product stock within the selected branch, including legacy opening movements',()=>{
+  const data=financeFixture(),productId=data.products[0].id,createdAt=data.orders[0].createdAt;
+  data.movements=[{id:'legacy',productId,type:'initial',quantity:7,reason:'Opening',createdBy:'Admin',createdAt},{id:'branch-2-in',productId,branchId:'Branch 2',type:'initial',quantity:11,reason:'Opening',createdBy:'Admin',createdAt},{id:'branch-2-out',productId,branchId:'Branch 2',type:'out',quantity:3,reason:'Sale',createdBy:'Admin',createdAt}];
+  const stock=(branchId:string)=>productReport(data,{...fixtureRange(),branchId}).find(p=>p.id===productId)?.stock;
+  expect(stock('Main Branch')).toBe(7);expect(stock('Branch 2')).toBe(8);expect(stock('all')).toBe(15);
+ });
+});

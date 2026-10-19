@@ -5,7 +5,7 @@ import type { PayrollRun, Staff } from './staff';
 import type { Product, Category, StockMovement } from './models';
 const id = z.string().min(1);
 const cents = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
-export const bankAccountSchema = z.object({ id, branchId: id.optional(), name: id, type: z.enum(['cash','bank','ewallet']), accountNo: z.string().optional(), bankName: z.string().optional(), openingBalance: cents, openingDate: z.iso.date(), status: z.enum(['active','inactive']), createdAt: z.iso.datetime() });
+export const bankAccountSchema = z.object({ id, branchId: id.optional(), name: id, type: z.enum(['cash','bank','ewallet']), accountNo: z.string().optional(), accountHolder:z.string().trim().optional(), bankName: z.string().optional(), openingBalance: cents, openingDate: z.iso.date(), status: z.enum(['active','inactive']), createdAt: z.iso.datetime() });
 export const financeCategorySchema = z.object({ id, branchId: id.optional(), name: id, type: z.enum(['income','expense']), isSystem: z.boolean(), status: z.enum(['active','inactive']) });
 export const manualEntrySchema = z.object({ id, type: z.enum(['income','expense']), date: z.iso.date(), categoryId: id, amount: cents.positive(), accountId: id, branchId: id, payee: z.string().optional(), reference: z.string().optional(), note: z.string().optional(), attachmentId: z.string().optional(), createdBy: id, createdAt: z.iso.datetime(), updatedAt: z.iso.datetime() });
 export const transferSchema = z.object({ id, transferNo: z.string().min(1), date: z.iso.date(), fromAccountId: id, toAccountId: id, amount: cents.positive(), reference: z.string().optional(), note: z.string().optional(), createdBy: id, createdAt: z.iso.datetime() });

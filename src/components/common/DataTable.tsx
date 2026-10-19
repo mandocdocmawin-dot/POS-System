@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {useSearchParams} from 'react-router-dom';
 import { useId, useState, type ReactNode } from "react";
 export interface Column<T> {
@@ -19,6 +20,7 @@ export function DataTable<T>({
   actions,
   onRowClick,
   showPagination = false,
+  hideFooter = false,
 }: {
   columns: Column<T>[];
   rows: T[];
@@ -32,6 +34,7 @@ export function DataTable<T>({
   actions?: (row: T) => ReactNode;
   onRowClick?: (row:T)=>void;
   showPagination?: boolean;
+  hideFooter?: boolean;
 }) {
   const id = useId();
   const [searchParams,setSearchParams]=useSearchParams();
@@ -74,8 +77,7 @@ export function DataTable<T>({
     <div className="min-w-0">
       {searchText && (
         <div className="p-3">
-          <label className="sr-only" htmlFor={id}>
-            Search {caption}
+          <label className="sr-only" htmlFor={id}><T text={"Search"}/><T>{caption}</T>
           </label>
           <input
             id={id}
@@ -99,7 +101,7 @@ export function DataTable<T>({
           className="w-full whitespace-nowrap text-left text-xs"
           aria-busy={loading}
         >
-          <caption className="sr-only">{caption}</caption>
+          <caption className="sr-only"><T>{caption}</T></caption>
           <thead className="bg-slate-50 text-slate-500 dark:bg-slate-800/70">
             <tr>
               {onSelectionChange && (
@@ -142,7 +144,7 @@ export function DataTable<T>({
                         })
                       }
                     >
-                      {c.header}{" "}
+                      <T>{c.header}</T>{" "}
                       {sort.id === c.id
                         ? sort.direction === 1
                           ? "↑"
@@ -154,7 +156,7 @@ export function DataTable<T>({
                   )}
                 </th>
               ))}
-              {actions && <th scope="col">Actions</th>}
+              {actions && <th scope="col"><T text={"Actions"}/></th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -194,17 +196,16 @@ export function DataTable<T>({
         </table>
       </div>
       {!loading && !visible.length && (
-        <p className="p-10 text-center text-slate-500">No matching items.</p>
+        <p className="p-10 text-center text-slate-500"><T text={"No matching items."}/></p>
       )}
-      {(searchText || onSelectionChange || showPagination) && (
+      {!hideFooter && (searchText || onSelectionChange || showPagination) && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 p-3 text-xs dark:border-slate-800">
           <span>
-            {filtered.length} items{" "}
+            {filtered.length}<T text={" items"}/>{" "}
             {onSelectionChange && `· ${selected.length} selected`}
           </span>
           <div className="flex items-center gap-3">
-            <label>
-              Rows{" "}
+            <label><T text={"Rows"}/>{" "}
               <select
                 aria-label="Rows per page"
                 value={size}
@@ -222,9 +223,7 @@ export function DataTable<T>({
               className="btn"
               disabled={current === 1}
               onClick={() => setPage(current - 1)}
-            >
-              Previous
-            </button>
+            ><T text={"Previous"}/></button>
             <span>
               {current} / {pages}
             </span>
@@ -232,9 +231,7 @@ export function DataTable<T>({
               className="btn"
               disabled={current === pages}
               onClick={() => setPage(current + 1)}
-            >
-              Next
-            </button>
+            ><T text={"Next"}/></button>
           </div>
         </div>
       )}

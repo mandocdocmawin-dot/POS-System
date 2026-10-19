@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import type { ReactNode } from "react";
 export function PageActions({
   title,
@@ -8,7 +9,7 @@ export function PageActions({
 }) {
   return (
     <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-      <h1 className="text-xl font-semibold">{title}</h1>
+      <h1 className="text-xl font-semibold"><T>{title}</T></h1>
       <div className="flex flex-wrap gap-2">{children}</div>
     </header>
   );

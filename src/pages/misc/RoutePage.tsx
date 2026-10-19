@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import { useLocation } from "react-router-dom";
 import { findRoute } from "../../config/menu";
 import { featureStatus } from "../../config/featureStatus";
@@ -6,7 +7,7 @@ export function Component() {
   const { pathname } = useLocation();
   const route = findRoute(pathname);
   const feature = featureStatus[pathname];
-  if (!route || !feature) return <p>Page not found.</p>;
+  if (!route || !feature) return <p><T text={"Page not found."}/></p>;
   const planned = ["components", "forms", "tables", "charts", "maps"].includes(
     route.sectionId,
   );

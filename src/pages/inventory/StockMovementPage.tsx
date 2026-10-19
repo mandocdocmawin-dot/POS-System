@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {InventoryWorkspace} from '../../components/inventory/InventoryWorkspace';
 import {Modal} from '../../components/common/Modal';
 import {Plus} from 'lucide-react';
@@ -56,8 +57,8 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
   const item = items.find((i) => i.key === key);
   return (
     <InventoryWorkspace title={type === "in" ? "Stock In" : "Stock Out"}>
-      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
-      <PageActions title={type === "in" ? "Stock In" : "Stock Out"}><button className="btn-primary" onClick={()=>setCreate(true)}><Plus size={16}/> Add {type === "in" ? "Stock In" : "Stock Out"}</button></PageActions>
+      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800"><T text={"Active branch: "}/><strong>{branchService.get(branchService.activeId())?.name}</strong></p>
+      <PageActions title={type === "in" ? "Stock In" : "Stock Out"}><button className="btn-primary" onClick={()=>setCreate(true)}><Plus size={16}/><T text={" Add "}/>{type === "in" ? "Stock In" : "Stock Out"}</button></PageActions>
       <Modal open={create} onClose={()=>setCreate(false)} title={type === "in" ? "Stock In" : "Stock Out"}><form
         className="card mb-6 space-y-4"
         onSubmit={handleSubmit((v) => {
@@ -90,7 +91,7 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
             {...register("item")}
             error={errors.item?.message}
           >
-            <option value="">Choose item</option>
+            <option value=""><T text={"Choose item"}/></option>
             {items.map((i) => (
               <option key={i.key} value={i.key}>
                 {i.name} · {i.sku}
@@ -109,7 +110,7 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
             {...register("reason")}
             error={errors.reason?.message}
           >
-            <option value="">Choose reason</option>
+            <option value=""><T text={"Choose reason"}/></option>
             {reasons.map((r) => (
               <option key={r}>{r}</option>
             ))}
@@ -123,8 +124,7 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
           />
         </div>
         {item && (
-          <p>
-            Current stock: <strong>{item.stock}</strong>
+          <p><T text={"Current stock:"}/><strong>{item.stock}</strong>
           </p>
         )}
         <Textarea label="Note" {...register("note")} />

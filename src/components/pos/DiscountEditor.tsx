@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {ApprovalDialog} from '../approvals/ApprovalDialog';
 import {ManagerApprovalRequired} from '../../services/discountApprovalService';
 import {useState} from 'react';
@@ -9,8 +10,8 @@ export function DiscountEditor({value,onSave,onClose}:{value:Discount;onSave:(va
  const [error,setError]=useState(''),[needsApproval,setNeedsApproval]=useState<string>();
  const {register,handleSubmit,formState:{errors}}=useForm<Discount>({resolver:zodResolver(discountSchema),defaultValues:value});
  return <form className="my-3 rounded-lg bg-slate-50 p-3 dark:bg-slate-800" onSubmit={handleSubmit(v=>{try{onSave(v);onClose();}catch(e){setError(errorMessage(e));if(e instanceof ManagerApprovalRequired)setNeedsApproval(e.scope);}})}>
- <div className="flex gap-2"><select className="min-w-0 flex-1" aria-label="Discount type" {...register('type')}><option value="percent">Percent (%)</option><option value="fixed">Amount (₱)</option></select><input className="w-24" aria-label="Discount value" type="number" min="0" step="0.01" {...register('value',{valueAsNumber:true})}/></div>
+ <div className="flex gap-2"><select className="min-w-0 flex-1" aria-label="Discount type" {...register('type')}><option value="percent">Percent (%)</option><option value="fixed"><T text={"Amount (₱)"}/></option></select><input className="w-24" aria-label="Discount value" type="number" min="0" step="0.01" {...register('value',{valueAsNumber:true})}/></div>
  {(error||errors.value)&&<p role="alert" className="text-xs text-red-500">{error||errors.value?.message}</p>}
  {needsApproval&&<ApprovalDialog scope={needsApproval} onClose={()=>setNeedsApproval(undefined)} onApproved={handleSubmit(v=>{onSave(v);onClose();})}/>}
- <div className="mt-2 flex gap-2"><button type="submit" className="btn-primary px-3 py-1 text-xs">Apply</button><button type="button" className="btn text-xs" onClick={onClose}>Cancel</button></div><p className="mt-2 text-xs text-slate-400">Discounts are capped at the amount they apply to.</p></form>;
+ <div className="mt-2 flex gap-2"><button type="submit" className="btn-primary px-3 py-1 text-xs"><T text={"Apply"}/></button><button type="button" className="btn text-xs" onClick={onClose}><T text={"Cancel"}/></button></div><p className="mt-2 text-xs text-slate-400">Discounts are capped at the amount they apply to.</p></form>;
 }

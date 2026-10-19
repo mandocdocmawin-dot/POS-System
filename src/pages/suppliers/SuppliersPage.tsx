@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {Download,Eye,Pencil,Plus,UserX} from 'lucide-react';
@@ -18,9 +19,9 @@ export function Component(){
  const rows=supplierService.list().filter(s=>!status||s.status===status);
  return <CommerceWorkspace title="Suppliers List" section="Suppliers"><div className="panel">
   <CommercePanelHeading title="Suppliers List" subtitle={`${rows.length} suppliers`}>
-   <select aria-label="Supplier status" value={status} onChange={e=>setStatus(e.target.value)}><option value="">Select Status</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
-   <button className="btn" onClick={()=>exportCSV('suppliers.csv',[['Supplier ID','Supplier','Company','Total Purchase','Contact','Email','Status','Country'],...rows.map(s=>[s.id,s.name,s.companyName??s.name,supplierService.report(s.id).total,s.phone??'',s.email??'',s.status,s.country??''])])}><Download size={15}/>Export As CSV</button>
-   <Can permission="suppliers:manage"><Link className="btn-primary" to="/suppliers/add-supplier"><Plus size={16}/>Add Supplier</Link></Can>
+   <select aria-label="Supplier status" value={status} onChange={e=>setStatus(e.target.value)}><option value=""><T text={"Select Status"}/></option><option value="active"><T text={"Active"}/></option><option value="inactive"><T text={"Inactive"}/></option></select>
+   <button className="btn" onClick={()=>exportCSV('suppliers.csv',[['Supplier ID','Supplier','Company','Total Purchase','Contact','Email','Status','Country'],...rows.map(s=>[s.id,s.name,s.companyName??s.name,supplierService.report(s.id).total,s.phone??'',s.email??'',s.status,s.country??''])])}><Download size={15}/><T text={"Export As CSV"}/></button>
+   <Can permission="suppliers:manage"><Link className="btn-primary" to="/suppliers/add-supplier"><Plus size={16}/><T text={"Add Supplier"}/></Link></Can>
   </CommercePanelHeading>
   <DataTable caption="Suppliers" rows={rows} rowKey={s=>s.id} searchText={s=>`${s.id} ${s.name} ${s.companyName??''} ${s.contactPerson??''} ${s.phone??''} ${s.email??''}`} selection={selected} onSelectionChange={setSelected} columns={[
    {id:'id',header:'Supplier ID',cell:s=><Link to={`/suppliers/${s.id}`}>#{s.id.startsWith('supplier-')?`SUP-${s.id.slice(9).padStart(4,'0')}`:s.id.slice(0,8).toUpperCase()}</Link>},

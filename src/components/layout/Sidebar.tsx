@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {useClock} from '../../hooks/useClock';
 import {useAccessibleMenu} from '../../hooks/usePermission';
 import {useLocalData} from '../../services/useLocalData';
@@ -42,7 +43,7 @@ export function Sidebar() {
           <div key={index} className="mb-6">
             {group.label && (
               <p className="mb-3 px-3 text-sm font-semibold tracking-[0.14em] text-slate-400">
-                {group.label}
+                <T>{group.label}</T>
               </p>
             )}
             {group.items.map(({ label, icon: Icon, path, children }) => (
@@ -62,7 +63,7 @@ export function Sidebar() {
                       className={`flex h-10 w-full items-center gap-3 rounded-lg border px-3 text-sm ${open === label ? "border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white" : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                     >
                       <Icon size={17} className="shrink-0" aria-hidden="true" />
-                      <span className="flex-1 text-left">{label}</span>{navigationService.badge(path,now)>0&&<span aria-label={`${navigationService.badge(path,now)} requiring attention`} className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs text-indigo-700 dark:bg-indigo-950 dark:text-indigo-200">{navigationService.badge(path,now)}</span>}
+                      <span className="flex-1 text-left"><T>{label}</T></span>{navigationService.badge(path,now)>0&&<span aria-label={`${navigationService.badge(path,now)} requiring attention`} className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs text-indigo-700 dark:bg-indigo-950 dark:text-indigo-200">{navigationService.badge(path,now)}</span>}
                       {open === label ? (
                         <ChevronUp size={14} />
                       ) : (
@@ -84,7 +85,7 @@ export function Sidebar() {
                             }
                           >
                             <child.icon size={16} className="shrink-0" aria-hidden="true" />
-                            {child.label}
+                            <T>{child.label}</T>
                           </NavLink>
                         ))}
                       </div>
@@ -100,7 +101,7 @@ export function Sidebar() {
                     }
                   >
                     <Icon size={17} />
-                    {label}
+                    <T>{label}</T>
                   </NavLink>
                 )}
               </div>
@@ -110,14 +111,13 @@ export function Sidebar() {
       </nav>
       {menu.some(s=>s.groups.some(g=>g.items.some(i=>i.path.startsWith("/reports"))))&&<div className="m-3 shrink-0 rounded-xl border border-indigo-100 bg-gradient-to-br from-orange-50 to-indigo-50 p-4 dark:border-indigo-900 dark:from-slate-800 dark:to-indigo-950">
         <Store size={24} className="mb-3 text-indigo-500" />
-        <p className="text-sm text-slate-500">Live sales insights</p>
-        <h3 className="mb-3 mt-1 text-sm font-semibold">Boost today's sales</h3>
+        <p className="text-sm text-slate-500"><T text={"Live sales insights"}/></p>
+        <h3 className="mb-3 mt-1 text-sm font-semibold"><T text={"Boost today's sales"}/></h3>
         <Link
           className="btn-primary w-full"
           to="/reports/sales"
           onClick={() => close(false)}
-        >
-          View Sales <ArrowUpRight size={14} />
+        ><T text={"View Sales"}/><ArrowUpRight size={14} />
         </Link>
       </div>}
     </aside>

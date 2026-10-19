@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {ManagerApprovalRequired} from '../../services/approvalService';
 import {ApprovalDialog} from '../approvals/ApprovalDialog';
 import { useState } from "react";
@@ -36,9 +37,7 @@ export function ConfirmDialog({
         </p>
       )}
       <div className="flex justify-end gap-3">
-        <button className="btn" disabled={busy} onClick={onClose}>
-          Cancel
-        </button>
+        <button className="btn" disabled={busy} onClick={onClose}><T text={"Cancel"}/></button>
         <button
           className="btn-primary"
           disabled={busy}
@@ -60,9 +59,7 @@ export function ConfirmDialog({
               setBusy(false);
             }
           }}
-        >
-          Confirm
-        </button>
+        ><T text={"Confirm"}/></button>
       </div>
     </Modal>{approval&&<ApprovalDialog scope={approval} onClose={()=>setApproval(undefined)} onApproved={async()=>{await onConfirm();onClose();}}/>}</>
   );

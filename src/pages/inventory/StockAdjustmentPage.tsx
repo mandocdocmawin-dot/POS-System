@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {InventoryWorkspace} from '../../components/inventory/InventoryWorkspace';
 import {Modal} from '../../components/common/Modal';
 import {Plus} from 'lucide-react';
@@ -54,8 +55,8 @@ export function Component() {
   const difference = (values.counted ?? 0) - (item?.stock ?? 0);
   return (
     <InventoryWorkspace title={"Stock Adjustment"}>
-      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
-      <PageActions title={"Stock Adjustment"}><button className="btn-primary" onClick={()=>setCreate(true)}><Plus size={16}/> Add {"Stock Adjustment"}</button></PageActions>
+      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800"><T text={"Active branch: "}/><strong>{branchService.get(branchService.activeId())?.name}</strong></p>
+      <PageActions title={"Stock Adjustment"}><button className="btn-primary" onClick={()=>setCreate(true)}><Plus size={16}/><T text={" Add "}/>{"Stock Adjustment"}</button></PageActions>
       <Modal open={create} onClose={()=>setCreate(false)} title={"Stock Adjustment"}><form
         className="card mb-6 space-y-4"
         onSubmit={handleSubmit((v) => {
@@ -78,7 +79,7 @@ export function Component() {
             {...register("item")}
             error={errors.item?.message}
           >
-            <option value="">Choose item</option>
+            <option value=""><T text={"Choose item"}/></option>
             {items.map((i) => (
               <option value={i.key} key={i.key}>
                 {i.name} · {i.sku}
@@ -124,7 +125,7 @@ export function Component() {
           </p>
         )}
         <div className="flex justify-end">
-          <button className="btn-primary">Review adjustment</button>
+          <button className="btn-primary"><T text={"Review adjustment"}/></button>
         </div>
       </form></Modal>
       <MovementHistory type="adjustment" />

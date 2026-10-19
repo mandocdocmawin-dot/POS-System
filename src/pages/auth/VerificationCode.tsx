@@ -1,10 +1,11 @@
+import { T } from "../../i18n/T";
 import { useRef, useState } from "react";
 export function VerificationCode() {
   const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   return (
     <fieldset>
-      <legend className="mb-3 text-xs font-medium">Verification code</legend>
+      <legend className="mb-3 text-xs font-medium"><T text={"Verification code"}/></legend>
       <div className="flex gap-2">
         {digits.map((digit, i) => (
           <input

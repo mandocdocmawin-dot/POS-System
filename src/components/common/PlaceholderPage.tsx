@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import { Construction, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageHeader } from "../layout/PageHeader";
@@ -57,8 +58,7 @@ export function PlaceholderPage({
           </ul>
         </div>
         <div className="mt-8 text-center">
-          <Link to="/" className="btn">
-            Back to Dashboard <ArrowUpRight size={14} />
+          <Link to="/" className="btn"><T text={"Back to Dashboard"}/><ArrowUpRight size={14} />
           </Link>
         </div>
       </section>

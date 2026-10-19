@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {InventoryWorkspace} from '../../components/inventory/InventoryWorkspace';
 import {ProductImage} from '../../components/common/ProductImage';
 import {Can} from '../../components/auth/Can';
@@ -35,7 +36,7 @@ export function Component() {
   };
   return (
     <InventoryWorkspace title="Stock List">
-      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
+      <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800"><T text={"Active branch: "}/><strong>{branchService.get(branchService.activeId())?.name}</strong></p>
 
       <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Object.entries(summary).map(([label, value]) => (
@@ -45,7 +46,7 @@ export function Component() {
           </section>
         ))}
       </div>
-      <section className="card p-0"><div className="product-panel-heading"><h2>Stock List</h2><Can permission="products:create"><Link className="btn-primary" to="/products/add"><Plus size={16}/> Add Product</Link></Can></div><div className="product-filters border-0"><Select label="Stock status" value={status} onChange={e=>setStatus(e.target.value)}><option value="">All stock statuses</option>{['In stock','Low stock','Out of stock'].map(s=><option key={s}>{s}</option>)}</Select><Select label="Category" value={category} onChange={e=>setCategory(e.target.value)}><option value="">All categories</option>{categoryService.list().map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</Select></div>
+      <section className="card p-0"><div className="product-panel-heading"><h2><T text={"Stock List"}/></h2><Can permission="products:create"><Link className="btn-primary" to="/products/add"><Plus size={16}/><T text={" Add Product"}/></Link></Can></div><div className="product-filters border-0"><Select label="Stock status" value={status} onChange={e=>setStatus(e.target.value)}><option value=""><T text={"All stock statuses"}/></option>{['In stock','Low stock','Out of stock'].map(s=><option key={s}>{s}</option>)}</Select><Select label="Category" value={category} onChange={e=>setCategory(e.target.value)}><option value=""><T text={"All categories"}/></option>{categoryService.list().map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</Select></div>
         <DataTable
           caption="Stock items"
           rows={rows}
@@ -105,7 +106,7 @@ export function Component() {
               ),
             },
           ]}
-          actions={(r) => <Popover label={`Actions for ${r.name}`} trigger={<MoreVertical size={16}/>} className="icon-btn border-transparent"><div className="flex min-w-44 flex-col gap-1 p-2"><button className="flex items-center gap-3 rounded p-2 text-left hover:bg-indigo-50 dark:hover:bg-slate-800" onClick={()=>setView(r)}><History size={16}/> View history</button><Can permission="inventory:adjust"><Link className="flex items-center gap-3 rounded p-2 hover:bg-indigo-50 dark:hover:bg-slate-800" to="/inventory/stock-in"><ArrowDownToLine size={16}/> Add stock in</Link><Link className="flex items-center gap-3 rounded p-2 hover:bg-indigo-50 dark:hover:bg-slate-800" to="/inventory/stock-out"><ArrowUpFromLine size={16}/> Add stock out</Link></Can></div></Popover>}
+          actions={(r) => <Popover label={`Actions for ${r.name}`} trigger={<MoreVertical size={16}/>} className="icon-btn border-transparent"><div className="flex min-w-44 flex-col gap-1 p-2"><button className="flex items-center gap-3 rounded p-2 text-left hover:bg-indigo-50 dark:hover:bg-slate-800" onClick={()=>setView(r)}><History size={16}/><T text={" View history"}/></button><Can permission="inventory:adjust"><Link className="flex items-center gap-3 rounded p-2 hover:bg-indigo-50 dark:hover:bg-slate-800" to="/inventory/stock-in"><ArrowDownToLine size={16}/><T text={" Add stock in"}/></Link><Link className="flex items-center gap-3 rounded p-2 hover:bg-indigo-50 dark:hover:bg-slate-800" to="/inventory/stock-out"><ArrowUpFromLine size={16}/><T text={" Add stock out"}/></Link></Can></div></Popover>}
         />
       </section>
       {view && (

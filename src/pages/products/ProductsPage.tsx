@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {ProductWorkspace,CatalogStatus} from '../../components/products/ProductWorkspace';
 import {Popover} from '../../components/common/Popover';
 import {MoreVertical,Eye,Pencil,Trash2,Plus,Download,Package,CheckCircle2,TriangleAlert,Archive} from 'lucide-react';
@@ -65,11 +66,9 @@ export function Component() {
             ])
           }
         >
-          <Download size={15}/> Export CSV
-        </button>
+          <Download size={15}/><T text={"Export CSV"}/></button>
         <Can permission="products:create"><Link className="btn-primary" to="/products/add">
-          <Plus size={16}/> Add Product
-        </Link></Can>
+          <Plus size={16}/><T text={"Add Product"}/></Link></Can>
       </PageActions>
       <div className="product-filters">
         <Select
@@ -77,7 +76,7 @@ export function Component() {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          <option value="">All categories</option>
+          <option value=""><T text={"All categories"}/></option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -89,7 +88,7 @@ export function Component() {
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
         >
-          <option value="">All brands</option>
+          <option value=""><T text={"All brands"}/></option>
           {brands.map((b) => (
             <option key={b.id} value={b.id}>
               {b.name}
@@ -101,16 +100,16 @@ export function Component() {
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          <option value="">All statuses</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value=""><T text={"All statuses"}/></option>
+          <option value="active"><T text={"Active"}/></option>
+          <option value="inactive"><T text={"Inactive"}/></option>
         </Select>
         <Select
           label="Stock status"
           value={stock}
           onChange={(e) => setStock(e.target.value)}
         >
-          <option value="">All stock</option>
+          <option value=""><T text={"All stock"}/></option>
           {["In stock", "Low stock", "Out of stock"].map((s) => (
             <option key={s}>{s}</option>
           ))}
@@ -209,22 +208,19 @@ export function Component() {
                 onClick={() => setView(p.id)}
                 aria-label={`View ${p.name}`}
               >
-                <Eye size={16}/> Overview
-              </button>
+                <Eye size={16}/><T text={"Overview"}/></button>
               <Can permission="products:edit"><Link
                 className="flex items-center gap-3 rounded p-2 text-left hover:bg-indigo-50 dark:hover:bg-slate-800"
                 to={`/products/${p.id}/edit`}
                 aria-label={`Edit ${p.name}`}
               >
-                <Pencil size={16}/> Edit
-              </Link></Can>
+                <Pencil size={16}/><T text={"Edit"}/></Link></Can>
               <Can permission="products:delete"><button
                 className="flex items-center gap-3 rounded p-2 text-left text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 onClick={() => setDeleting([p.id])}
                 aria-label={`Delete ${p.name}`}
               >
-                <Trash2 size={16}/> Delete
-              </button></Can>
+                <Trash2 size={16}/><T text={"Delete"}/></button></Can>
             </div></Popover>
           )}
         />

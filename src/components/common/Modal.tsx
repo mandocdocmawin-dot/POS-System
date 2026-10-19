@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events -- Native dialog backdrop clicks complement native Escape and the explicit Close button. */
+import { T } from "../../i18n/T";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 export function Modal({
@@ -49,7 +50,7 @@ export function Modal({
     >
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
         <h2 id={titleId} className="text-lg font-semibold">
-          {title}
+          <T>{title}</T>
         </h2>
         <button
           type="button"

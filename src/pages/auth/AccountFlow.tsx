@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {staffService} from '../../services/staffService';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CheckCheck, ShieldCheck, KeyRound, UserRoundX } from "lucide-react";
@@ -44,9 +45,7 @@ export function AccountFlow() {
               : deactivated?"Your staff account is inactive and you have been signed out. You can still use demo login.":"Deactivation marks your staff record inactive and signs you out."}
       </p>
       {success||deactivated ? (
-        <Link className="btn-primary w-full" to="/auth/sign-in">
-          Back to Sign In
-        </Link>
+        <Link className="btn-primary w-full" to="/auth/sign-in"><T text={"Back to Sign In"}/></Link>
       ) : (
         <form
           noValidate className="space-y-5"
@@ -70,14 +69,14 @@ export function AccountFlow() {
                 label="New password"
                 name="password"
                 type="password"
-                
+
                 autoComplete="new-password"
               />
               <AuthField
                 label="Confirm password"
                 name="confirm"
                 type="password"
-                
+
                 autoComplete="new-password"
               />
             </>
@@ -93,9 +92,7 @@ export function AccountFlow() {
                 autoComplete="current-password"
               />
               <label className="flex items-start gap-2 text-xs">
-                <input type="checkbox" required className="mt-0.5" />I
-                understand and want to deactivate my account.
-              </label>
+                <input type="checkbox" required className="mt-0.5" /><T text={"I understand and want to deactivate my account."}/></label>
             </>
           )}
           {notice && (
@@ -120,20 +117,14 @@ export function AccountFlow() {
               onClick={() =>
                 setNotice("Demo only: no verification code has been sent.")
               }
-            >
-              Resend code
-            </button>
+            ><T text={"Resend code"}/></button>
           )}
         </form>
       )}
       <div className="mt-6 text-center">
-        <Link to="/auth/sign-in" className="text-xs text-indigo-500">
-          Back to Sign In
-        </Link>
+        <Link to="/auth/sign-in" className="text-xs text-indigo-500"><T text={"Back to Sign In"}/></Link>
       </div>
-      <p className="mt-5 text-center text-xs text-slate-400">
-        Demo password flow. No credentials are checked or stored.
-      </p>
+      <p className="mt-5 text-center text-xs text-slate-400"><T text={"Demo password flow. No credentials are checked or stored."}/></p>
     </>
   );
 }

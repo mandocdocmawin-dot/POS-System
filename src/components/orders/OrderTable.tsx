@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {useState} from 'react';
 import {ProductDetails} from '../../pages/products/ProductDetails';
 import {productService} from '../../services/productService';
@@ -16,7 +17,7 @@ export function OrderTable({rows,selection,onSelectionChange}:{rows:Order[];sele
  return <><DataTable caption="Orders" rows={rows} rowKey={o=>o.id} searchText={o=>`${o.orderNo} ${o.customerName} ${o.items.map(i=>`${i.name} ${i.sku}`).join(' ')} ${o.coupon?.code??''}`} selection={selection} onSelectionChange={onSelectionChange} columns={[
  {id:'no',header:'Order ID',cell:o=><Link to={`/orders/${o.id}`} className="commerce-muted">{o.orderNo}{o.coupon&&<small className="commerce-subline">Coupon: {o.coupon.code}</small>}</Link>,sortValue:o=>o.orderNo},
  {id:'date',header:'Date',cell:o=>formatDate(new Date(o.createdAt)),sortValue:o=>o.createdAt},
- {id:'product',header:'Product',cell:o=><button className="commerce-product" disabled={!productService.get(o.items[0].productId)} onClick={()=>setProduct(o.items[0].productId)}><ProductImage imageId={o.items[0].imageId} name={o.items[0].name}/><span>{o.items[0].name}{o.items.length>1&&<small className="commerce-subline">+{o.items.length-1} more items</small>}</span></button>},
+ {id:'product',header:'Product',cell:o=><button className="commerce-product" disabled={!productService.get(o.items[0].productId)} onClick={()=>setProduct(o.items[0].productId)}><ProductImage imageId={o.items[0].imageId} name={o.items[0].name}/><span>{o.items[0].name}{o.items.length>1&&<small className="commerce-subline">+{o.items.length-1}<T text={" more items"}/></small>}</span></button>},
  {id:'customer',header:'Customer',cell:o=><CustomerIdentity id={o.customerId} name={o.customerName}/>},
  {id:'items',header:'Items',cell:o=>o.items.length},
  {id:'total',header:'Total Price',cell:o=><><strong>{formatPHP(o.grandTotal)}</strong><small className="commerce-subline">{[...new Set(o.payments.map(p=>p.method))].join(', ')||'Pay later'}</small></>,sortValue:o=>o.grandTotal},

@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 const tones = {
   green:
     "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
@@ -17,7 +18,7 @@ export function StatusBadge({ children }: { children: string }) {
     <span
       className={`inline-flex whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium ${tones[tone]}`}
     >
-      {children}
+      <T>{children}</T>
     </span>
   );
-}
+}

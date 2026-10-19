@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {CartPopover} from '../../components/pos/CartPopover';
 import {formatDate,formatTime} from '../../utils/date';
 import {Popover} from '../../components/common/Popover';
@@ -41,14 +42,12 @@ export function PosTopbar() {
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <Popover label="Open workspace" className="btn" trigger={<>Workspace</>}><nav aria-label="POS workspace links" className="w-48 p-2">{[['Orders','/orders','orders:view'],['Customers','/customers','customers:view'],['Products','/products','products:view'],['My attendance','/staff/attendance','attendance:view'],['My schedule','/staff/schedule','schedule:view']].map(([label,path,permission])=><Can key={path} permission={permission}><Link className="block rounded-lg p-3 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" to={path}>{label}</Link></Can>)}</nav></Popover>
+        <Popover label="Open workspace" className="btn" trigger={<><T text={"Workspace"}/></>}><nav aria-label="POS workspace links" className="w-48 p-2">{[['Orders','/orders','orders:view'],['Customers','/customers','customers:view'],['Products','/products','products:view'],['My attendance','/staff/attendance','attendance:view'],['My schedule','/staff/schedule','schedule:view']].map(([label,path,permission])=><Can key={path} permission={permission}><Link className="block rounded-lg p-3 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" to={path}>{label}</Link></Can>)}</nav></Popover>
         <Can permission="dashboard:view"><Link
           to="/"
           className="btn border-slate-900 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800"
         >
-          <LayoutDashboard size={15} />
-          Dashboard
-        </Link></Can>
+          <LayoutDashboard size={15} /><T text={"Dashboard"}/></Link></Can>
         <Can permission="settings:manage"><Link className="icon-btn" aria-label="POS settings" to="/settings/pos">
           <Settings size={17} />
         </Link></Can>

@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {usePermission} from '../../hooks/usePermission';
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -11,8 +12,7 @@ export function AddNewMenu() {
       align="left"
       className="btn"
       trigger={
-        <>
-          Add New <Plus size={15} />
+        <><T text={"Add New"}/><Plus size={15} />
         </>
       }
     >
@@ -26,7 +26,7 @@ export function AddNewMenu() {
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 dark:border-slate-700">
               <Icon size={18} />
             </span>
-            {label}
+            <T>{label}</T>
           </Link>
         ))}
       </div>

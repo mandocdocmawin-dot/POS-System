@@ -1,84 +1,15 @@
-import { ArrowDownLeft, Shirt, Footprints } from "lucide-react";
-import { CardHeading } from "../../components/common/CardHeading";
-import { DashboardChart } from "./DashboardChart";
-import { dashboardService } from "../../services/dashboardService";
-import {formatPHP} from "../../utils/money";
+import { T } from "../../i18n/T";
+import { Link } from 'react-router-dom';
+import { Avatar } from '../../components/common/Avatar';
+import { ProductImage } from '../../components/common/ProductImage';
+import { dashboardService } from '../../services/dashboardService';
+import { formatPHP } from '../../utils/money';
+import { DashboardPanel } from './DashboardPanel';
+import { DashboardChart } from './DashboardChart';
 export function AnalyticsRow() {
-  const categories = dashboardService.getCategories();
-  return (
-    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
-      <section className="card md:col-span-2 xl:col-span-5">
-        <CardHeading title="Order Analytics">
-          
-        </CardHeading>
-        <DashboardChart kind="orders"/>
-      </section>
-      <section className="card xl:col-span-4">
-        <CardHeading title="Recent Transactions" />
-        <ul className="mt-5 space-y-5">
-          {dashboardService.getTransactions().map((t) => (
-            <li key={t.id} className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-500 dark:bg-emerald-500/10">
-                <ArrowDownLeft size={16} />
-              </span>
-              <div className="flex-1">
-                <p className="text-xs font-medium text-slate-800 dark:text-slate-100">
-                  {t.id}
-                </p>
-                <p className="mt-1 text-xs text-slate-400">
-                  {t.method} <span className="px-1">·</span> {t.time}
-                </p>
-              </div>
-              <span className="text-xs font-semibold">
-                {formatPHP(t.amount)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-      <section className="card xl:col-span-3">
-        <CardHeading title="Top Categories" />
-        <div className="mt-4">
-          <h3 className="text-3xl font-semibold tracking-tight">
-            {categories.total}
-          </h3>
-          <p className="mt-1 text-xs text-slate-400">Total products sold</p>
-        </div>
-        <div className="mt-4 flex h-2 gap-1 overflow-hidden rounded-full">
-          {categories.segments.map((s) => (
-            <div
-              key={s.name}
-              style={{ width: `${s.percent}%` }}
-              className={s.color}
-            />
-          ))}
-        </div>
-        <div className="mt-3 flex flex-wrap gap-3">
-          {categories.segments.map((s) => (
-            <span key={s.name} className="text-xs text-slate-400">
-              <i
-                className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${s.color}`}
-              />
-              {s.name} {s.percent}%
-            </span>
-          ))}
-        </div>
-        <div className="mt-5 space-y-4">
-          {categories.rows.map((r, i) => (
-            <div className="flex items-center gap-2" key={r.name}>
-              <span className="rounded-lg bg-indigo-50 p-2 text-indigo-500 dark:bg-indigo-500/10">
-                {i === 0 ? <Shirt size={16} /> : <Footprints size={16} />}
-              </span>
-              <div className="flex-1">
-                <p className="text-xs font-medium">{r.name}</p>
-                <p className="mt-0.5 text-xs text-slate-400">{r.subtitle}</p>
-              </div>
-              <span className="text-xs font-semibold">{r.value}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
+  const categories = dashboardService.getCategories(), transactions = dashboardService.getTransactions();
+  return <div className="dashboard-analytics-row"><DashboardPanel title="Order Analytics" className="dashboard-order-analytics"><DashboardChart kind="orders"/></DashboardPanel>
+    <DashboardPanel title="Recent Transactions" action={<Link to="/reports/sales" aria-label="View sales transactions">⋮</Link>} className="dashboard-transactions"><ul>{transactions.map(t => <li key={t.id}><Avatar name={t.customerName}/><div><strong>{t.id.split(' · ')[0]}</strong><p>{t.method} · {t.time}</p></div><strong>{formatPHP(t.amount)}</strong></li>)}</ul>{!transactions.length && <p className="dashboard-empty"><T text={"No transactions recorded."}/></p>}</DashboardPanel>
+    <DashboardPanel title="Top Categories" action={<Link to="/products/categories"><T text={"View Details"}/></Link>} className="dashboard-categories"><div className="dashboard-category-total"><h3>{categories.total}</h3><span><T text={"Total Categories"}/></span></div><div className="dashboard-category-segments">{categories.segments.map((s, i) => <div key={s.name} style={{ flex: Math.max(s.percent, 15) }}><div style={{ background: ['#ff762b', '#06396a', '#35bf65', '#f3bd3c'][i % 4] }}/><p>{s.name}</p><strong><i style={{ background: ['#ff762b', '#06396a', '#35bf65', '#f3bd3c'][i % 4] }}/>{s.percent}%</strong></div>)}</div><div className="dashboard-category-list">{categories.rows.slice(0, 2).map(row => <div key={row.name}><ProductImage name={row.productName} imageId={row.imageId}/><div><div className="dashboard-category-value"><strong>{row.name}</strong><span>{row.value}<T text={" Revenue"}/></span></div><p>{row.subtitle}</p></div></div>)}</div><Link className="dashboard-panel-footer" to="/products/categories"><T text={"View all categories ›"}/></Link></DashboardPanel>
+  </div>;
 }
-

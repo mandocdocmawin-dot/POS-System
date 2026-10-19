@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {useSettings} from '../../hooks/useSettings';
 import {formatDate as displayDate} from '../../utils/date';
 import { useState } from 'react';
@@ -41,19 +42,19 @@ export function Component() {
   }
 
   return (
-    <StaffShell title="Staff schedule" actions={<button type="button" className="btn" onClick={() => window.print()}>Print schedule</button>}>
+    <StaffShell title="Staff schedule" actions={<button type="button" className="btn" onClick={() => window.print()}><T text={"Print schedule"}/></button>}>
       <div className="mb-5 flex flex-wrap items-end gap-3">
-        <button type="button" className="btn" onClick={() => setStart(addDays(start, -7))}>Previous week</button>
-        <button type="button" className="btn" onClick={() => setStart(weekStart(localDate(),weekStartsOn))}>This week</button>
-        <button type="button" className="btn" onClick={() => setStart(addDays(start, 7))}>Next week</button>
+        <button type="button" className="btn" onClick={() => setStart(addDays(start, -7))}><T text={"Previous week"}/></button>
+        <button type="button" className="btn" onClick={() => setStart(weekStart(localDate(),weekStartsOn))}><T text={"This week"}/></button>
+        <button type="button" className="btn" onClick={() => setStart(addDays(start, 7))}><T text={"Next week"}/></button>
         <label className="text-xs">Week containing
           <input className="mt-1 block" type="date" value={start} onChange={event => {
             if (/^\d{4}-\d{2}-\d{2}$/.test(event.target.value)) setStart(weekStart(event.target.value,weekStartsOn));
           }} />
         </label>
         {manage && <>
-          <button type="button" className="btn" onClick={() => setConfirmation('copy')}>Copy previous week</button>
-          <button type="button" className="btn text-red-500" disabled={!visibleShifts.length} onClick={() => setConfirmation('clear')}>Clear week</button>
+          <button type="button" className="btn" onClick={() => setConfirmation('copy')}><T text={"Copy previous week"}/></button>
+          <button type="button" className="btn text-red-500" disabled={!visibleShifts.length} onClick={() => setConfirmation('clear')}><T text={"Clear week"}/></button>
         </>}
       </div>
       <StaffSummary items={[
@@ -69,10 +70,10 @@ export function Component() {
         </div>
         <div className="schedule-scroll overflow-x-auto">
           <table className="w-full min-w-[1000px] table-fixed border-collapse text-sm">
-            <caption className="sr-only">Weekly staff schedule from {start} through {end}. Shift times use Philippine local time.</caption>
+            <caption className="sr-only"><T text={"Weekly staff schedule from "}/>{start} through {end}. Shift times use Philippine local time.</caption>
             <thead>
               <tr>
-                <th scope="col" className="w-44 border border-slate-200 p-3 text-left align-top dark:border-slate-700">Staff</th>
+                <th scope="col" className="w-44 border border-slate-200 p-3 text-left align-top dark:border-slate-700"><T text={"Staff"}/></th>
                 {dates.map(date => <th key={date} scope="col" className={`border border-slate-200 p-3 text-left align-top dark:border-slate-700 ${date === localDate() ? 'bg-indigo-50 dark:bg-indigo-950/40' : ''}`}>
                   <span className="block font-semibold">{displayDate(new Date(date + 'T12:00:00Z'))}</span>
                   {holidays.filter(h => h.date === date).map(h => <span className="mt-2 block rounded bg-amber-100 px-2 py-1 text-xs font-normal text-amber-900" key={h.id}>{h.name}</span>)}
@@ -91,13 +92,13 @@ export function Component() {
                   return <td key={date} className="h-28 border border-slate-200 p-2 align-top dark:border-slate-700" onClick={event => {
                     if (event.target === event.currentTarget) add(person.id, date);
                   }}>
-                    {leave && <p className="mb-2 rounded bg-violet-100 px-2 py-1 text-xs text-violet-900" title={leave.note}>On leave</p>}
+                    {leave && <p className="mb-2 rounded bg-violet-100 px-2 py-1 text-xs text-violet-900" title={leave.note}><T text={"On leave"}/></p>}
                     {dayShifts.map(shift => {
                       const content = <><strong className="block text-xs tabular-nums">{shift.startTime}–{shift.endTime}</strong><span className="mt-1 block text-xs">{shift.branchId}</span>{shift.note && <span className="mt-1 block break-words text-xs opacity-75">{shift.note}</span>}</>;
                       const className = 'mb-2 block w-full rounded-lg bg-indigo-50 p-2 text-left text-indigo-800 dark:bg-indigo-950 dark:text-indigo-200';
                       return manage ? <button type="button" key={shift.id} className={className} aria-label={`Edit ${person.name}, ${date}, ${shift.startTime} to ${shift.endTime}`} onClick={() => setEditing(shift)}>{content}</button> : <div className={className} key={shift.id}>{content}</div>;
                     })}
-                    {manage ? <button type="button" className="schedule-add w-full rounded border border-dashed border-slate-300 px-2 py-2 text-xs text-slate-500 hover:border-indigo-400 hover:text-indigo-600 dark:border-slate-600 dark:hover:text-indigo-300" aria-label={`Add shift for ${person.name} on ${date}`} onClick={() => add(person.id, date)}>+ Add shift</button> : !dayShifts.length && <p className="p-2 text-xs text-slate-400">No shift scheduled</p>}
+                    {manage ? <button type="button" className="schedule-add w-full rounded border border-dashed border-slate-300 px-2 py-2 text-xs text-slate-500 hover:border-indigo-400 hover:text-indigo-600 dark:border-slate-600 dark:hover:text-indigo-300" aria-label={`Add shift for ${person.name} on ${date}`} onClick={() => add(person.id, date)}>+ Add shift</button> : !dayShifts.length && <p className="p-2 text-xs text-slate-400"><T text={"No shift scheduled"}/></p>}
                   </td>;
                 })}
               </tr>)}

@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import {Eye,Pencil,Trash2,Plus,Star} from 'lucide-react';
@@ -31,10 +32,10 @@ function Records({warranty}:{warranty:boolean}){
  return <ProductWorkspace title={title}>
   <p className="product-sample-note">Design demo · sample {title.toLowerCase()} using your catalog images. Changes stay on this page; these are not verified purchases or warranty coverage.</p>
   <section className="product-panel">
-   {warranty?<div className="product-panel-heading"><h2>Warranty List</h2><Can permission="products:create"><button className="btn-primary" onClick={create} disabled={!products.length}><Plus size={16}/> Add Warranty</button></Can></div>:<div className="product-table-tabs">{['','Published','Hidden','Pending'].map(s=><button key={s} aria-pressed={status===s} onClick={()=>setStatus(s)}>{s||'All Reviews'}</button>)}</div>}
+   {warranty?<div className="product-panel-heading"><h2><T text={"Warranty List"}/></h2><Can permission="products:create"><button className="btn-primary" onClick={create} disabled={!products.length}><Plus size={16}/><T text={" Add Warranty"}/></button></Can></div>:<div className="product-table-tabs">{['','Published','Hidden','Pending'].map(s=><button key={s} aria-pressed={status===s} onClick={()=>setStatus(s)}>{s||'All Reviews'}</button>)}</div>}
    <div className="product-filters border-0">
-    <Select label="Status" value={status} onChange={e=>setStatus(e.target.value)}><option value="">All statuses</option>{(warranty?['Active','Expired']:['Published','Hidden','Pending']).map(s=><option key={s}>{s}</option>)}</Select>
-    {warranty?<Select label="Warranty type" value={type} onChange={e=>setType(e.target.value)}><option value="">All warranties</option>{['Manufacturer','Store','Extended'].map(t=><option key={t}>{t}</option>)}</Select>:<Select label="Rating" value={rating} onChange={e=>setRating(e.target.value)}><option value="">All ratings</option>{[5,4,3,2,1].map(n=><option key={n} value={n}>{n} stars</option>)}</Select>}
+    <Select label="Status" value={status} onChange={e=>setStatus(e.target.value)}><option value=""><T text={"All statuses"}/></option>{(warranty?['Active','Expired']:['Published','Hidden','Pending']).map(s=><option key={s}>{s}</option>)}</Select>
+    {warranty?<Select label="Warranty type" value={type} onChange={e=>setType(e.target.value)}><option value=""><T text={"All warranties"}/></option>{['Manufacturer','Store','Extended'].map(t=><option key={t}>{t}</option>)}</Select>:<Select label="Rating" value={rating} onChange={e=>setRating(e.target.value)}><option value=""><T text={"All ratings"}/></option>{[5,4,3,2,1].map(n=><option key={n} value={n}>{n} stars</option>)}</Select>}
     <TextInput label={warranty?'Purchase date':'Review date'} type="date" value={date} onChange={e=>setDate(e.target.value)}/>
     {!warranty&&<Can permission="products:create"><button className="btn-primary self-end" onClick={create} disabled={!products.length}><Plus size={16}/> Add Review</button></Can>}
    </div>
@@ -59,7 +60,7 @@ function Records({warranty}:{warranty:boolean}){
     <Select label="Product" required value={editing.productId} onChange={e=>setEditing({...editing,productId:e.target.value})}>{products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</Select>
     <TextInput label="Customer name" required maxLength={80} value={editing.customer} onChange={e=>setEditing({...editing,customer:e.target.value})}/>
     {warranty?<><Select label="Warranty type" value={editing.type} onChange={e=>setEditing({...editing,type:e.target.value})}>{['Store','Manufacturer','Extended'].map(t=><option key={t}>{t}</option>)}</Select><TextInput label="Purchase date" type="date" required value={editing.purchase} onChange={e=>setEditing({...editing,purchase:e.target.value})}/><div className="grid gap-4 sm:grid-cols-2"><TextInput label="Warranty start" type="date" required value={editing.start} onChange={e=>setEditing({...editing,start:e.target.value})}/><TextInput label="Warranty end" type="date" required min={editing.start} value={editing.end} onChange={e=>setEditing({...editing,end:e.target.value})}/></div></>:<><Select label="Rating" value={editing.rating} onChange={e=>setEditing({...editing,rating:Number(e.target.value)})}>{[5,4,3,2,1].map(n=><option key={n} value={n}>{n} stars</option>)}</Select><Textarea label="Review" required maxLength={1000} rows={4} value={editing.text} onChange={e=>setEditing({...editing,text:e.target.value})}/><Select label="Visibility" value={editing.status} onChange={e=>setEditing({...editing,status:e.target.value})}>{['Published','Hidden','Pending'].map(s=><option key={s}>{s}</option>)}</Select></>}
-    <p className="text-xs text-slate-500">Demo changes last while this page is open.</p><div className="flex justify-end gap-2"><button type="button" className="btn" onClick={()=>setEditing(undefined)}>Cancel</button><button className="btn-primary">Save sample</button></div>
+    <p className="text-xs text-slate-500">Demo changes last while this page is open.</p><div className="flex justify-end gap-2"><button type="button" className="btn" onClick={()=>setEditing(undefined)}><T text={"Cancel"}/></button><button className="btn-primary"><T text={"Save sample"}/></button></div>
    </form>}
   </Modal>
  </ProductWorkspace>;

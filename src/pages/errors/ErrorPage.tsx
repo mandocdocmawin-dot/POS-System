@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft, SearchX, TriangleAlert } from "lucide-react";
 export function Component() {
@@ -21,9 +22,7 @@ export function Component() {
           : "The page you are looking for may have moved, or the address may be incorrect."}
       </p>
       <Link to="/" className="btn-primary">
-        <ArrowLeft size={15} />
-        Back to Dashboard
-      </Link>
+        <ArrowLeft size={15} /><T text={"Back to Dashboard"}/></Link>
     </section>
   );
 }

@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {lazy,Suspense,useMemo,useSyncExternalStore} from 'react';
 import type {ApexOptions} from 'apexcharts';
 import {darkTheme,subscribeTheme,chartColors} from '../charts/theme';
@@ -27,5 +28,5 @@ export function ReferenceChart({kind,labels,series,summary,height=320,count=fals
  const scaled=series.map((s,i)=>({...s,...(kind==='comparison'?{type:i?'line':'area'}:{}),data:s.data.map(v=>count||s.count?v:fromCentavos(v))}));
  const type=donut?'donut':bar?'bar':kind==='comparison'?'area':'line';
  const hasData=series.some(s=>s.data.some(v=>v!==0));
- return <figure className="reference-chart" aria-label={summary} role="img"><figcaption className="sr-only">{summary}</figcaption>{!hasData?<div className="commerce-empty" style={{height}}>No data for this period</div>:<Suspense fallback={<div className="animate-pulse bg-slate-50 dark:bg-slate-800" role="status" aria-label="Loading chart" style={{height}}/>}><ApexChart type={type} height={height} width="100%" options={options} series={donut?scaled[0]?.data:scaled}/></Suspense>}</figure>;
+ return <figure className="reference-chart" aria-label={summary} role="img"><figcaption className="sr-only">{summary}</figcaption>{!hasData?<div className="commerce-empty" style={{height}}><T text={"No data for this period"}/></div>:<Suspense fallback={<div className="animate-pulse bg-slate-50 dark:bg-slate-800" role="status" aria-label="Loading chart" style={{height}}/>}><ApexChart type={type} height={height} width="100%" options={options} series={donut?scaled[0]?.data:scaled}/></Suspense>}</figure>;
 }

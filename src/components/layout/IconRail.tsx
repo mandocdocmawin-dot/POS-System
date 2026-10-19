@@ -1,3 +1,4 @@
+import { useTranslation } from '../../i18n/useTranslation';
 import {Avatar} from '../common/Avatar';
 import {toast,errorMessage} from '../../services/toastService';
 import {authService} from '../../services/authService';
@@ -11,6 +12,7 @@ import { useUiStore } from "../../store/useUiStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import { Brand } from "./Brand";
 export function IconRail() {
+ const { t } = useTranslation();
  const menu=useAccessibleMenu();
  const user=useCurrentUser();
   const { section, setSection } = useUiStore();
@@ -30,8 +32,8 @@ export function IconRail() {
         {menu.map(({ id, label, railIcon: Icon, groups }) =>
           ["support", "licenses", "activity-history"].includes(id) ? (
             <Link
-              title={label}
-              aria-label={label}
+              title={t(label)}
+              aria-label={t(label)}
               key={id}
               to={groups[0].items[0].path}
               className={`icon-btn border-transparent ${section === id ? "menu-active shadow-sm" : ""}`}
@@ -40,8 +42,8 @@ export function IconRail() {
             </Link>
           ) : (
             <button
-              title={label}
-              aria-label={label}
+              title={t(label)}
+              aria-label={t(label)}
               aria-pressed={section === id}
               key={id}
               onClick={() => setSection(id)}
@@ -54,7 +56,7 @@ export function IconRail() {
       </div>
       <div className="flex flex-col gap-2 pt-3">
         <button
-          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          aria-label={t(`Switch to ${theme === "light" ? "dark" : "light"} mode`)}
           className="icon-btn border-transparent"
           onClick={toggle}
         >
@@ -63,14 +65,14 @@ export function IconRail() {
         <Link
           to="/account/account"
           title="Account settings"
-          aria-label="Account settings"
+          aria-label={t("Account settings")}
           aria-current={pathname.startsWith('/account/') ? 'page' : undefined}
           className={`icon-btn border-transparent ${pathname.startsWith('/account/') ? 'menu-active' : ''}`}
         >
           <UserRound size={18} />
         </Link>
         <Link
-          aria-label="Log out (demo)"
+          aria-label={t("Log out (demo)")}
           to="/sign-in"
           onClick={event=>{try{authService.logout();}catch(error){event.preventDefault();toast.error(errorMessage(error));}}}
           className="icon-btn border-transparent"

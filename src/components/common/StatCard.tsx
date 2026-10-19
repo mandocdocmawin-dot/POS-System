@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import type { LucideIcon } from "lucide-react";
 export interface Stat {
   title: string;
@@ -13,7 +14,7 @@ export function StatCard({ title, value, trend, up, icon: Icon, color, caption }
     <section className="card">
       <div className="mb-5 flex items-start justify-between gap-2">
         <div>
-          <p className="mb-2 text-xs text-slate-500">{title}</p>
+          <p className="mb-2 text-xs text-slate-500"><T>{title}</T></p>
           <h2 className="text-2xl font-semibold tracking-tight">{value}</h2>
         </div>
         <span
@@ -28,7 +29,7 @@ export function StatCard({ title, value, trend, up, icon: Icon, color, caption }
         >
           {up ? "▲" : "▼"} {trend}
         </span>}{' '}
-        {caption??'From Last Week'}
+        <T>{caption??'From Last Week'}</T>
       </p>
     </section>
   );

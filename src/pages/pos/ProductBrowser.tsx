@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/no-autofocus -- The user-controlled POS autofocus setting supports keyboard barcode entry. */
+import { T } from "../../i18n/T";
 import {branchService} from '../../services/branchService';
 import {useSettings} from '../../hooks/useSettings';
 import {stockService} from '../../services/stockService';
@@ -43,7 +44,7 @@ export function ProductBrowser() {
   );
   return (
     <><Modal open={brandModal} title="View All Brands" onClose={()=>{setBrandModal(false);focusSearch();}}><div className="flex flex-wrap gap-2">{[{id:'',name:'All brands'},...brandService.list().filter(b=>b.status==='active')].map(b=><button className="btn" aria-pressed={brand===b.id} key={b.id} onClick={()=>{setBrand(b.id);setBrandModal(false);focusSearch();}}>{b.name}</button>)}</div></Modal>
-    <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/>In-stock products only</label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}>Apply filters</button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex w-full min-w-0 flex-col sm:flex-row md:min-h-0 md:flex-1">
+    <Modal open={filterModal} title="Filter products" onClose={()=>{setFilterModal(false);focusSearch();}}><label className="flex gap-3"><input type="checkbox" checked={stockOnly} onChange={e=>setStockOnly(e.target.checked)}/><T text={"In-stock products only"}/></label><button className="btn-primary mt-5" onClick={()=>{setFilterModal(false);focusSearch();}}><T text={"Apply filters"}/></button></Modal><VariantPicker product={variantProduct} onClose={()=>setVariantProduct(null)} onChoose={id=>variantProduct&&add(variantProduct,id)}/><div className="flex w-full min-w-0 flex-col sm:flex-row md:min-h-0 md:flex-1">
       <nav
         aria-label="Product categories"
         className="flex shrink-0 gap-3 overflow-x-auto border-b border-slate-200 bg-white p-4 sm:w-36 sm:flex-col sm:overflow-x-hidden sm:px-3 sm:border-b-0 sm:border-r md:overflow-y-auto dark:border-slate-800 dark:bg-slate-900"
@@ -79,7 +80,7 @@ export function ProductBrowser() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </label>
-          <button className="btn" onClick={()=>setBrandModal(true)}>View All Brands{brand?' •':''}</button><button className="btn" onClick={()=>setFilterModal(true)}>Filter{stockOnly?' •':''}</button>
+          <button className="btn" onClick={()=>setBrandModal(true)}>View All Brands{brand?' •':''}</button><button className="btn" onClick={()=>setFilterModal(true)}><T text={"Filter"}/>{stockOnly?' •':''}</button>
           <button
             className="btn"
             onClick={() => {
@@ -87,26 +88,21 @@ export function ProductBrowser() {
               setBrand("");
               setSearch("");setStockOnly(false);focusSearch();
             }}
-          >
-            Reset
-          </button>
+          ><T text={"Reset"}/></button>
         </div>
         <div className="mb-5 flex items-center justify-between">
           <h1 className="text-lg font-semibold">
             {categories.find((c) => c.id === category)?.name ?? "All Products"}
           </h1>
           <span className="text-xs text-slate-500">
-            {products.length} products
-          </span>
+            {products.length}<T text={"products"}/></span>
         </div>
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
           {products.map(p=><ProductCard key={p.id} product={p} onAdd={()=>add(p)}/>)}
 
         </div>
         {!products.length && (
-          <div className="card py-12 text-center text-slate-500">
-            No products match your filters.
-          </div>
+          <div className="card py-12 text-center text-slate-500"><T text={"No products match your filters."}/></div>
         )}
       </main>
     </div></>

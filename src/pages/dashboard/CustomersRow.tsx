@@ -1,113 +1,16 @@
-import { CardHeading } from "../../components/common/CardHeading";
-import { DashboardChart } from "./DashboardChart";
-import { Avatar } from "../../components/common/Avatar";
-import { dashboardService } from "../../services/dashboardService";
+import { T } from "../../i18n/T";
+import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
+import { Avatar } from '../../components/common/Avatar';
+import { dashboardService } from '../../services/dashboardService';
+import { DashboardPanel } from './DashboardPanel';
+import { DashboardChart } from './DashboardChart';
 function ProgressRing({ percent, color }: { percent: number; color: string }) {
-  return (
-    <svg
-      width="40"
-      height="40"
-      viewBox="0 0 40 40"
-      role="img"
-      aria-label={`${percent}%`}
-    >
-      <circle
-        cx="20"
-        cy="20"
-        r="16"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        className="text-slate-100 dark:text-slate-800"
-      />
-      <circle
-        cx="20"
-        cy="20"
-        r="16"
-        fill="none"
-        stroke={color}
-        strokeWidth="3"
-        strokeDasharray={`${percent} 100`}
-        pathLength="100"
-        strokeLinecap="round"
-        transform="rotate(-90 20 20)"
-      />
-    </svg>
-  );
+  return <svg viewBox="0 0 52 52" role="img" aria-label={`${percent}%`}><circle cx="26" cy="26" r="22" fill="none" className="dashboard-ring-track" strokeWidth="4"/><circle cx="26" cy="26" r="22" fill="none" stroke={color} strokeWidth="4" strokeDasharray={`${percent} 100`} pathLength="100" strokeLinecap="round" transform="rotate(-90 26 26)"/><text x="26" y="30" textAnchor="middle">{percent}%</text></svg>;
 }
 export function CustomersRow() {
-  const customers = dashboardService.getCustomers();
-  const payments = dashboardService.getPayments();
-  return (
-    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
-      <section className="card xl:col-span-4">
-        <CardHeading title="Total Customers" />
-        <div className="mt-4 flex items-center justify-between">
-          <div>
-            <h3 className="text-3xl font-semibold tracking-tight">
-              {customers.total}
-            </h3>
-            <p className="mt-1 text-xs text-slate-400">
-              <span className="text-emerald-500">↗ {customers.trend}</span> vs
-              last week
-            </p>
-          </div>
-          <div className="flex -space-x-2">
-            {customers.names.map((name, i) => (
-              <Avatar key={name} name={name} index={i} />
-            ))}
-          </div>
-        </div>
-        <div className="mt-6 space-y-4">
-          {customers.rows.map((r) => (
-            <div className="flex items-center gap-3" key={r.label}>
-              <ProgressRing percent={r.percent} color={r.color} />
-              <div className="flex-1">
-                <p className="text-xs font-medium">{r.label}</p>
-                <p className="mt-1 text-xs text-slate-400">
-                  {r.count} customers
-                </p>
-              </div>
-              <span className="text-sm font-semibold">{r.percent}%</span>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className="card xl:col-span-3">
-        <CardHeading title="Payment Methods" />
-        <div className="mt-5 grid grid-cols-2">
-          {payments.map((p) => (
-            <div key={p.label}>
-              <p className="text-xl font-semibold">{p.percent}%</p>
-              <p className="mt-1 text-xs text-slate-400">
-                <i
-                  className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${p.color}`}
-                />
-                {p.label}
-              </p>
-            </div>
-          ))}
-        </div>
-        <DashboardChart kind="payments"/>
-      </section>
-      <section className="card md:col-span-2 xl:col-span-5">
-        <CardHeading title="Inventory Management">
-          
-        </CardHeading>
-        <div className="mt-4 flex gap-4 text-xs text-slate-400">
-          <span>
-            <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-indigo-500" />
-            Stock In
-          </span>
-          <span>
-            <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-teal-400" />
-            Stock Out
-          </span>
-        </div>
-        <DashboardChart kind="inventory"/>
-      </section>
-    </div>
-  );
+  const customers = dashboardService.getCustomers(), payments = dashboardService.getPayments().slice(0, 2);
+  return <div className="dashboard-customers-row"><DashboardPanel title="Total Customers" action={<Link to="/customers/customer-list" aria-label="View customers">⋮</Link>} className="dashboard-customers"><p className="dashboard-muted dashboard-customers-subtitle"><T text={"Customers across your stores"}/></p><div className="dashboard-customer-total"><div><h3>{customers.total}</h3><p><span className="dashboard-positive">{customers.trend}</span> <span className="dashboard-muted"><T text={"vs last week"}/></span></p></div><div className="dashboard-avatar-stack">{customers.names.slice(0, 3).map(name => <Avatar name={name} key={name}/>)}{customers.names.length > 3 && <span>+{customers.names.length - 3}</span>}</div></div><div className="dashboard-customer-segments">{customers.rows.map((row, i) => <Link to="/customers/customer-list" key={row.label}><ProgressRing percent={row.percent} color={i === 0 ? '#ff3c48' : '#35bf65'}/><div><strong><T>{row.label}</T> <span style={{ color: i === 0 ? '#ff3c48' : '#35bf65' }}>{row.percent}%</span></strong><p>{i === 0 ? 'Customers joined in the last 30 days' : 'Repeat buyers with loyalty points'}</p></div><ChevronRight size={17}/></Link>)}</div></DashboardPanel>
+  <DashboardPanel title="Payment methods" className="dashboard-payments"><div className="dashboard-payment-values">{payments.map((payment, i) => <div key={payment.label}><strong><span className={i === 0 ? 'payment-purple' : 'payment-pink'}>☆</span> {payment.percent}%</strong><p>{payment.label}</p></div>)}</div><DashboardChart kind="payments"/></DashboardPanel>
+  <DashboardPanel title="Inventory management" className="dashboard-inventory"><DashboardChart kind="inventory"/></DashboardPanel></div>;
 }
-
-

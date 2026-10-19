@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import { ChevronRight } from "lucide-react";
 export function PageHeader({
   title,
@@ -11,7 +12,7 @@ export function PageHeader({
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="text-xl font-semibold tracking-tight"><T>{title}</T></h1>
         {children}
       </div>
       <nav aria-label="Breadcrumb">
@@ -27,7 +28,7 @@ export function PageHeader({
                     : ""
                 }
               >
-                {text}
+                <T>{text}</T>
               </span>
             </li>
           ))}

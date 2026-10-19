@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions -- The dialog delegates native control clicks; its key handler supports Escape, Tab and arrow navigation. */
+import { useTranslation } from '../../i18n/useTranslation';
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 export function Popover({
@@ -14,6 +15,7 @@ export function Popover({
   className?: string;
   align?: "left" | "right";
 }) {
+  const { t } = useTranslation();
   const panel = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -64,7 +66,7 @@ export function Popover({
     <div ref={root} className="relative">
       <button
         ref={button}
-        aria-label={label}
+        aria-label={t(label)}
         aria-expanded={open}
         aria-haspopup="dialog"
         className={className || "icon-btn"}
@@ -76,7 +78,7 @@ export function Popover({
         <div
           ref={panel}
           role="dialog"
-          aria-label={label}
+          aria-label={t(label)}
           aria-modal="true"
           onClick={(e) => {
             if ((e.target as HTMLElement).closest("a,button")) setOpen(false);

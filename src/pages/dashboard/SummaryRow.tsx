@@ -1,51 +1,32 @@
-import {usePermission} from '../../hooks/usePermission';
-import { Users, ArrowUpRight } from "lucide-react";
-import { StatCard } from "../../components/common/StatCard";
-import { dashboardService } from "../../services/dashboardService";
+import { useTranslation } from '../../i18n/useTranslation';
+import { T } from "../../i18n/T";
+import { useEffect, useState } from 'react';
+import { Users, Store, ShoppingCart, ArrowUpFromLine, ArrowDownToLine, Pause, Play } from 'lucide-react';
+import { usePermission } from '../../hooks/usePermission';
+import { dashboardService } from '../../services/dashboardService';
 export function SummaryRow() {
-  const {can}=usePermission();const summary = dashboardService.getSummary();
-  return (
-    <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:col-span-9">
-        {dashboardService.getStats().filter(s=>s.title!=="Net Profit"||can("reports:finance")).map((stat) => (
-          <StatCard key={stat.title} {...stat} />
-        ))}
-      </div>
-      <section className="card relative overflow-hidden xl:col-span-3">
-        <div className="absolute -right-5 -top-6 h-28 w-28 rounded-full bg-indigo-50 dark:bg-indigo-500/10" />
-        <div className="relative flex justify-between">
-          <p className="text-xs text-slate-500">Total Active Customers</p>
-          <Users size={18} className="text-indigo-500" />
-        </div>
-        <div className="relative mt-2 flex items-center gap-3">
-          <h2 className="text-3xl font-semibold tracking-tight">
-            {summary.total}
-          </h2>
-          <span className="flex items-center text-xs font-medium text-emerald-500">
-            <ArrowUpRight size={12} />
-            {summary.trend}
-          </span>
-        </div>
-        <div className="mt-5 grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800">
-          {summary.mini.map((item) => (
-            <div key={item.label} className="text-center first:text-left">
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                {item.value}
-              </p>
-              <p className="mt-1 text-xs text-slate-400">{item.label}</p>
-            </div>
-          ))}
-        </div>
-        <div
-          aria-label="Summary slide 1 of 3"
-          className="mt-4 flex justify-center gap-1"
-        >
-          <span className="h-1 w-3 rounded-full bg-indigo-500" />
-          <span className="h-1 w-1 rounded-full bg-slate-200" />
-          <span className="h-1 w-1 rounded-full bg-slate-200" />
-        </div>
-      </section>
-    </div>
-  );
+  const { can } = usePermission();
+  return <div className="dashboard-stats">{dashboardService.getStats().filter(s => s.title !== 'Net Profit' || can('reports:finance')).map((s, i) => {
+    const Icon = s.icon;
+    return <section className="dashboard-panel dashboard-stat" key={s.title}><div><p><T>{s.title}</T></p><h2>{s.value}</h2></div><span className={`dashboard-stat-icon stat-color-${i}`}><Icon size={21}/></span><p className="dashboard-stat-change"><span className={s.up ? 'dashboard-positive' : 'dashboard-negative'}>{s.up ? <ArrowUpFromLine size={12}/> : <ArrowDownToLine size={12}/>} <T>{s.trend}</T></span><T text={" From Last Week"}/></p></section>;
+  })}</div>;
 }
-
+export function SummaryCarousel() {
+  const { t } = useTranslation();
+  const { can } = usePermission();
+  const slides = dashboardService.getSummarySlides().filter(s => s.kind !== 'suppliers' || can('suppliers:view'));
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  useEffect(() => {
+    if (paused || hovered) return;
+    const timer = window.setInterval(() => setIndex(i => (i + 1) % slides.length), 3000);
+    return () => window.clearInterval(timer);
+  }, [paused, hovered, slides.length]);
+  const current = index % slides.length, slide = slides[current];
+  const Icon = slide.kind === 'suppliers' ? Store : slide.kind === 'customers' ? Users : ShoppingCart;
+  return <section className="dashboard-panel dashboard-summary" aria-label="Business summary" aria-roledescription="carousel" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onFocusCapture={() => setHovered(true)} onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) setHovered(false); }}>
+    <div key={slide.kind} className="dashboard-summary-slide" role="group" aria-roledescription="slide" aria-label={`${current + 1} of ${slides.length}`}><div className="dashboard-summary-title"><span className="dashboard-summary-icon"><Icon size={21}/></span><div><h2><T>{slide.title}</T></h2><p><strong>{slide.total}</strong><span className="dashboard-positive"><T>{slide.trend}</T></span></p></div></div><div className="dashboard-summary-details">{slide.mini.map(item => <div key={item.label}><p><T>{item.label}</T></p><strong>{item.value}</strong></div>)}</div></div>
+    <div className="dashboard-carousel-controls"><div className="dashboard-carousel-dots">{slides.map((s, i) => <button key={s.kind} aria-label={t('Show {title}',{title:t(s.title)})} aria-pressed={current === i} onClick={() => setIndex(i)}><span className={current === i ? 'is-active' : ''}/></button>)}</div><button className="dashboard-carousel-pause" aria-label={t(paused ? 'Play summary rotation' : 'Pause summary rotation')} onClick={() => setPaused(p => !p)}>{paused ? <Play size={13}/> : <Pause size={13}/>}</button></div>
+  </section>;
+}

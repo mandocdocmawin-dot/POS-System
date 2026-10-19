@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {backupService} from '../../services/backupService';
 import {demoHistoryService} from '../../services/demoHistoryService';
 import { useState } from "react";
@@ -16,7 +17,7 @@ export function DataDemoCard() {
     <>
 
       <fieldset disabled={!can("settings:manage")}><section className="card mt-6 space-y-4">
-        <h2 className="text-base font-semibold">Data</h2><button className="btn" disabled={busy||demoHistoryService.generated()} onClick={()=>setHistory(true)}>{demoHistoryService.generated()?"Demo history generated":"Generate demo history"}</button>
+        <h2 className="text-base font-semibold"><T text={"Data"}/></h2><button className="btn" disabled={busy||demoHistoryService.generated()} onClick={()=>setHistory(true)}>{demoHistoryService.generated()?"Demo history generated":"Generate demo history"}</button>
         <p className="text-sm text-slate-500">
           Demo data is stored in this browser. JSON backups include product
           images, staff avatars, roles, attendance, holidays, shifts, payroll, the demo session, customers, orders, held orders and the open cart. Import and reset
@@ -42,12 +43,8 @@ export function DataDemoCard() {
                 setBusy(false);
               }
             }}
-          >
-            Export data (JSON)
-          </button>
-          <label className="btn cursor-pointer">
-            Import data (JSON)
-            <input
+          ><T text={"Export data (JSON)"}/></button>
+          <label className="btn cursor-pointer"><T text={"Import data (JSON)"}/><input
               className="sr-only"
               type="file"
               accept="application/json,.json"
@@ -73,11 +70,9 @@ export function DataDemoCard() {
             className="btn text-red-500"
             disabled={busy}
             onClick={() => setReset(true)}
-          >
-            Reset demo data
-          </button>
+          ><T text={"Reset demo data"}/></button>
         </div>
-        {busy && <p role="status">Preparing backup…</p>}
+        {busy && <p role="status"><T text={"Preparing backup…"}/></p>}
         {error && (
           <p role="alert" className="break-words text-red-500">
             {error}
@@ -112,4 +107,3 @@ export function DataDemoCard() {
     </>
   );
 }
-

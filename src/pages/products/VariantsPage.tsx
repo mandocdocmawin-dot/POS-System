@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {ProductWorkspace} from '../../components/products/ProductWorkspace';
 import {ProductImage} from '../../components/common/ProductImage';
 import {branchService} from '../../services/branchService';
@@ -71,7 +72,7 @@ function Editor({ item, done }: { item?: Variant; done: () => void }) {
         {...register("productId")}
         error={errors.productId?.message}
       >
-        <option value="">Choose product</option>
+        <option value=""><T text={"Choose product"}/></option>
         {productService.list().map((p) => (
           <option key={p.id} value={p.id}>
             {p.name}
@@ -110,10 +111,8 @@ function Editor({ item, done }: { item?: Variant; done: () => void }) {
         tracking. Use the product form to create a product with variants.
       </p>
       <div className="flex justify-end gap-3">
-        <button type="button" className="btn" onClick={done}>
-          Cancel
-        </button>
-        <button className="btn-primary">Save variant</button>
+        <button type="button" className="btn" onClick={done}><T text={"Cancel"}/></button>
+        <button className="btn-primary"><T text={"Save variant"}/></button>
       </div>
     </form>
   );
@@ -126,9 +125,7 @@ export function Component() {
   return (
     <ProductWorkspace title="Variants">
       <PageActions title="Variants">
-        <Can permission="products:create"><button className="btn-primary" onClick={() => setEdit("new")}>
-          Add Variant
-        </button></Can>
+        <Can permission="products:create"><button className="btn-primary" onClick={() => setEdit("new")}><T text={"Add Variant"}/></button></Can>
       </PageActions>
       <section className="card p-0">
         <DataTable
@@ -180,12 +177,8 @@ export function Component() {
           ]}
           actions={(v) => (
             <div className="flex gap-3">
-              <Can permission="products:edit"><button className="text-indigo-500" onClick={() => setEdit(v)}>
-                Edit
-              </button></Can>
-              <Can permission="products:delete"><button className="text-red-500" onClick={() => setRemove(v)}>
-                Delete
-              </button></Can>
+              <Can permission="products:edit"><button className="text-indigo-500" onClick={() => setEdit(v)}><T text={"Edit"}/></button></Can>
+              <Can permission="products:delete"><button className="text-red-500" onClick={() => setRemove(v)}><T text={"Delete"}/></button></Can>
             </div>
           )}
         />

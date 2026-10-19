@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {branchService} from '../../services/branchService';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -49,21 +50,15 @@ export function ShiftEditor({ shift, onClose }: { shift: Shift; onClose: () => v
           toast.error(message);
         }
       })}>
-        <label className="block text-sm">
-          Staff
-          <select className="mt-1 w-full" {...register('staffId')}>
+        <label className="block text-sm"><T text={"Staff"}/><select className="mt-1 w-full" {...register('staffId')}>
             {staff.filter(s => s.status === 'active' || s.id === values.staffId).map(s => (
               <option key={s.id} value={s.id}>{s.name} · {s.staffNo}</option>
             ))}
           </select>
         </label>
-        <label className="block text-sm">
-          Date
-          <input className="mt-1 w-full" type="date" {...register('date')} />
+        <label className="block text-sm"><T text={"Date"}/><input className="mt-1 w-full" type="date" {...register('date')} />
         </label>
-        <label className="block text-sm">
-          Shift template
-          <select className="mt-1 w-full" value={templateId} onChange={event => {
+        <label className="block text-sm"><T text={"Shift template"}/><select className="mt-1 w-full" value={templateId} onChange={event => {
             setTemplateId(event.target.value);
             const selected = shiftTemplates.find(t => t.id === event.target.value);
             if (selected) {
@@ -76,17 +71,15 @@ export function ShiftEditor({ shift, onClose }: { shift: Shift; onClose: () => v
           </select>
         </label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block text-sm">Start time<input className="mt-1 w-full" type="time" {...register('startTime', { onChange: () => setTemplateId('custom') })} /></label>
-          <label className="block text-sm">End time<input className="mt-1 w-full" type="time" {...register('endTime', { onChange: () => setTemplateId('custom') })} /></label>
+          <label className="block text-sm"><T text={"Start time"}/><input className="mt-1 w-full" type="time" {...register('startTime', { onChange: () => setTemplateId('custom') })} /></label>
+          <label className="block text-sm"><T text={"End time"}/><input className="mt-1 w-full" type="time" {...register('endTime', { onChange: () => setTemplateId('custom') })} /></label>
         </div>
         <p className="text-xs text-slate-500">Shifts must end after they start on the same day. Overnight shifts are unavailable.</p>
-        <label className="block text-sm">
-          Branch
-          <select className="mt-1 w-full" {...register('branchId')}>
+        <label className="block text-sm"><T text={"Branch"}/><select className="mt-1 w-full" {...register('branchId')}>
             {branchService.list().map(b=>b.id).map(branch => <option key={branch}>{branch}</option>)}
           </select>
         </label>
-        <label className="block text-sm">Note<textarea className="mt-1 w-full" rows={3} {...register('note')} /></label>
+        <label className="block text-sm"><T text={"Note"}/><textarea className="mt-1 w-full" rows={3} {...register('note')} /></label>
         {warnings.length > 0 && (
           <div role="status" className="space-y-1 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
             {warnings.map(warning => <p key={warning}>{warning}</p>)}
@@ -96,9 +89,9 @@ export function ShiftEditor({ shift, onClose }: { shift: Shift; onClose: () => v
         {Object.entries(errors).map(([key, value]) => <p role="alert" className="text-sm text-red-500" key={key}>{value.message}</p>)}
         {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
         <div className="flex flex-wrap gap-3">
-          <button className="btn-primary" disabled={isSubmitting}>Save shift</button>
-          <button type="button" className="btn" onClick={onClose}>Cancel</button>
-          {existing && <button type="button" className="btn text-red-500" onClick={() => setRemoving(true)}>Delete shift</button>}
+          <button className="btn-primary" disabled={isSubmitting}><T text={"Save shift"}/></button>
+          <button type="button" className="btn" onClick={onClose}><T text={"Cancel"}/></button>
+          {existing && <button type="button" className="btn text-red-500" onClick={() => setRemoving(true)}><T text={"Delete shift"}/></button>}
         </div>
       </form>
       <ConfirmDialog open={removing} title="Delete shift?" message="This removes the scheduled shift. Attendance history will be retained." onClose={() => setRemoving(false)} onConfirm={() => {

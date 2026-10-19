@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {ProductImage} from '../../components/common/ProductImage';
 import {Avatar} from '../../components/common/Avatar';
 import {CatalogStatus} from '../../components/products/ProductWorkspace';
@@ -40,7 +41,7 @@ export function MovementHistory({
     );
   return (
     <section className="card p-0">
-      <div className="product-panel-heading"><h2>{type==='in'?'Stock In List':type==='out'?'Stock Out List':type==='adjustment'?'Stock Adjustments':'Stock History'}</h2><button className="btn" onClick={()=>exportCSV('stock-movements.csv',[['Date','Product','Type','Quantity','Reason','Reference'],...rows.map(m=>[m.createdAt,products.find(p=>p.id===m.productId)?.name??'',m.type,m.type==='out'?-m.quantity:m.quantity,m.reason,m.reference??''])])}><Download size={15}/> Export CSV</button></div>
+      <div className="product-panel-heading"><h2>{type==='in'?'Stock In List':type==='out'?'Stock Out List':type==='adjustment'?'Stock Adjustments':'Stock History'}</h2><button className="btn" onClick={()=>exportCSV('stock-movements.csv',[['Date','Product','Type','Quantity','Reason','Reference'],...rows.map(m=>[m.createdAt,products.find(p=>p.id===m.productId)?.name??'',m.type,m.type==='out'?-m.quantity:m.quantity,m.reason,m.reference??''])])}><Download size={15}/><T text={" Export CSV"}/></button></div>
       <div className="grid gap-3 p-5 sm:grid-cols-3">
         {!productId && (
           <Select
@@ -48,7 +49,7 @@ export function MovementHistory({
             value={product}
             onChange={(e) => setProduct(e.target.value)}
           >
-            <option value="">All products</option>
+            <option value=""><T text={"All products"}/></option>
             {products.map((p) => (
               <option value={p.id} key={p.id}>
                 {p.name}

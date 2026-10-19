@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {z} from 'zod';
 import {authService} from '../../services/authService';
 import {DemoAccountsCard} from '../../components/auth/DemoAccountsCard';
@@ -61,7 +62,7 @@ export function Component() {
             label="Password"
             name="password"
             type="password"
-            
+
             autoComplete={signUp ? "new-password" : "current-password"}
           />
         )}
@@ -69,20 +70,14 @@ export function Component() {
           {signUp ? (
             <label className="flex items-center gap-2">
               <input type="checkbox" />I agree to the{" "}
-              <Link className="text-indigo-500" to="/privacy-policy">
-                Privacy Policy
-              </Link>
+              <Link className="text-indigo-500" to="/privacy-policy"><T text={"Privacy Policy"}/></Link>
             </label>
           ) : (
             !forgot && (
               <>
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" />
-                  Remember me
-                </label>
-                <Link className="text-indigo-500" to="/auth/forgot-password">
-                  Forgot password?
-                </Link>
+                  <input type="checkbox" /><T text={"Remember me"}/></label>
+                <Link className="text-indigo-500" to="/auth/forgot-password"><T text={"Forgot password?"}/></Link>
               </>
             )
           )}
@@ -97,24 +92,17 @@ export function Component() {
         </button>
         {notice&&<p role="alert" className="text-xs text-red-500">{notice}</p>}
       </form>
-      {signIn&&<><p className="mt-4 text-xs text-slate-500">Demo mode: no real authentication. Any credentials work.</p><DemoAccountsCard/></>}
+      {signIn&&<><p className="mt-4 text-xs text-slate-500"><T text={"Demo mode: no real authentication. Any credentials work."}/></p><DemoAccountsCard/></>}
       <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs text-slate-400 dark:border-slate-800">
         {signIn ? (
-          <>
-            New to TindaPOS?{" "}
-            <Link to="/auth/sign-up" className="font-medium text-indigo-500">
-              Create an account
-            </Link>
+          <><T text={"New to TindaPOS?"}/>{" "}
+            <Link to="/auth/sign-up" className="font-medium text-indigo-500"><T text={"Create an account"}/></Link>
           </>
         ) : (
-          <Link to="/auth/sign-in" className="font-medium text-indigo-500">
-            Back to Sign In
-          </Link>
+          <Link to="/auth/sign-in" className="font-medium text-indigo-500"><T text={"Back to Sign In"}/></Link>
         )}
       </div>
-      <p className="mt-5 text-center text-xs text-slate-400">
-        UI preview only. No real authentication.
-      </p>
+      <p className="mt-5 text-center text-xs text-slate-400"><T text={"UI preview only. No real authentication."}/></p>
     </>
   );
 }

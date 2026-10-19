@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {ProductWorkspace,CatalogStatus} from '../../components/products/ProductWorkspace';
 import {ProductImage} from '../../components/common/ProductImage';
 import {Popover} from '../../components/common/Popover';
@@ -91,7 +92,7 @@ function Editor({
     >
       <TextInput
         label="Name"
-       
+
         {...register("name")}
         error={errors.name?.message}
       />
@@ -101,7 +102,7 @@ function Editor({
           {...register("categoryId")}
           error={errors.categoryId?.message}
         >
-          <option value="">Choose category</option>
+          <option value=""><T text={"Choose category"}/></option>
           {config.parents.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -117,8 +118,8 @@ function Editor({
         />
       )}
       <Select label="Status" {...register("status")}>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
+        <option value="active"><T text={"Active"}/></option>
+        <option value="inactive"><T text={"Inactive"}/></option>
       </Select>
       {error && (
         <p role="alert" className="text-red-500">
@@ -126,11 +127,8 @@ function Editor({
         </p>
       )}
       <div className="flex justify-end gap-2">
-        <button type="button" className="btn" onClick={done}>
-          Cancel
-        </button>
-        <button disabled={isSubmitting} className="btn-primary">
-          Save {config.singular.toLowerCase()}
+        <button type="button" className="btn" onClick={done}><T text={"Cancel"}/></button>
+        <button disabled={isSubmitting} className="btn-primary"><T text={"Save"}/>{config.singular.toLowerCase()}
         </button>
       </div>
     </form>
@@ -153,17 +151,17 @@ export function CatalogPage({ config }: { config: CatalogConfig }) {
       <div className="product-metrics">{[[Layers,allRows.length,`All ${config.title.toLowerCase()}`],[CheckCircle2,allRows.filter(r=>r.status==='active').length,'Active'],[XCircle,allRows.filter(r=>r.status==='inactive').length,'Inactive'],[Package,products.length,'Catalog products']].map(([Icon,value,label])=>{const Mark=Icon as typeof Layers;return <div className="product-metric" key={String(label)}><span className="rounded-lg bg-indigo-50 p-3 text-indigo-600 dark:bg-indigo-500/15"><Mark size={22}/></span><div><strong>{String(value)}</strong><span>{String(label)}</span></div></div>;})}</div>
       <PageActions title={config.title}>
         <Can permission="products:create"><button className="btn-primary" onClick={() => setEdit("new")}>
-          <Plus size={16}/> Add {config.singular}
+          <Plus size={16}/><T text={" Add "}/>{config.singular}
         </button></Can>
       </PageActions>
-      <div className="product-filters"><Select label="Status" value={status} onChange={e=>setStatus(e.target.value)}><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></Select>{config.parents && (
+      <div className="product-filters"><Select label="Status" value={status} onChange={e=>setStatus(e.target.value)}><option value=""><T text={"All statuses"}/></option><option value="active"><T text={"Active"}/></option><option value="inactive"><T text={"Inactive"}/></option></Select>{config.parents && (
         <div className="mb-4 max-w-xs">
           <Select
             label="Filter by category"
             value={parent}
             onChange={(e) => setParent(e.target.value)}
           >
-            <option value="">All categories</option>
+            <option value=""><T text={"All categories"}/></option>
             {config.parents.map((p) => (
               <option value={p.id} key={p.id}>
                 {p.name}
@@ -202,15 +200,13 @@ export function CatalogPage({ config }: { config: CatalogConfig }) {
                 onClick={() => setEdit(r)}
                 aria-label={`Edit ${r.name}`}
               >
-                <Pencil size={16}/> Edit
-              </button></Can>
+                <Pencil size={16}/><T text={"Edit"}/></button></Can>
               <Can permission="products:delete"><button
                 className="flex items-center gap-3 rounded p-2 text-left text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 onClick={() => setRemove(r)}
                 aria-label={`Delete ${r.name}`}
               >
-                <Trash2 size={16}/> Delete
-              </button></Can>
+                <Trash2 size={16}/><T text={"Delete"}/></button></Can>
             </div></Popover>
           )}
         />

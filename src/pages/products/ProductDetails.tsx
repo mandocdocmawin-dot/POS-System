@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {branchService} from '../../services/branchService';
 import { Drawer } from "../../components/common/Drawer";
 import { ProductImage } from "../../components/common/ProductImage";
@@ -60,7 +61,7 @@ export function ProductDetails({
       <p className="mb-5 whitespace-pre-wrap">
         {p.description || "No description."}
       </p>
-      <h3 className="mb-3 font-semibold">Variants</h3>
+      <h3 className="mb-3 font-semibold"><T text={"Variants"}/></h3>
       {productService.variants(id).map((v) => (
         <div
           className="mb-3 rounded-lg border border-slate-200 p-3 dark:border-slate-700"
@@ -74,14 +75,13 @@ export function ProductDetails({
               .map(([k, value]) => `${k}: ${value}`)
               .join(", ")}
           </p>
-          <p className="mt-1">
-            Cost {formatPHP(v.costPrice)} · Price {formatPHP(v.sellingPrice)} ·
+          <p className="mt-1"><T text={"Cost"}/>{formatPHP(v.costPrice)} · Price {formatPHP(v.sellingPrice)} ·
             Stock {stockService.getStock(id, v.id,branchService.activeId())}
           </p>
         </div>
       ))}
-      {!p.hasVariants && <p className="mb-5 text-slate-500">No variants.</p>}
-      <h3 className="mb-3 font-semibold">Last 5 stock movements</h3>
+      {!p.hasVariants && <p className="mb-5 text-slate-500"><T text={"No variants."}/></p>}
+      <h3 className="mb-3 font-semibold"><T text={"Last 5 stock movements"}/></h3>
       <ul className="space-y-3">
         {stockService
           .history(id,undefined,branchService.activeId())
@@ -105,7 +105,7 @@ export function ProductDetails({
           ))}
       </ul>
       {!stockService.history(id,undefined,branchService.activeId()).length && (
-        <p className="text-slate-500">No stock movements.</p>
+        <p className="text-slate-500"><T text={"No stock movements."}/></p>
       )}
     </Drawer>
   );

@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {ProductWorkspace} from '../../components/products/ProductWorkspace';
 import {useSettings} from '../../hooks/useSettings';
 import {
@@ -154,7 +155,7 @@ function ProductForm({ id }: { id?: string }) {
   if (id && !current)
     return (
       <section className="card">
-        <h1>Product not found</h1>
+        <h1><T text={"Product not found"}/></h1>
         <button className="btn mt-4" onClick={() => navigate("/products")}>
           Back to products
         </button>
@@ -176,7 +177,7 @@ function ProductForm({ id }: { id?: string }) {
         }}
       >
         <div className="product-form-main"><section className="card space-y-4">
-          <h2 className="text-base font-semibold">Product Information</h2>
+          <h2 className="text-base font-semibold"><T text={"Product Information"}/></h2>
           <TextInput
             label="Product name"
             {...register("name")}
@@ -200,9 +201,7 @@ function ProductForm({ id }: { id?: string }) {
                   shouldValidate: true,
                 })
               }
-            >
-              Generate
-            </button>
+            ><T text={"Generate"}/></button>
           </div>
           <TextInput
             label="Barcode"
@@ -218,7 +217,7 @@ function ProductForm({ id }: { id?: string }) {
               })}
               error={errors.categoryId?.message}
             >
-              <option value="">Choose category</option>
+              <option value=""><T text={"Choose category"}/></option>
               {categories
                 .filter(
                   (c) => c.status === "active" || c.id === current?.categoryId,
@@ -235,7 +234,7 @@ function ProductForm({ id }: { id?: string }) {
               disabled={!values.categoryId}
               error={errors.subcategoryId?.message}
             >
-              <option value="">None</option>
+              <option value=""><T text={"None"}/></option>
               {subcategories.map((c) => (
                 <option value={c.id} key={c.id}>
                   {c.name}
@@ -247,7 +246,7 @@ function ProductForm({ id }: { id?: string }) {
               {...register("brandId")}
               error={errors.brandId?.message}
             >
-              <option value="">None</option>
+              <option value=""><T text={"None"}/></option>
               {brands.map((b) => (
                 <option value={b.id} key={b.id}>
                   {b.name}
@@ -259,7 +258,7 @@ function ProductForm({ id }: { id?: string }) {
               {...register("unitId")}
               error={errors.unitId?.message}
             >
-              <option value="">Choose unit</option>
+              <option value=""><T text={"Choose unit"}/></option>
               {units.map((u) => (
                 <option value={u.id} key={u.id}>
                   {u.name} ({u.shortName})
@@ -269,7 +268,7 @@ function ProductForm({ id }: { id?: string }) {
           </div>
         </section>
         <section className="card space-y-4">
-          <h2 className="text-base font-semibold">Pricing &amp; Tax</h2>
+          <h2 className="text-base font-semibold"><T text={"Pricing & Tax"}/></h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <NumberInput
               label="Cost price (PHP)"
@@ -305,7 +304,7 @@ function ProductForm({ id }: { id?: string }) {
           </p>
         </section>
         <section className="card space-y-4">
-          <h2 className="text-base font-semibold">Inventory</h2>
+          <h2 className="text-base font-semibold"><T text={"Inventory"}/></h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {!id && !values.hasVariants && (
               <NumberInput
@@ -338,7 +337,7 @@ function ProductForm({ id }: { id?: string }) {
           />
         )}
         <section className="card space-y-4">
-          <h2 className="text-base font-semibold">Product Availability</h2>
+          <h2 className="text-base font-semibold"><T text={"Product Availability"}/></h2>
           <Switch
             label="Active product"
             checked={values.status === "active"}
@@ -351,7 +350,7 @@ function ProductForm({ id }: { id?: string }) {
         </section>
         </div>
         <section className="card space-y-4 product-form-media">
-          <h2 className="text-base font-semibold">Product Images &amp; Media</h2>
+          <h2 className="text-base font-semibold"><T text={"Product Images & Media"}/></h2>
           {current && !blob && (
             <div className="max-w-32">
               <ProductImage
@@ -382,17 +381,13 @@ function ProductForm({ id }: { id?: string }) {
             className="btn"
             type="button"
             onClick={() => navigate("/products")}
-          >
-            Cancel
-          </button>
+          ><T text={"Cancel"}/></button>
           {!id && (
             <button
               className="btn"
               disabled={isSubmitting || imageBusy}
               value="another"
-            >
-              Save and add another
-            </button>
+            ><T text={"Save and add another"}/></button>
           )}
           <button className="btn-primary" disabled={isSubmitting || imageBusy}>
             {isSubmitting ? "Saving…" : "Save product"}

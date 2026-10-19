@@ -1,3 +1,5 @@
+import { useTranslation } from '../../i18n/useTranslation';
+import { T } from "../../i18n/T";
 import {
   useId,
   type ReactNode,
@@ -16,11 +18,11 @@ export function FormField({
 }) {
   return (
     <div className="space-y-1.5">
-      <div className="text-sm font-medium">{label}</div>
+      <div className="text-sm font-medium"><T>{label}</T></div>
       {children}
       {error && (
         <p role="alert" className="text-xs text-red-500">
-          {error}
+          <T>{error}</T>
         </p>
       )}
     </div>
@@ -31,15 +33,17 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
 };
 export function TextInput({ label, error, id, ...props }: InputProps) {
+  const { t } = useTranslation();
   const auto = useId();
   const key = id ?? auto;
   return (
     <div className="space-y-1.5">
       <label htmlFor={key} className="block text-sm font-medium">
-        {label}
+        <T>{label}</T>
       </label>
       <input
         {...props}
+        aria-label={t(props['aria-label'] ?? label)}
         id={key}
         className="w-full"
         aria-invalid={!!error}
@@ -47,7 +51,7 @@ export function TextInput({ label, error, id, ...props }: InputProps) {
       />
       {error && (
         <p id={`${key}-error`} role="alert" className="text-xs text-red-500">
-          {error}
+          <T>{error}</T>
         </p>
       )}
     </div>
@@ -66,15 +70,17 @@ export function Select({
   label: string;
   error?: string;
 }) {
+  const { t } = useTranslation();
   const auto = useId();
   const key = id ?? auto;
   return (
     <div className="space-y-1.5">
       <label htmlFor={key} className="block text-sm font-medium">
-        {label}
+        <T>{label}</T>
       </label>
       <select
         {...props}
+        aria-label={t(props['aria-label'] ?? label)}
         id={key}
         className="w-full"
         aria-invalid={!!error}
@@ -84,7 +90,7 @@ export function Select({
       </select>
       {error && (
         <p id={`${key}-error`} role="alert" className="text-xs text-red-500">
-          {error}
+          <T>{error}</T>
         </p>
       )}
     </div>
@@ -99,15 +105,17 @@ export function Textarea({
   label: string;
   error?: string;
 }) {
+  const { t } = useTranslation();
   const auto = useId();
   const key = id ?? auto;
   return (
     <div className="space-y-1.5">
       <label htmlFor={key} className="block text-sm font-medium">
-        {label}
+        <T>{label}</T>
       </label>
       <textarea
         {...props}
+        aria-label={t(props['aria-label'] ?? label)}
         id={key}
         className="w-full rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900"
         aria-invalid={!!error}
@@ -115,7 +123,7 @@ export function Textarea({
       />
       {error && (
         <p id={`${key}-error`} role="alert" className="text-xs text-red-500">
-          {error}
+          <T>{error}</T>
         </p>
       )}
     </div>
@@ -126,7 +134,7 @@ export function Switch({ label, ...props }: InputProps) {
   return (
     <label htmlFor={key} className="flex items-center gap-3">
       <input {...props} id={key} type="checkbox" role="switch" />
-      {label}
+      <T>{label}</T>
     </label>
   );
 }

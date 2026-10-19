@@ -1,3 +1,4 @@
+import { T } from "../../i18n/T";
 import {
   useFieldArray,
   type Control,
@@ -26,7 +27,7 @@ export function InlineVariants({
   return (
     <section className="card space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Variants</h2>
+        <h2 className="font-semibold"><T text={"Variants"}/></h2>
         <button
           type="button"
           className="btn"
@@ -41,9 +42,7 @@ export function InlineVariants({
               attributesText: "",
             })
           }
-        >
-          Add variant
-        </button>
+        ><T text={"Add variant"}/></button>
       </div>
       {errors.variants?.message && (
         <p role="alert" className="text-red-500">
@@ -55,7 +54,7 @@ export function InlineVariants({
           key={field.fieldKey}
           className="rounded-lg border border-slate-200 p-4 dark:border-slate-700"
         >
-          <legend className="px-2">Variant {i + 1}</legend>
+          <legend className="px-2"><T text={"Variant "}/>{i + 1}</legend>
           <div className="grid gap-3 sm:grid-cols-2">
             <TextInput
               label="Variant name"

@@ -1,3 +1,6 @@
+import {InventoryWorkspace} from '../../components/inventory/InventoryWorkspace';
+import {Modal} from '../../components/common/Modal';
+import {Plus} from 'lucide-react';
 import {branchService} from '../../services/branchService';
 import { localDate } from "../../utils/date";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +31,7 @@ export function Component() {
   useLocalData();
   const [pending, setPending] = useState<{ values: Values; before: number }>();
   const [error, setError] = useState("");
+  const [create,setCreate]=useState(false);
   const {
     register,
     control,
@@ -49,10 +53,10 @@ export function Component() {
     item = items.find((i) => i.key === values.item);
   const difference = (values.counted ?? 0) - (item?.stock ?? 0);
   return (
-    <>
+    <InventoryWorkspace title={"Stock Adjustment"}>
       <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
-      <PageActions title="Stock Adjustment" />
-      <form
+      <PageActions title={"Stock Adjustment"}><button className="btn-primary" onClick={()=>setCreate(true)}><Plus size={16}/> Add {"Stock Adjustment"}</button></PageActions>
+      <Modal open={create} onClose={()=>setCreate(false)} title={"Stock Adjustment"}><form
         className="card mb-6 space-y-4"
         onSubmit={handleSubmit((v) => {
           const selected = stockService.items(branchService.activeId()).find((i) => i.key === v.item);
@@ -122,7 +126,7 @@ export function Component() {
         <div className="flex justify-end">
           <button className="btn-primary">Review adjustment</button>
         </div>
-      </form>
+      </form></Modal>
       <MovementHistory type="adjustment" />
       {pending && (
         <ConfirmDialog
@@ -161,6 +165,6 @@ export function Component() {
           }}
         />
       )}
-    </>
+    </InventoryWorkspace>
   );
 }

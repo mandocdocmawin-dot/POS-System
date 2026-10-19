@@ -84,6 +84,8 @@ export const pageLoaders = {
   products: () => import("../pages/products/ProductsPage"),
   productForm: () => import("../pages/products/ProductFormPage"),
   variants: () => import("../pages/products/VariantsPage"),
+  inventoryOverview:()=>import('../pages/inventory/InventoryOverviewPage'),
+  inventoryBatch:()=>import('../pages/inventory/InventoryBatchPage'),
   stockList: () => import("../pages/inventory/StockListPage"),
   stockIn: () => import("../pages/inventory/StockMovementPage"),
   stockOut: () => import("../pages/inventory/StockOutPage"),
@@ -97,6 +99,7 @@ export const pageLoaders = {
 };
 export type PageId = keyof typeof pageLoaders;
 export const implementedPages: Record<string, PageId> = {
+ '/inventory/warehouse':'inventoryOverview','/inventory/valuation':'inventoryOverview','/inventory/alerts':'inventoryOverview','/inventory/lost-items':'inventoryOverview','/inventory/batch-management':'inventoryBatch',
  '/products/reviews':'productRecords','/products/warranty':'productRecords',
  '/products/bulk-import':'productBulk','/products/bulk-export':'productBulk',
  '/products/print-barcode':'productBarcode',

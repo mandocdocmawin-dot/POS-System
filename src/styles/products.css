@@ -4,7 +4,7 @@
 .product-workspace>.card,.product-workspace .product-panel{box-shadow:none;border-radius:.375rem}
 .product-workspace>header:not(.product-page-heading){border:1px solid #e2e8f0;background:white;padding:1rem;margin-bottom:0;border-radius:.375rem .375rem 0 0}
 .product-workspace>header:not(.product-page-heading) h1{font-size:.95rem}
-.product-workspace table{font-size:.8125rem}
+.product-workspace table{font-size:.8125rem;width:max-content;min-width:100%}
 .product-workspace table th{padding-block:1rem;font-weight:500}
 .product-workspace table td{padding-block:1rem}
 .product-workspace table td:first-child input,.product-workspace table th:first-child input{height:1.1rem;width:1.1rem;padding:0}
@@ -38,6 +38,16 @@
 .barcode-label{background:#fff;color:#111827;text-align:center;border:1px solid #e2e8f0;padding:1rem;break-inside:avoid}
 .barcode-label svg{max-width:100%;height:auto;margin-inline:auto}
 .barcode-compact{grid-template-columns:repeat(auto-fill,minmax(10rem,1fr))}
+.inventory-value-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));padding:1.2rem .5rem;text-align:center;gap:.75rem}
+.inventory-value-summary>div+div{border-left:1px solid #e2e8f0}
+.inventory-value-summary strong{display:block;font-size:1.1rem;margin-block:.4rem}
+.inventory-value-summary p{font-size:.75rem;color:#64748b;line-height:1.6}
+.inventory-location-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1rem;padding:1rem}
+.inventory-alert-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1rem;margin-bottom:1rem}
+.dark .inventory-value-summary>div+div{border-color:#334155}
+.dark .inventory-value-summary p{color:#94a3b8}
+@media(max-width:1100px){.inventory-value-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.inventory-alert-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.inventory-value-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-alert-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}.inventory-alert-cards h2{font-size:.8rem}}
 .dark .product-panel,.dark .product-filters,.dark .product-metric,.dark .product-workspace>header:not(.product-page-heading){background:#0f172a;border-color:#334155}
 .dark .product-panel-heading,.dark .product-form .card>h2,.dark .product-form-footer,.dark .product-table-tabs,.dark .product-file-option{border-color:#334155}
 .dark .product-note{background:#312e8140;border-color:#4338ca;color:#c7d2fe}

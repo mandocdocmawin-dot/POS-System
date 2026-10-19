@@ -1,3 +1,6 @@
+import {InventoryWorkspace} from '../../components/inventory/InventoryWorkspace';
+import {Modal} from '../../components/common/Modal';
+import {Plus} from 'lucide-react';
 import {branchService} from '../../services/branchService';
 import { localDate } from "../../utils/date";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +33,7 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
   const reasons = type === "in" ? inReasons : outReasons;
   useLocalData();
   const [error, setError] = useState("");
+  const [create,setCreate]=useState(false);
   const items = stockService.items(branchService.activeId());
   const {
     register,
@@ -51,10 +55,10 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
   const key = useWatch({ control, name: "item" });
   const item = items.find((i) => i.key === key);
   return (
-    <>
+    <InventoryWorkspace title={type === "in" ? "Stock In" : "Stock Out"}>
       <p className="mb-4 rounded-lg border border-indigo-200 p-3 text-sm dark:border-indigo-800">Active branch: <strong>{branchService.get(branchService.activeId())?.name}</strong></p>
-      <PageActions title={type === "in" ? "Stock In" : "Stock Out"} />
-      <form
+      <PageActions title={type === "in" ? "Stock In" : "Stock Out"}><button className="btn-primary" onClick={()=>setCreate(true)}><Plus size={16}/> Add {type === "in" ? "Stock In" : "Stock Out"}</button></PageActions>
+      <Modal open={create} onClose={()=>setCreate(false)} title={type === "in" ? "Stock In" : "Stock Out"}><form
         className="card mb-6 space-y-4"
         onSubmit={handleSubmit((v) => {
           try {
@@ -134,9 +138,9 @@ export function StockMovementPage({ type }: { type: "in" | "out" }) {
             {type === "in" ? "Record stock in" : "Record stock out"}
           </button>
         </div>
-      </form>
+      </form></Modal>
       <MovementHistory type={type} />
-    </>
+    </InventoryWorkspace>
   );
 }
 export function Component() {
